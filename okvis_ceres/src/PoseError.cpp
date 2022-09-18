@@ -45,29 +45,29 @@ namespace okvis {
 namespace ceres {
 
 // Construct with measurement and information matrix.
-PoseError::PoseError(const okvis::kinematics::Transformation & measurement,
-                     const Eigen::Matrix<double, 6, 6> & information) {
+PoseError::PoseError(const okvis::kinematics::Transformation &measurement,
+                     const Eigen::Matrix<double, 6, 6> &information) {
   setMeasurement(measurement);
   setInformation(information);
 }
 
 // Construct with measurement and variance.
-PoseError::PoseError(const okvis::kinematics::Transformation & measurement,
+PoseError::PoseError(const okvis::kinematics::Transformation &measurement,
                      double translationVariance, double rotationVariance) {
   setMeasurement(measurement);
 
   information_t information;
   information.setZero();
   information.topLeftCorner<3, 3>() = Eigen::Matrix3d::Identity() * 1.0
-      / translationVariance;
+                                      / translationVariance;
   information.bottomRightCorner<3, 3>() = Eigen::Matrix3d::Identity() * 1.0
-      / rotationVariance;
+                                          / rotationVariance;
 
   setInformation(information);
 }
 
 // Set the information.
-void PoseError::setInformation(const information_t & information) {
+void PoseError::setInformation(const information_t &information) {
   information_ = information;
   covariance_ = information.inverse();
   // perform the Cholesky decomposition on order to obtain the correct error weighting
@@ -76,17 +76,17 @@ void PoseError::setInformation(const information_t & information) {
 }
 
 // This evaluates the error term and additionally computes the Jacobians.
-bool PoseError::Evaluate(double const* const * parameters, double* residuals,
-                         double** jacobians) const {
+bool PoseError::Evaluate(double const *const *parameters, double *residuals,
+                         double **jacobians) const {
   return EvaluateWithMinimalJacobians(parameters, residuals, jacobians, NULL);
 }
 
 // This evaluates the error term and additionally computes
 // the Jacobians in the minimal internal representation.
-bool PoseError::EvaluateWithMinimalJacobians(double const* const * parameters,
-                                             double* residuals,
-                                             double** jacobians,
-                                             double** jacobiansMinimal) const {
+bool PoseError::EvaluateWithMinimalJacobians(double const *const *parameters,
+                                             double *residuals,
+                                             double **jacobians,
+                                             double **jacobiansMinimal) const {
 
   // compute error
   okvis::kinematics::Transformation T_WS(

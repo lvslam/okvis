@@ -65,12 +65,12 @@ template<class GEOMETRY_TYPE>
   information *= 64.0 / (size * size);
 
   // create error term
-  std::shared_ptr < ceres::ReprojectionError
-      < GEOMETRY_TYPE
-          >> reprojectionError(
-              new ceres::ReprojectionError<GEOMETRY_TYPE>(
-                  multiFramePtr->template geometryAs<GEOMETRY_TYPE>(camIdx),
-                  camIdx, measurement, information));
+  std::shared_ptr<ceres::ReprojectionError
+      <GEOMETRY_TYPE
+      >> reprojectionError(
+      new ceres::ReprojectionError<GEOMETRY_TYPE>(
+          multiFramePtr->template geometryAs<GEOMETRY_TYPE>(camIdx),
+          camIdx, measurement, information));
 
   ::ceres::ResidualBlockId retVal = mapPtr_->addResidualBlock(
       reprojectionError,

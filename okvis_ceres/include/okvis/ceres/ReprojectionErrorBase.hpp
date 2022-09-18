@@ -50,8 +50,9 @@ namespace ceres {
 class ReprojectionErrorBase :
     public ::ceres::SizedCostFunction<2 /* number of residuals */,
         7 /* size of first parameter */, 4 /* size of second parameter */, 7 /* size of third parameter (camera extrinsics) */>,
-    public ErrorInterface {
- public:
+    public ErrorInterface
+{
+public:
 
   /// \brief Camera ID.
   uint64_t cameraId() const {
@@ -67,9 +68,11 @@ class ReprojectionErrorBase :
   uint64_t cameraId_; ///< ID of the camera.
 };
 
+
 /// \brief 2D keypoint reprojection error base class.
-class ReprojectionError2dBase : public ReprojectionErrorBase {
- public:
+class ReprojectionError2dBase : public ReprojectionErrorBase
+{
+public:
 
   /// \brief Measurement type (2D).
   typedef Eigen::Vector2d measurement_t;
@@ -79,24 +82,24 @@ class ReprojectionError2dBase : public ReprojectionErrorBase {
 
   /// \brief Set the measurement.
   /// @param[in] measurement The measurement vector (2d).
-  virtual void setMeasurement(const measurement_t& measurement) = 0;
+  virtual void setMeasurement(const measurement_t &measurement) = 0;
 
   /// \brief Set the information.
   /// @param[in] information The information (weight) matrix (2x2).
-  virtual void setInformation(const covariance_t& information) = 0;
+  virtual void setInformation(const covariance_t &information) = 0;
 
   // getters
   /// \brief Get the measurement.
   /// \return The measurement vector (2d).
-  virtual const measurement_t& measurement() const = 0;
+  virtual const measurement_t &measurement() const = 0;
 
   /// \brief Get the information matrix.
   /// \return The information (weight) matrix (2x2).
-  virtual const covariance_t& information() const = 0;
+  virtual const covariance_t &information() const = 0;
 
   /// \brief Get the covariance matrix.
   /// \return The inverse information (covariance) matrix.
-  virtual const covariance_t& covariance() const = 0;
+  virtual const covariance_t &covariance() const = 0;
 
 };
 

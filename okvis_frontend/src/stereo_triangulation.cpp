@@ -48,11 +48,11 @@ namespace okvis {
 namespace triangulation {
 
 // Triangulate the intersection of two rays.
-Eigen::Vector4d triangulateFast(const Eigen::Vector3d& p1,
-                                const Eigen::Vector3d& e1,
-                                const Eigen::Vector3d& p2,
-                                const Eigen::Vector3d& e2, double sigma,
-                                bool& isValid, bool& isParallel) {
+Eigen::Vector4d triangulateFast(const Eigen::Vector3d &p1,
+                                const Eigen::Vector3d &e1,
+                                const Eigen::Vector3d &p2,
+                                const Eigen::Vector3d &e2, double sigma,
+                                bool &isValid, bool &isParallel) {
   isParallel = false; // This should be the default.
   // But parallel and invalid is not the same. Points at infinity are valid and parallel.
   isValid = false; // hopefully this will be reset to true.
@@ -92,8 +92,8 @@ Eigen::Vector4d triangulateFast(const Eigen::Vector3d& p1,
   if (!invertible) {
     isParallel = true; // let's note this.
     // parallel. that's fine. but A is not invertible. so handle it separately.
-    if ((e1.cross(e2)).norm() < 6 * sigma){
-       isValid = true;  // check parallel
+    if ((e1.cross(e2)).norm() < 6 * sigma) {
+      isValid = true;  // check parallel
     }
     return (Eigen::Vector4d((e1[0] + e2[0]) / 2.0, (e1[1] + e2[1]) / 2.0,
                             (e1[2] + e2[2]) / 2.0, 1e-3).normalized());

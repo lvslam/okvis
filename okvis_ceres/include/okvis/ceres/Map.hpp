@@ -60,16 +60,20 @@ namespace ceres {
 ///        In essence, it encapsulates the ceres::Problem. This way, we can easily manipulate the optimisation
 ///        problem. You could argue why not use cere's internal mechanisms to do that. We found that our
 ///        implementation was faster...
-class Map {
- public:
-  OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
+class Map
+{
+public:
+  OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /// @brief Constructor.
   Map();
 
+
   // definitions
   /// @brief Struct to store some infos about a residual.
-  struct ResidualBlockSpec {
+  struct ResidualBlockSpec
+  {
     ResidualBlockSpec()
         : residualBlockId(0),
           lossFunctionPtr(0),
@@ -81,7 +85,7 @@ class Map {
     /// @param[in] lossFunctionPtr The m-estimator.
     /// @param[in] errorInterfacePtr The pointer to the error interface of the respective residual block.
     ResidualBlockSpec(::ceres::ResidualBlockId residualBlockId,
-                      ::ceres::LossFunction* lossFunctionPtr,
+                      ::ceres::LossFunction *lossFunctionPtr,
                       std::shared_ptr<ErrorInterface> errorInterfacePtr)
         : residualBlockId(residualBlockId),
           lossFunctionPtr(lossFunctionPtr),
@@ -89,16 +93,19 @@ class Map {
     }
 
     ::ceres::ResidualBlockId residualBlockId;           ///< ID of residual block.
-    ::ceres::LossFunction* lossFunctionPtr;             ///< The m-estimator.
+    ::ceres::LossFunction *lossFunctionPtr;             ///< The m-estimator.
     std::shared_ptr<ErrorInterface> errorInterfacePtr;  ///< The pointer to the error interface of the respective residual block.
   };
+
+
   typedef std::pair<uint64_t, std::shared_ptr<okvis::ceres::ParameterBlock> > ParameterBlockSpec;
 
   typedef std::vector<ResidualBlockSpec> ResidualBlockCollection;
   typedef std::vector<ParameterBlockSpec> ParameterBlockCollection;
 
   /// @brief The Parameterisation enum
-  enum Parameterization {
+  enum Parameterization
+  {
     HomogeneousPoint,     ///< Use okvis::ceres::HomogeneousPointLocalParameterization.
     Pose6d,               ///< Use okvis::ceres::PoseLocalParameterization.
     Pose3d,               ///< Use okvis::ceres::PoseLocalParameterization3d (orientation varying).
@@ -131,7 +138,7 @@ class Map {
    * @param[in] parameterBlockId Parameter block ID of interest.
    * @param[out] H the output Hessian block.
    */
-  void getLhs(uint64_t parameterBlockId, Eigen::MatrixXd& H);
+  void getLhs(uint64_t parameterBlockId, Eigen::MatrixXd &H);
 
   /// @name add/remove
   /// @{
@@ -170,9 +177,9 @@ class Map {
    * @return
    */
   ::ceres::ResidualBlockId addResidualBlock(
-      std::shared_ptr< ::ceres::CostFunction> cost_function,
-      ::ceres::LossFunction* loss_function,
-      std::vector<std::shared_ptr<okvis::ceres::ParameterBlock> >& parameterBlockPtrs);
+      std::shared_ptr<::ceres::CostFunction> cost_function,
+      ::ceres::LossFunction *loss_function,
+      std::vector<std::shared_ptr<okvis::ceres::ParameterBlock> > &parameterBlockPtrs);
 
   /**
    * @brief Replace the parameters connected to a residual block ID.
@@ -181,7 +188,7 @@ class Map {
    */
   void resetResidualBlock(
       ::ceres::ResidualBlockId residualBlockId,
-      std::vector<std::shared_ptr<okvis::ceres::ParameterBlock> >& parameterBlockPtrs);
+      std::vector<std::shared_ptr<okvis::ceres::ParameterBlock> > &parameterBlockPtrs);
 
   /**
    * @brief Add a residual block. See respective ceres docu. If more are needed, see other interface.
@@ -200,8 +207,8 @@ class Map {
    * @return The residual block ID, i.e. what cost_function points to.
    */
   ::ceres::ResidualBlockId addResidualBlock(
-      std::shared_ptr< ::ceres::CostFunction> cost_function,
-      ::ceres::LossFunction* loss_function,
+      std::shared_ptr<::ceres::CostFunction> cost_function,
+      ::ceres::LossFunction *loss_function,
       std::shared_ptr<okvis::ceres::ParameterBlock> x0,
       std::shared_ptr<okvis::ceres::ParameterBlock> x1 = std::shared_ptr<
           okvis::ceres::ParameterBlock>(),
@@ -284,7 +291,7 @@ class Map {
    */
   bool setParameterization(
       uint64_t parameterBlockId,
-      ::ceres::LocalParameterization* local_parameterization);
+      ::ceres::LocalParameterization *local_parameterization);
 
   /**
    * @brief Set the (local) parameterisation of a parameter block.
@@ -294,7 +301,7 @@ class Map {
    */
   bool setParameterization(
       std::shared_ptr<okvis::ceres::ParameterBlock> parameterBlock,
-      ::ceres::LocalParameterization* local_parameterization) {
+      ::ceres::LocalParameterization *local_parameterization) {
     return setParameterization(parameterBlock->id(), local_parameterization);
   }
 
@@ -349,14 +356,15 @@ class Map {
       std::shared_ptr<okvis::ceres::ParameterBlock> > Id2ParameterBlock_Map;
 
   /// \brief The actual map from Id to residual block specs.
-  typedef std::unordered_map< ::ceres::ResidualBlockId, ResidualBlockSpec> ResidualBlockId2ResidualBlockSpec_Map;
+  typedef std::unordered_map<::ceres::ResidualBlockId, ResidualBlockSpec> ResidualBlockId2ResidualBlockSpec_Map;
 
   /// @brief Get map connecting parameter block IDs to parameter blocks
-  const Id2ParameterBlock_Map& id2parameterBlockMap() const {
+  const Id2ParameterBlock_Map &id2parameterBlockMap() const {
     return id2ParameterBlock_Map_;
   }
+
   /// @brief Get the actual map from Id to residual block specs.
-  const ResidualBlockId2ResidualBlockSpec_Map& residualBlockId2ResidualBlockSpecMap() const {
+  const ResidualBlockId2ResidualBlockSpec_Map &residualBlockId2ResidualBlockSpecMap() const {
     return residualBlockId2ResidualBlockSpec_Map_;
   }
 
@@ -372,21 +380,21 @@ class Map {
     Solve(options, problem_.get(), &summary);
   }
 
- protected:
+protected:
 
   /// \brief count the inserted residual blocks.
   uint64_t residualCounter_;
 
   // member variables related to optimization
   /// \brief The ceres problem
-  std::shared_ptr< ::ceres::Problem> problem_;
+  std::shared_ptr<::ceres::Problem> problem_;
 
   // the actual maps
   /// \brief Go from Id to residual block pointer.
   typedef std::unordered_multimap<uint64_t, ResidualBlockSpec> Id2ResidualBlock_Multimap;
 
   /// \brief Go from residual block id to its parameter blocks.
-  typedef std::unordered_map< ::ceres::ResidualBlockId,
+  typedef std::unordered_map<::ceres::ResidualBlockId,
       ParameterBlockCollection> ResidualBlockId2ParameterBlockCollection_Map;
 
   /// \brief The map connecting parameter block ID's and parameter blocks

@@ -57,15 +57,17 @@ namespace okvis {
  * @brief This class combines multiple frames with the same or similar timestamp into one multiframe.
  * @warning This class is not threadsafe. Make sure to lock it with a mutex if used in multiple threads!
  */
-class FrameSynchronizer {
- public:
+class FrameSynchronizer
+{
+public:
   OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /**
    * @brief Constructor. Calls init().
    * @param parameters Parameters and settings.
    */
-  FrameSynchronizer(okvis::VioParameters& parameters);
+  FrameSynchronizer(okvis::VioParameters &parameters);
 
   /// @brief Trivial destructor.
   virtual ~FrameSynchronizer();
@@ -74,7 +76,7 @@ class FrameSynchronizer {
    * @brief Initialise the synchronizer with new parameters. Is called in the constructor.
    * @param parameters New parameters and settings.
    */
-  void init(okvis::VioParameters& parameters);
+  void init(okvis::VioParameters &parameters);
 
   /**
    * @brief Adds a new frame to the internal buffer and returns the Multiframe containing the frame.
@@ -107,7 +109,7 @@ class FrameSynchronizer {
    */
   bool detectionCompletedForAllCameras(uint64_t multiFrameId);
 
- private:
+private:
 
   /**
    * @brief Find a multiframe in the buffer that has a timestamp within the tolerances of the given one. The tolerance
@@ -117,7 +119,7 @@ class FrameSynchronizer {
    *                       whether the multiframe was found.
    * @return True if a multiframe with a timestamp within tolerances has been found.
    */
-  bool findFrameByTime(const okvis::Time& timestamp, int& position) const;
+  bool findFrameByTime(const okvis::Time &timestamp, int &position) const;
 
   /// returns true if a frame with multiframe id mfId is found and sets position to its frame buffer position
   /**
@@ -127,7 +129,7 @@ class FrameSynchronizer {
    *                      whether the multiframe was found.
    * @return True if a multiframe with the given timestamp was found in the buffer.
    */
-  bool findFrameById(uint64_t mfId, int& position) const;
+  bool findFrameById(uint64_t mfId, int &position) const;
 
   /// Copy of the parameters and settings.
   okvis::VioParameters parameters_;

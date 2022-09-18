@@ -45,11 +45,11 @@ namespace ceres {
 template<typename Derived_A, typename Derived_U, typename Derived_W,
     typename Derived_V>
 void MarginalizationError::splitSymmetricMatrix(
-    const std::vector<std::pair<int, int> >& marginalizationStartIdxAndLengthPairs,
-    const Eigen::MatrixBase<Derived_A>& A,  // input
-    const Eigen::MatrixBase<Derived_U>& U,  // output
-    const Eigen::MatrixBase<Derived_W>& W,  // output
-    const Eigen::MatrixBase<Derived_V>& V) {  // output
+    const std::vector<std::pair<int, int> > &marginalizationStartIdxAndLengthPairs,
+    const Eigen::MatrixBase<Derived_A> &A,  // input
+    const Eigen::MatrixBase<Derived_U> &U,  // output
+    const Eigen::MatrixBase<Derived_W> &W,  // output
+    const Eigen::MatrixBase<Derived_V> &V) {  // output
 
   // sanity check
   const int size = A.cols();
@@ -91,22 +91,22 @@ void MarginalizationError::splitSymmetricMatrix(
 
       // the kept part - only access and copy if non-zero
       if (size_a_j > 0 && size_a_i > 0) {
-        const_cast<Eigen::MatrixBase<Derived_U>&>(U).block(start_a_i, start_a_j,
-                                                           size_a_i, size_a_j) =
+        const_cast<Eigen::MatrixBase<Derived_U> &>(U).block(start_a_i, start_a_j,
+                                                            size_a_i, size_a_j) =
             A.block(lastIdx_row, lastIdx_col, size_a_i, size_a_j);
       }
 
       // now the mixed part
       if (size_b_j > 0 && size_a_i > 0) {
-        const_cast<Eigen::MatrixBase<Derived_W>&>(W).block(start_a_i, start_b_j,
-                                                           size_a_i, size_b_j) =
+        const_cast<Eigen::MatrixBase<Derived_W> &>(W).block(start_a_i, start_b_j,
+                                                            size_a_i, size_b_j) =
             A.block(lastIdx_row, thisIdx_col, size_a_i, size_b_j);
       }
 
       // and finally the marginalized part
       if (size_b_j > 0 && size_b_i > 0) {
-        const_cast<Eigen::MatrixBase<Derived_V>&>(V).block(start_b_i, start_b_j,
-                                                           size_b_i, size_b_j) =
+        const_cast<Eigen::MatrixBase<Derived_V> &>(V).block(start_b_i, start_b_j,
+                                                            size_b_i, size_b_j) =
             A.block(thisIdx_row, thisIdx_col, size_b_i, size_b_j);
       }
 
@@ -123,10 +123,10 @@ void MarginalizationError::splitSymmetricMatrix(
 // Split for Schur complement op.
 template<typename Derived_b, typename Derived_b_a, typename Derived_b_b>
 void MarginalizationError::splitVector(
-    const std::vector<std::pair<int, int> >& marginalizationStartIdxAndLengthPairs,
-    const Eigen::MatrixBase<Derived_b>& b,  // input
-    const Eigen::MatrixBase<Derived_b_a>& b_a,  // output
-    const Eigen::MatrixBase<Derived_b_b>& b_b) {  // output
+    const std::vector<std::pair<int, int> > &marginalizationStartIdxAndLengthPairs,
+    const Eigen::MatrixBase<Derived_b> &b,  // input
+    const Eigen::MatrixBase<Derived_b_a> &b_a,  // output
+    const Eigen::MatrixBase<Derived_b_b> &b_b) {  // output
 
   const int size = b.rows();
   // sanity check
@@ -157,15 +157,15 @@ void MarginalizationError::splitVector(
 
     // the kept part - only access and copy if non-zero
     if (size_a_i > 0) {
-      const_cast<Eigen::MatrixBase<Derived_b_a>&>(b_a).segment(start_a_i,
-                                                               size_a_i) = b
+      const_cast<Eigen::MatrixBase<Derived_b_a> &>(b_a).segment(start_a_i,
+                                                                size_a_i) = b
           .segment(lastIdx_row, size_a_i);
     }
 
     // and finally the marginalized part
     if (size_b_i > 0) {
-      const_cast<Eigen::MatrixBase<Derived_b_b>&>(b_b).segment(start_b_i,
-                                                               size_b_i) = b
+      const_cast<Eigen::MatrixBase<Derived_b_b> &>(b_b).segment(start_b_i,
+                                                                size_b_i) = b
           .segment(thisIdx_row, size_b_i);
     }
 
@@ -180,8 +180,8 @@ void MarginalizationError::splitVector(
 // (negative Eigenvalues are set to zero)
 template<typename Derived>
 bool MarginalizationError::pseudoInverseSymm(
-    const Eigen::MatrixBase<Derived>&a, const Eigen::MatrixBase<Derived>&result,
-    double epsilon, int * rank) {
+    const Eigen::MatrixBase<Derived> &a, const Eigen::MatrixBase<Derived> &result,
+    double epsilon, int *rank) {
 
   OKVIS_ASSERT_TRUE_DBG(Exception, a.rows() == a.cols(),
                         "matrix supplied is not quadratic");
@@ -189,13 +189,13 @@ bool MarginalizationError::pseudoInverseSymm(
   Eigen::SelfAdjointEigenSolver<Derived> saes(a);
 
   typename Derived::Scalar tolerance = epsilon * a.cols()
-      * saes.eigenvalues().array().maxCoeff();
+                                       * saes.eigenvalues().array().maxCoeff();
 
-  const_cast<Eigen::MatrixBase<Derived>&>(result) = (saes.eigenvectors())
-      * Eigen::VectorXd(
-          (saes.eigenvalues().array() > tolerance).select(
-              saes.eigenvalues().array().inverse(), 0)).asDiagonal()
-      * (saes.eigenvectors().transpose());
+  const_cast<Eigen::MatrixBase<Derived> &>(result) = (saes.eigenvectors())
+                                                     * Eigen::VectorXd(
+      (saes.eigenvalues().array() > tolerance).select(
+          saes.eigenvalues().array().inverse(), 0)).asDiagonal()
+                                                     * (saes.eigenvectors().transpose());
 
   if (rank) {
     *rank = 0;
@@ -213,8 +213,8 @@ bool MarginalizationError::pseudoInverseSymm(
 // (negative Eigenvalues are set to zero)
 template<typename Derived>
 bool MarginalizationError::pseudoInverseSymmSqrt(
-    const Eigen::MatrixBase<Derived>&a, const Eigen::MatrixBase<Derived>&result,
-    double epsilon, int * rank) {
+    const Eigen::MatrixBase<Derived> &a, const Eigen::MatrixBase<Derived> &result,
+    double epsilon, int *rank) {
 
   OKVIS_ASSERT_TRUE_DBG(Exception, a.rows() == a.cols(),
                         "matrix supplied is not quadratic");
@@ -222,14 +222,14 @@ bool MarginalizationError::pseudoInverseSymmSqrt(
   Eigen::SelfAdjointEigenSolver<Derived> saes(a);
 
   typename Derived::Scalar tolerance = epsilon * a.cols()
-      * saes.eigenvalues().array().maxCoeff();
+                                       * saes.eigenvalues().array().maxCoeff();
 
-  const_cast<Eigen::MatrixBase<Derived>&>(result) = (saes.eigenvectors())
-      * Eigen::VectorXd(
-          Eigen::VectorXd(
-              (saes.eigenvalues().array() > tolerance).select(
-                  saes.eigenvalues().array().inverse(), 0)).array().sqrt())
-          .asDiagonal();
+  const_cast<Eigen::MatrixBase<Derived> &>(result) = (saes.eigenvectors())
+                                                     * Eigen::VectorXd(
+      Eigen::VectorXd(
+          (saes.eigenvalues().array() > tolerance).select(
+              saes.eigenvalues().array().inverse(), 0)).array().sqrt())
+                                                         .asDiagonal();
 
   if (rank) {
     *rank = 0;
@@ -247,22 +247,22 @@ bool MarginalizationError::pseudoInverseSymmSqrt(
 // (negative Eigenvalues are set to zero)
 template<typename Derived, int blockDim>
 void MarginalizationError::blockPinverse(
-    const Eigen::MatrixBase<Derived>& M_in,
-    const Eigen::MatrixBase<Derived>& M_out, double epsilon) {
+    const Eigen::MatrixBase<Derived> &M_in,
+    const Eigen::MatrixBase<Derived> &M_out, double epsilon) {
 
   OKVIS_ASSERT_TRUE_DBG(Exception, M_in.rows() == M_in.cols(),
                         "matrix supplied is not quadratic");
 
-  const_cast<Eigen::MatrixBase<Derived>&>(M_out).resize(M_in.rows(),
-                                                        M_in.rows());
-  const_cast<Eigen::MatrixBase<Derived>&>(M_out).setZero();
+  const_cast<Eigen::MatrixBase<Derived> &>(M_out).resize(M_in.rows(),
+                                                         M_in.rows());
+  const_cast<Eigen::MatrixBase<Derived> &>(M_out).setZero();
   for (int i = 0; i < M_in.cols(); i += blockDim) {
     Eigen::Matrix<double, blockDim, blockDim> inv;
     const Eigen::Matrix<double, blockDim, blockDim> in = M_in
         .template block<blockDim, blockDim>(i, i);
     //const Eigen::Matrix<double,blockDim,blockDim> in1=0.5*(in+in.transpose());
     pseudoInverseSymm(in, inv, epsilon);
-    const_cast<Eigen::MatrixBase<Derived>&>(M_out)
+    const_cast<Eigen::MatrixBase<Derived> &>(M_out)
         .template block<blockDim, blockDim>(i, i) = inv;
   }
 }
@@ -273,22 +273,22 @@ void MarginalizationError::blockPinverse(
 // (negative Eigenvalues are set to zero)
 template<typename Derived, int blockDim>
 void MarginalizationError::blockPinverseSqrt(
-    const Eigen::MatrixBase<Derived>& M_in,
-    const Eigen::MatrixBase<Derived>& M_out, double epsilon) {
+    const Eigen::MatrixBase<Derived> &M_in,
+    const Eigen::MatrixBase<Derived> &M_out, double epsilon) {
 
   OKVIS_ASSERT_TRUE_DBG(Exception, M_in.rows() == M_in.cols(),
                         "matrix supplied is not quadratic");
 
-  const_cast<Eigen::MatrixBase<Derived>&>(M_out).resize(M_in.rows(),
-                                                        M_in.rows());
-  const_cast<Eigen::MatrixBase<Derived>&>(M_out).setZero();
+  const_cast<Eigen::MatrixBase<Derived> &>(M_out).resize(M_in.rows(),
+                                                         M_in.rows());
+  const_cast<Eigen::MatrixBase<Derived> &>(M_out).setZero();
   for (int i = 0; i < M_in.cols(); i += blockDim) {
     Eigen::Matrix<double, blockDim, blockDim> inv;
     const Eigen::Matrix<double, blockDim, blockDim> in = M_in
         .template block<blockDim, blockDim>(i, i);
     //const Eigen::Matrix<double,blockDim,blockDim> in1=0.5*(in+in.transpose());
     pseudoInverseSymmSqrt(in, inv, epsilon);
-    const_cast<Eigen::MatrixBase<Derived>&>(M_out)
+    const_cast<Eigen::MatrixBase<Derived> &>(M_out)
         .template block<blockDim, blockDim>(i, i) = inv;
   }
 }

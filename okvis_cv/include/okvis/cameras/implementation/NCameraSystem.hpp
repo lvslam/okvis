@@ -45,19 +45,18 @@ namespace okvis {
 namespace cameras {
 
 // Default constructor
-NCameraSystem::NCameraSystem()
-{
+NCameraSystem::NCameraSystem() {
 }
+
 // Construct with vector of extrinsics and geometries
 NCameraSystem::NCameraSystem(
-    const std::vector<std::shared_ptr<const okvis::kinematics::Transformation>> & T_SC,
-    const std::vector<std::shared_ptr<const cameras::CameraBase>> & cameraGeometries,
-    const std::vector<DistortionType>& distortionTypes,
+    const std::vector<std::shared_ptr<const okvis::kinematics::Transformation>> &T_SC,
+    const std::vector<std::shared_ptr<const cameras::CameraBase>> &cameraGeometries,
+    const std::vector<DistortionType> &distortionTypes,
     bool computeOverlaps)
     : T_SC_(T_SC),
       cameraGeometries_(cameraGeometries),
-      distortionTypes_(distortionTypes)
-{
+      distortionTypes_(distortionTypes) {
 
   OKVIS_ASSERT_TRUE_DBG(
       Exception, T_SC.size() == cameraGeometries.size(),
@@ -70,17 +69,16 @@ NCameraSystem::NCameraSystem(
     this->computeOverlaps();
   }
 }
-NCameraSystem::~NCameraSystem()
-{
+
+NCameraSystem::~NCameraSystem() {
 }
 
 // Reset with vector of extrinsics and geometries
 void NCameraSystem::reset(
-    const std::vector<std::shared_ptr<const okvis::kinematics::Transformation>> & T_SC,
-    const std::vector<std::shared_ptr<const cameras::CameraBase>> & cameraGeometries,
-    const std::vector<DistortionType>& distortionTypes,
-    bool computeOverlaps)
-{
+    const std::vector<std::shared_ptr<const okvis::kinematics::Transformation>> &T_SC,
+    const std::vector<std::shared_ptr<const cameras::CameraBase>> &cameraGeometries,
+    const std::vector<DistortionType> &distortionTypes,
+    bool computeOverlaps) {
   OKVIS_ASSERT_TRUE_DBG(
       Exception, T_SC.size() == cameraGeometries.size(),
       "Number of extrinsics must match number of camera models!");
@@ -103,8 +101,7 @@ void NCameraSystem::addCamera(
     std::shared_ptr<const okvis::kinematics::Transformation> T_SC,
     std::shared_ptr<const cameras::CameraBase> cameraGeometry,
     DistortionType distortionType,
-    bool computeOverlaps)
-{
+    bool computeOverlaps) {
   T_SC_.push_back(T_SC);
   cameraGeometries_.push_back(cameraGeometry);
   distortionTypes_.push_back(distortionType);
@@ -117,8 +114,7 @@ void NCameraSystem::addCamera(
 
 // get the pose of the IMU frame S with respect to the camera cameraIndex
 std::shared_ptr<const okvis::kinematics::Transformation> NCameraSystem::T_SC(
-    size_t cameraIndex) const
-{
+    size_t cameraIndex) const {
   OKVIS_ASSERT_TRUE_DBG(Exception, cameraIndex < T_SC_.size(),
                         "Camera index " << cameraIndex << "out of range.");
   return T_SC_[cameraIndex];
@@ -126,16 +122,14 @@ std::shared_ptr<const okvis::kinematics::Transformation> NCameraSystem::T_SC(
 
 //get the camera geometry of camera cameraIndex
 std::shared_ptr<const cameras::CameraBase> NCameraSystem::cameraGeometry(
-    size_t cameraIndex) const
-{
+    size_t cameraIndex) const {
   OKVIS_ASSERT_TRUE_DBG(Exception, cameraIndex < cameraGeometries_.size(),
                         "Camera index " << cameraIndex << "out of range.");
   return cameraGeometries_[cameraIndex];
 }
 
 // get the distortion type of cmaera cameraIndex
-inline NCameraSystem::DistortionType NCameraSystem::distortionType(size_t cameraIndex) const
-{
+inline NCameraSystem::DistortionType NCameraSystem::distortionType(size_t cameraIndex) const {
   OKVIS_ASSERT_TRUE_DBG(Exception, cameraIndex < cameraGeometries_.size(),
                         "Camera index " << cameraIndex << "out of range.");
   return distortionTypes_[cameraIndex];
@@ -143,8 +137,7 @@ inline NCameraSystem::DistortionType NCameraSystem::distortionType(size_t camera
 
 // Get the overlap mask
 const cv::Mat NCameraSystem::overlap(size_t cameraIndexSeenBy,
-                                      size_t cameraIndex) const
-{
+                                     size_t cameraIndex) const {
   OKVIS_ASSERT_TRUE_DBG(
       Exception, cameraIndexSeenBy < T_SC_.size(),
       "Camera index " << cameraIndexSeenBy << "out of range.");
@@ -152,15 +145,14 @@ const cv::Mat NCameraSystem::overlap(size_t cameraIndexSeenBy,
                         "Camera index " << cameraIndex << "out of range.");
 
   OKVIS_ASSERT_TRUE_DBG(Exception, overlapComputationValid(),
-                            "Overlap computation not performed or incorrectly computed!");
+                        "Overlap computation not performed or incorrectly computed!");
 
   return overlapMats_[cameraIndexSeenBy][cameraIndex];
 }
 
 // Can the first camera see parts of the FOV of the second camera?
 bool NCameraSystem::hasOverlap(size_t cameraIndexSeenBy,
-                                      size_t cameraIndex) const
-{
+                               size_t cameraIndex) const {
   OKVIS_ASSERT_TRUE_DBG(
       Exception, cameraIndexSeenBy < T_SC_.size(),
       "Camera index " << cameraIndexSeenBy << "out of range.");
@@ -170,7 +162,7 @@ bool NCameraSystem::hasOverlap(size_t cameraIndexSeenBy,
                         "Camera index " << cameraIndex << "out of range.");
 
   OKVIS_ASSERT_TRUE_DBG(Exception, overlapComputationValid(),
-                          "Overlap computation not performed or incorrectly computed!");
+                        "Overlap computation not performed or incorrectly computed!");
 
   return overlaps_[cameraIndexSeenBy][cameraIndex];
 }
@@ -180,19 +172,19 @@ bool NCameraSystem::overlapComputationValid() const {
       Exception, T_SC_.size() == cameraGeometries_.size(),
       "Number of extrinsics must match number of camera models!");
 
-  if(overlaps_.size() != cameraGeometries_.size()) {
+  if (overlaps_.size() != cameraGeometries_.size()) {
     return false;
   }
-  if(overlapMats_.size() != cameraGeometries_.size()) {
+  if (overlapMats_.size() != cameraGeometries_.size()) {
     return false;
   }
 
   // also check for each element
-  for(size_t i= 0; i<overlaps_.size(); ++i){
-    if(overlaps_[i].size() != cameraGeometries_.size()) {
+  for (size_t i = 0; i < overlaps_.size(); ++i) {
+    if (overlaps_[i].size() != cameraGeometries_.size()) {
       return false;
     }
-    if(overlapMats_[i].size() != cameraGeometries_.size()) {
+    if (overlapMats_[i].size() != cameraGeometries_.size()) {
       return false;
     }
   }

@@ -53,12 +53,11 @@ namespace cameras {
 /// This is useful for testing, or working with pre-undistorted images.
 class NoDistortion : public DistortionBase
 {
- public:
+public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /// \brief Destructor, not doing anything
-  inline ~NoDistortion()
-  {
+  inline ~NoDistortion() {
   }
 
   //////////////////////////////////////////////////////////////
@@ -68,28 +67,24 @@ class NoDistortion : public DistortionBase
   /// \brief set the generic parameters
   /// @param[in] parameters Parameter vector -- length must correspond numDistortionIntrinsics().
   /// @return    True if the requirements were followed.
-  bool setParameters(const Eigen::VectorXd & parameters)
-  {
-    (void)parameters;
+  bool setParameters(const Eigen::VectorXd &parameters) {
+    (void) parameters;
     return true;
   }
 
   /// \brief Obtain the generic parameters.
-  bool getParameters(Eigen::VectorXd & parameters) const
-  {
+  bool getParameters(Eigen::VectorXd &parameters) const {
     parameters.resize(0);
     return true;
   }
 
   /// \brief The class type.
-  std::string type() const
-  {
+  std::string type() const {
     return "NoDistortion";
   }
 
   /// \brief Number of derived class distortion parameters
-  int numDistortionIntrinsics() const
-  {
+  int numDistortionIntrinsics() const {
     return 0;
   }
 
@@ -100,6 +95,7 @@ class NoDistortion : public DistortionBase
   static std::shared_ptr<DistortionBase> createTestObject() {
     return std::shared_ptr<DistortionBase>(new NoDistortion());
   }
+
   /// \brief Unit test support -- create a test distortion object
   static NoDistortion testObject() {
     return NoDistortion();
@@ -113,9 +109,8 @@ class NoDistortion : public DistortionBase
   /// @param[in]  pointUndistorted The undistorted normalised (!) image point.
   /// @param[out] pointDistorted   The distorted normalised (!) image point.
   /// @return     True on success (no singularity)
-  bool distort(const Eigen::Vector2d & pointUndistorted,
-                       Eigen::Vector2d * pointDistorted) const
-  {
+  bool distort(const Eigen::Vector2d &pointUndistorted,
+               Eigen::Vector2d *pointDistorted) const {
     *pointDistorted = pointUndistorted;
     return true;
   }
@@ -126,11 +121,10 @@ class NoDistortion : public DistortionBase
   /// @param[out] pointJacobian     The Jacobian w.r.t. changes on the image point.
   /// @param[out] parameterJacobian The Jacobian w.r.t. changes on the intrinsics vector.
   /// @return     True on success (no singularity)
-  bool distort(const Eigen::Vector2d & pointUndistorted,
-                       Eigen::Vector2d * pointDistorted,
-                       Eigen::Matrix2d * pointJacobian,
-                       Eigen::Matrix2Xd * parameterJacobian = NULL) const
-  {
+  bool distort(const Eigen::Vector2d &pointUndistorted,
+               Eigen::Vector2d *pointDistorted,
+               Eigen::Matrix2d *pointJacobian,
+               Eigen::Matrix2Xd *parameterJacobian = NULL) const {
     *pointDistorted = pointUndistorted;
     *pointJacobian = Eigen::Matrix2d::Identity();
     if (parameterJacobian) {
@@ -147,12 +141,11 @@ class NoDistortion : public DistortionBase
   /// @param[out] parameterJacobian The Jacobian w.r.t. changes on the intrinsics vector.
   /// @return     True on success (no singularity)
   bool distortWithExternalParameters(
-      const Eigen::Vector2d & pointUndistorted,
-      const Eigen::VectorXd & parameters, Eigen::Vector2d * pointDistorted,
-      Eigen::Matrix2d * pointJacobian = NULL,
-      Eigen::Matrix2Xd * parameterJacobian = NULL) const
-  {
-    (void)parameters;
+      const Eigen::Vector2d &pointUndistorted,
+      const Eigen::VectorXd &parameters, Eigen::Vector2d *pointDistorted,
+      Eigen::Matrix2d *pointJacobian = NULL,
+      Eigen::Matrix2Xd *parameterJacobian = NULL) const {
+    (void) parameters;
     *pointDistorted = pointUndistorted;
     if (pointJacobian) {
       *pointJacobian = Eigen::Matrix2d::Identity();
@@ -172,9 +165,8 @@ class NoDistortion : public DistortionBase
   /// @param[in]  pointDistorted   The distorted normalised (!) image point.
   /// @param[out] pointUndistorted The undistorted normalised (!) image point.
   /// @return     True on success (no singularity)
-  bool undistort(const Eigen::Vector2d & pointDistorted,
-                 Eigen::Vector2d * pointUndistorted) const
-  {
+  bool undistort(const Eigen::Vector2d &pointDistorted,
+                 Eigen::Vector2d *pointUndistorted) const {
     *pointUndistorted = pointDistorted;
     return true;
   }
@@ -184,10 +176,9 @@ class NoDistortion : public DistortionBase
   /// @param[out] pointUndistorted The undistorted normalised (!) image point.
   /// @param[out] pointJacobian    The Jacobian w.r.t. changes on the image point.
   /// @return     True on success (no singularity)
-  bool undistort(const Eigen::Vector2d & pointDistorted,
-                         Eigen::Vector2d * pointUndistorted,
-                         Eigen::Matrix2d * pointJacobian) const
-  {
+  bool undistort(const Eigen::Vector2d &pointDistorted,
+                 Eigen::Vector2d *pointUndistorted,
+                 Eigen::Matrix2d *pointJacobian) const {
     *pointUndistorted = pointDistorted;
     *pointJacobian = Eigen::Matrix2d::Identity();
     return true;

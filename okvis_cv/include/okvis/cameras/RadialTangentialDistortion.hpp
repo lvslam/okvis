@@ -50,7 +50,7 @@ namespace cameras {
 
 class RadialTangentialDistortion : public DistortionBase
 {
- public:
+public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /// \brief The default constructor with all zero ki
@@ -70,24 +70,21 @@ class RadialTangentialDistortion : public DistortionBase
   /// \brief set the generic parameters
   /// @param[in] parameters Parameter vector -- length must correspond numDistortionIntrinsics().
   /// @return    True if the requirements were followed.
-  inline bool setParameters(const Eigen::VectorXd & parameters);
+  inline bool setParameters(const Eigen::VectorXd &parameters);
 
   /// \brief Obtain the generic parameters.
-  inline bool getParameters(Eigen::VectorXd & parameters) const
-  {
+  inline bool getParameters(Eigen::VectorXd &parameters) const {
     parameters = parameters_;
     return true;
   }
 
   /// \brief The class type.
-  inline std::string type() const
-  {
+  inline std::string type() const {
     return "RadialTangentialDistortion";
   }
 
   /// \brief Number of distortion parameters
-  inline int numDistortionIntrinsics() const
-  {
+  inline int numDistortionIntrinsics() const {
     return NumDistortionIntrinsics;
   }
 
@@ -95,14 +92,13 @@ class RadialTangentialDistortion : public DistortionBase
   /// @}
 
   /// \brief Unit test support -- create a test distortion object
-  static std::shared_ptr<DistortionBase> createTestObject()
-  {
+  static std::shared_ptr<DistortionBase> createTestObject() {
     return std::shared_ptr<DistortionBase>(
         new RadialTangentialDistortion(-0.16, 0.15, 0.0003, 0.0002));
   }
+
   /// \brief Unit test support -- create a test distortion object
-  static RadialTangentialDistortion testObject()
-  {
+  static RadialTangentialDistortion testObject() {
     return RadialTangentialDistortion(-0.16, 0.15, 0.0003, 0.0002);
   }
 
@@ -114,8 +110,8 @@ class RadialTangentialDistortion : public DistortionBase
   /// @param[in]  pointUndistorted The undistorted normalised (!) image point.
   /// @param[out] pointDistorted   The distorted normalised (!) image point.
   /// @return     True on success (no singularity)
-  inline bool distort(const Eigen::Vector2d & pointUndistorted,
-                      Eigen::Vector2d * pointDistorted) const;
+  inline bool distort(const Eigen::Vector2d &pointUndistorted,
+                      Eigen::Vector2d *pointDistorted) const;
 
   /// \brief Distortion and Jacobians.
   /// @param[in]  pointUndistorted  The undistorted normalised (!) image point.
@@ -123,10 +119,10 @@ class RadialTangentialDistortion : public DistortionBase
   /// @param[out] pointJacobian     The Jacobian w.r.t. changes on the image point.
   /// @param[out] parameterJacobian The Jacobian w.r.t. changes on the intrinsics vector.
   /// @return     True on success (no singularity)
-  inline bool distort(const Eigen::Vector2d & pointUndistorted,
-                      Eigen::Vector2d * pointDistorted,
-                      Eigen::Matrix2d * pointJacobian,
-                      Eigen::Matrix2Xd * parameterJacobian = NULL) const;
+  inline bool distort(const Eigen::Vector2d &pointUndistorted,
+                      Eigen::Vector2d *pointDistorted,
+                      Eigen::Matrix2d *pointJacobian,
+                      Eigen::Matrix2Xd *parameterJacobian = NULL) const;
 
   /// \brief Distortion and Jacobians using external distortion intrinsics parameters.
   /// @param[in]  pointUndistorted  The undistorted normalised (!) image point.
@@ -136,10 +132,10 @@ class RadialTangentialDistortion : public DistortionBase
   /// @param[out] parameterJacobian The Jacobian w.r.t. changes on the intrinsics vector.
   /// @return     True on success (no singularity)
   inline bool distortWithExternalParameters(
-      const Eigen::Vector2d & pointUndistorted,
-      const Eigen::VectorXd & parameters, Eigen::Vector2d * pointDistorted,
-      Eigen::Matrix2d * pointJacobian = NULL,
-      Eigen::Matrix2Xd * parameterJacobian = NULL) const;
+      const Eigen::Vector2d &pointUndistorted,
+      const Eigen::VectorXd &parameters, Eigen::Vector2d *pointDistorted,
+      Eigen::Matrix2d *pointJacobian = NULL,
+      Eigen::Matrix2Xd *parameterJacobian = NULL) const;
   /// @}
 
   //////////////////////////////////////////////////////////////
@@ -150,20 +146,20 @@ class RadialTangentialDistortion : public DistortionBase
   /// @param[in]  pointDistorted   The distorted normalised (!) image point.
   /// @param[out] pointUndistorted The undistorted normalised (!) image point.
   /// @return     True on success (no singularity)
-  inline bool undistort(const Eigen::Vector2d & pointDistorted,
-                        Eigen::Vector2d * pointUndistorted) const;
+  inline bool undistort(const Eigen::Vector2d &pointDistorted,
+                        Eigen::Vector2d *pointUndistorted) const;
 
   /// \brief Undistortion only
   /// @param[in]  pointDistorted   The distorted normalised (!) image point.
   /// @param[out] pointUndistorted The undistorted normalised (!) image point.
   /// @param[out] pointJacobian    The Jacobian w.r.t. changes on the image point.
   /// @return     True on success (no singularity)
-  inline bool undistort(const Eigen::Vector2d & pointDistorted,
-                        Eigen::Vector2d * pointUndistorted,
-                        Eigen::Matrix2d * pointJacobian) const;
+  inline bool undistort(const Eigen::Vector2d &pointDistorted,
+                        Eigen::Vector2d *pointUndistorted,
+                        Eigen::Matrix2d *pointJacobian) const;
   /// @}
 
- protected:
+protected:
   Eigen::Matrix<double, NumDistortionIntrinsics, 1> parameters_;  ///< all distortion parameters
 
   double k1_;  ///< radial parameter 1

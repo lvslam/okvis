@@ -63,8 +63,10 @@
 #include <../test/MockVioFrontendInterface.hpp>
 #include <../test/MockVioBackendInterface.hpp>
 #else
+
 #include <okvis/Estimator.hpp>
 #include <okvis/VioFrontendInterface.hpp>
+
 #endif
 
 /// \brief okvis Main namespace of this package.
@@ -85,11 +87,15 @@ namespace okvis {
  *  All the queues can be limited to size 1 to back propagate processing congestions
  *  to the user callback.
  */
-class ThreadedKFVio : public VioInterface {
- public:
+class ThreadedKFVio : public VioInterface
+{
+public:
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+
   OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
 #ifdef DEACTIVATE_TIMERS
   typedef okvis::timing::DummyTimer TimerSwitchable;
@@ -108,7 +114,7 @@ class ThreadedKFVio : public VioInterface {
    * \brief Constructor.
    * \param parameters Parameters and settings.
    */
-  ThreadedKFVio(okvis::VioParameters& parameters);
+  ThreadedKFVio(okvis::VioParameters &parameters);
 #endif
 
   /// \brief Destructor. This calls Shutdown() for all threadsafe queues and joins all threads.
@@ -127,10 +133,10 @@ class ThreadedKFVio : public VioInterface {
    * \warning Already specifying whether this frame should be a keyframe is not implemented yet.
    * \return             Returns true normally. False, if the previous one has not been processed yet.
    */
-  virtual bool addImage(const okvis::Time & stamp, size_t cameraIndex,
-                        const cv::Mat & image,
-                        const std::vector<cv::KeyPoint> * keypoints = 0,
-                        bool* asKeyframe = 0);
+  virtual bool addImage(const okvis::Time &stamp, size_t cameraIndex,
+                        const cv::Mat &image,
+                        const std::vector<cv::KeyPoint> *keypoints = 0,
+                        bool *asKeyframe = 0);
 
   /**
    * \brief             Add an abstracted image observation.
@@ -143,11 +149,11 @@ class ThreadedKFVio : public VioInterface {
    * \param asKeyframe  Optionally force keyframe or not.
    * \return            Returns true normally. False, if the previous one has not been processed yet.
    */
-  virtual bool addKeypoints(const okvis::Time & stamp, size_t cameraIndex,
-                            const std::vector<cv::KeyPoint> & keypoints,
-                            const std::vector<uint64_t> & landmarkIds,
-                            const cv::Mat& descriptors = cv::Mat(),
-                            bool* asKeyframe = 0);
+  virtual bool addKeypoints(const okvis::Time &stamp, size_t cameraIndex,
+                            const std::vector<cv::KeyPoint> &keypoints,
+                            const std::vector<uint64_t> &landmarkIds,
+                            const cv::Mat &descriptors = cv::Mat(),
+                            bool *asKeyframe = 0);
 
   /**
    * \brief          Add an IMU measurement.
@@ -156,9 +162,9 @@ class ThreadedKFVio : public VioInterface {
    * \param omega    The angular velocity measured at this time.
    * \return Returns true normally. False if the previous one has not been processed yet.
    */
-  virtual bool addImuMeasurement(const okvis::Time & stamp,
-                                 const Eigen::Vector3d & alpha,
-                                 const Eigen::Vector3d & omega);
+  virtual bool addImuMeasurement(const okvis::Time &stamp,
+                                 const Eigen::Vector3d &alpha,
+                                 const Eigen::Vector3d &omega);
 
   /**
    * \brief                      Add a position measurement.
@@ -169,9 +175,9 @@ class ThreadedKFVio : public VioInterface {
    * \param positionCovariance   The position measurement covariance matrix.
    */
   virtual void addPositionMeasurement(
-      const okvis::Time & stamp, const Eigen::Vector3d & position,
-      const Eigen::Vector3d & positionOffset,
-      const Eigen::Matrix3d & positionCovariance);
+      const okvis::Time &stamp, const Eigen::Vector3d &position,
+      const Eigen::Vector3d &positionOffset,
+      const Eigen::Matrix3d &positionCovariance);
 
   /**
    * \brief                       Add a GPS measurement.
@@ -183,11 +189,11 @@ class ThreadedKFVio : public VioInterface {
    * \param positionOffset        Body frame antenna position offset [m].
    * \param positionCovarianceENU The position measurement covariance matrix.
    */
-  virtual void addGpsMeasurement(const okvis::Time & stamp,
+  virtual void addGpsMeasurement(const okvis::Time &stamp,
                                  double lat_wgs84_deg, double lon_wgs84_deg,
                                  double alt_wgs84_deg,
-                                 const Eigen::Vector3d & positionOffset,
-                                 const Eigen::Matrix3d & positionCovarianceENU);
+                                 const Eigen::Vector3d &positionOffset,
+                                 const Eigen::Matrix3d &positionCovarianceENU);
 
   /**
    * \brief                      Add a magnetometer measurement.
@@ -197,7 +203,7 @@ class ThreadedKFVio : public VioInterface {
    * \param stdev                Measurement std deviation [uT].
    */
   virtual void addMagnetometerMeasurement(
-      const okvis::Time & stamp, const Eigen::Vector3d & fluxDensityMeas,
+      const okvis::Time &stamp, const Eigen::Vector3d &fluxDensityMeas,
       double stdev);
 
   /**
@@ -207,7 +213,7 @@ class ThreadedKFVio : public VioInterface {
    * \param staticPressure       Measured static pressure [Pa].
    * \param stdev                Measurement std deviation [Pa].
    */
-  virtual void addBarometerMeasurement(const okvis::Time & stamp,
+  virtual void addBarometerMeasurement(const okvis::Time &stamp,
                                        double staticPressure, double stdev);
 
   /**
@@ -217,7 +223,7 @@ class ThreadedKFVio : public VioInterface {
    * \param differentialPressure Measured differential pressure [Pa].
    * \param stdev                Measurement std deviation [Pa].
    */
-  virtual void addDifferentialPressureMeasurement(const okvis::Time & stamp,
+  virtual void addDifferentialPressureMeasurement(const okvis::Time &stamp,
                                                   double differentialPressure,
                                                   double stdev);
 
@@ -235,13 +241,13 @@ class ThreadedKFVio : public VioInterface {
   /// \brief Trigger display (needed because OSX won't allow threaded display).
   void display();
 
- private:
+private:
   /// \brief Start all threads.
   virtual void startThreads();
   /// \brief Initialises settings and calls startThreads().
   void init();
 
- private:
+private:
 
   /// \brief Loop to process frames from camera with index cameraIndex
   void frameConsumerLoop(size_t cameraIndex);
@@ -276,23 +282,24 @@ class ThreadedKFVio : public VioInterface {
    * @remark This function is threadsafe.
    * @return The IMU Measurement spanning at least the time between start and end.
    */
-  okvis::ImuMeasurementDeque getImuMeasurments(okvis::Time& start,
-                                               okvis::Time& end);
+  okvis::ImuMeasurementDeque getImuMeasurments(okvis::Time &start,
+                                               okvis::Time &end);
 
   /**
    * @brief Remove IMU measurements from the internal buffer.
    * @param eraseUntil Remove all measurements that are strictly older than this time.
    * @return The number of IMU measurements that have been removed
    */
-  int deleteImuMeasurements(const okvis::Time& eraseUntil);
+  int deleteImuMeasurements(const okvis::Time &eraseUntil);
 
- private:
+private:
 
   /// @brief This struct contains the results of the optimization for ease of publication.
   ///        It is also used for publishing poses that have been propagated with the IMU
   ///        measurements.
-  struct OptimizationResults {
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  struct OptimizationResults
+  {
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     okvis::Time stamp;                          ///< Timestamp of the optimized/propagated pose.
     okvis::kinematics::Transformation T_WS;     ///< The pose.
     okvis::SpeedAndBias speedAndBiases;         ///< The speeds and biases.
@@ -435,7 +442,7 @@ class ThreadedKFVio : public VioInterface {
 
   /// Max position measurements before dropping.
   const size_t maxPositionInputQueueSize_ = 10;
-  
+
 };
 
 }  // namespace okvis

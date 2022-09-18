@@ -12,10 +12,9 @@ namespace ceres {
 
 // Verifies the correctness of a inplementation.
 bool LocalParamizationAdditionalInterfaces::verify(
-    const double* x_raw, double purturbation_magnitude) const
-{
-  const ::ceres::LocalParameterization* casted =
-      dynamic_cast<const ::ceres::LocalParameterization*>(this);
+    const double *x_raw, double purturbation_magnitude) const {
+  const ::ceres::LocalParameterization *casted =
+      dynamic_cast<const ::ceres::LocalParameterization *>(this);
   if (!casted) {
     return false;
   }

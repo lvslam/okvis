@@ -55,10 +55,13 @@ namespace ceres {
 template<class GEOMETRY_TYPE>
 class ReprojectionError : public ReprojectionError2dBase
 {
- public:
+public:
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
+
+
+  OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /// \brief Make the camera geometry type accessible.
   typedef GEOMETRY_TYPE camera_geometry_t;
@@ -81,53 +84,47 @@ class ReprojectionError : public ReprojectionError2dBase
   /// @param[in] measurement The measurement.
   /// @param[in] information The information (weight) matrix.
   ReprojectionError(std::shared_ptr<const camera_geometry_t> cameraGeometry,
-                    uint64_t cameraId, const measurement_t & measurement,
-                    const covariance_t & information);
+                    uint64_t cameraId, const measurement_t &measurement,
+                    const covariance_t &information);
 
   /// \brief Trivial destructor.
-  virtual ~ReprojectionError()
-  {
+  virtual ~ReprojectionError() {
   }
 
   // setters
   /// \brief Set the measurement.
   /// @param[in] measurement The measurement.
-  virtual void setMeasurement(const measurement_t& measurement)
-  {
+  virtual void setMeasurement(const measurement_t &measurement) {
     measurement_ = measurement;
   }
 
   /// \brief Set the underlying camera model.
   /// @param[in] cameraGeometry The camera geometry.
   void setCameraGeometry(
-      std::shared_ptr<const camera_geometry_t> cameraGeometry)
-  {
+      std::shared_ptr<const camera_geometry_t> cameraGeometry) {
     cameraGeometry_ = cameraGeometry;
   }
 
   /// \brief Set the information.
   /// @param[in] information The information (weight) matrix.
-  virtual void setInformation(const covariance_t& information);
+  virtual void setInformation(const covariance_t &information);
 
   // getters
   /// \brief Get the measurement.
   /// \return The measurement vector.
-  virtual const measurement_t& measurement() const
-  {
+  virtual const measurement_t &measurement() const {
     return measurement_;
   }
 
   /// \brief Get the information matrix.
   /// \return The information (weight) matrix.
-  virtual const covariance_t& information() const
-  {
+  virtual const covariance_t &information() const {
     return information_;
   }
 
   /// \brief Get the covariance matrix.
   /// \return The inverse information (covariance) matrix.
-  virtual const covariance_t& covariance() const
-  {
+  virtual const covariance_t &covariance() const {
     return covariance_;
   }
 
@@ -139,8 +136,8 @@ class ReprojectionError : public ReprojectionError2dBase
    * @param jacobians Pointer to the Jacobians (see ceres)
    * @return success of th evaluation.
    */
-  virtual bool Evaluate(double const* const * parameters, double* residuals,
-                        double** jacobians) const;
+  virtual bool Evaluate(double const *const *parameters, double *residuals,
+                        double **jacobians) const;
 
   /**
    * @brief This evaluates the error term and additionally computes
@@ -151,38 +148,35 @@ class ReprojectionError : public ReprojectionError2dBase
    * @param jacobiansMinimal Pointer to the minimal Jacobians (equivalent to jacobians).
    * @return Success of the evaluation.
    */
-  virtual bool EvaluateWithMinimalJacobians(double const* const * parameters,
-                                            double* residuals,
-                                            double** jacobians,
-                                            double** jacobiansMinimal) const;
+  virtual bool EvaluateWithMinimalJacobians(double const *const *parameters,
+                                            double *residuals,
+                                            double **jacobians,
+                                            double **jacobiansMinimal) const;
+
   // sizes
   /// \brief Residual dimension.
-  size_t residualDim() const
-  {
+  size_t residualDim() const {
     return kNumResiduals;
   }
 
   /// \brief Number of parameter blocks.
-  size_t parameterBlocks() const
-  {
+  size_t parameterBlocks() const {
     return parameter_block_sizes().size();
   }
 
   /// \brief Dimension of an individual parameter block.
   /// @param[in] parameterBlockId ID of the parameter block of interest.
   /// \return The dimension.
-  size_t parameterBlockDim(size_t parameterBlockId) const
-  {
+  size_t parameterBlockDim(size_t parameterBlockId) const {
     return base_t::parameter_block_sizes().at(parameterBlockId);
   }
 
   /// @brief Residual block type as string
-  virtual std::string typeInfo() const
-  {
+  virtual std::string typeInfo() const {
     return "ReprojectionError";
   }
 
- protected:
+protected:
 
   // the measurement
   measurement_t measurement_; ///< The (2D) measurement.

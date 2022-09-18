@@ -46,20 +46,20 @@ namespace ceres {
 
 // Construct with measurement and information matrix.
 HomogeneousPointError::HomogeneousPointError(
-    const Eigen::Vector4d & measurement, const information_t & information) {
+    const Eigen::Vector4d &measurement, const information_t &information) {
   setMeasurement(measurement);
   setInformation(information);
 }
 
 // Construct with measurement and variance.
 HomogeneousPointError::HomogeneousPointError(
-    const Eigen::Vector4d & measurement, double variance) {
+    const Eigen::Vector4d &measurement, double variance) {
   setMeasurement(measurement);
   setInformation(Eigen::Matrix3d::Identity() * 1.0 / variance);
 }
 
 // Construct with measurement and variance.
-void HomogeneousPointError::setInformation(const information_t & information) {
+void HomogeneousPointError::setInformation(const information_t &information) {
   information_ = information;
   covariance_ = information.inverse();
   // perform the Cholesky decomposition on order to obtain the correct error weighting
@@ -68,17 +68,17 @@ void HomogeneousPointError::setInformation(const information_t & information) {
 }
 
 // This evaluates the error term and additionally computes the Jacobians.
-bool HomogeneousPointError::Evaluate(double const* const * parameters,
-                                     double* residuals,
-                                     double** jacobians) const {
+bool HomogeneousPointError::Evaluate(double const *const *parameters,
+                                     double *residuals,
+                                     double **jacobians) const {
   return EvaluateWithMinimalJacobians(parameters, residuals, jacobians, NULL);
 }
 
 // This evaluates the error term and additionally computes
 // the Jacobians in the minimal internal representation.
 bool HomogeneousPointError::EvaluateWithMinimalJacobians(
-    double const* const * parameters, double* residuals, double** jacobians,
-    double** jacobiansMinimal) const {
+    double const *const *parameters, double *residuals, double **jacobians,
+    double **jacobiansMinimal) const {
 
   // compute error
   Eigen::Vector4d hp(parameters[0][0], parameters[0][1], parameters[0][2],

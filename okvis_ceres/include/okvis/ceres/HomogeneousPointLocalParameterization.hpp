@@ -54,12 +54,12 @@ class HomogeneousPointLocalParameterization :
     public ::ceres::LocalParameterization,
     public LocalParamizationAdditionalInterfaces
 {
- public:
-  OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
+public:
+  OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /// \brief Destructor (does nothing)
-  virtual ~HomogeneousPointLocalParameterization()
-  {
+  virtual ~HomogeneousPointLocalParameterization() {
   }
 
   /// \brief Generalization of the addition operation,
@@ -68,27 +68,27 @@ class HomogeneousPointLocalParameterization :
   /// @param[in] x Variable.
   /// @param[in] delta Perturbation.
   /// @param[out] x_plus_delta Perturbed x.
-  virtual bool Plus(const double* x, const double* delta,
-                    double* x_plus_delta) const;
+  virtual bool Plus(const double *x, const double *delta,
+                    double *x_plus_delta) const;
 
   /// \brief Computes the minimal difference between a variable x and a perturbed variable x_plus_delta
   /// @param[in] x Variable.
   /// @param[in] x_plus_delta Perturbed variable.
   /// @param[out] delta minimal difference.
   /// \return True on success.
-  virtual bool Minus(const double* x, const double* x_plus_delta,
-                     double* delta) const;
+  virtual bool Minus(const double *x, const double *x_plus_delta,
+                     double *delta) const;
 
   /// \brief The jacobian of Plus(x, delta) w.r.t delta at delta = 0.
   /// @param[in] x Variable.
   /// @param[out] jacobian The Jacobian.
-  virtual bool ComputeJacobian(const double* x, double* jacobian) const;
+  virtual bool ComputeJacobian(const double *x, double *jacobian) const;
 
   /// \brief Computes the Jacobian from minimal space to naively overparameterised space as used by ceres.
   /// @param[in] x Variable.
   /// @param[out] jacobian the Jacobian (dimension minDim x dim).
   /// \return True on success.
-  virtual bool ComputeLiftJacobian(const double* x, double* jacobian) const;
+  virtual bool ComputeLiftJacobian(const double *x, double *jacobian) const;
 
   // provide these as static for easy use elsewhere:
 
@@ -98,35 +98,33 @@ class HomogeneousPointLocalParameterization :
   /// @param[in] x Variable.
   /// @param[in] delta Perturbation.
   /// @param[out] x_plus_delta Perturbed x.
-  static bool plus(const double* x, const double* delta, double* x_plus_delta);
+  static bool plus(const double *x, const double *delta, double *x_plus_delta);
 
   /// \brief The jacobian of Plus(x, delta) w.r.t delta at delta = 0.
   /// @param[in] x Variable.
   /// @param[out] jacobian The Jacobian.
-  static bool plusJacobian(const double* x, double* jacobian);
+  static bool plusJacobian(const double *x, double *jacobian);
 
   /// \brief Computes the minimal difference between a variable x and a perturbed variable x_plus_delta
   /// @param[in] x Variable.
   /// @param[in] x_plus_delta Perturbed variable.
   /// @param[out] delta minimal difference.
   /// \return True on success.
-  static bool minus(const double* x, const double* x_plus_delta, double* delta);
+  static bool minus(const double *x, const double *x_plus_delta, double *delta);
 
   /// \brief Computes the Jacobian from minimal space to naively overparameterised space as used by ceres.
   /// @param[in] x Variable.
   /// @param[out] jacobian the Jacobian (dimension minDim x dim).
   /// \return True on success.
-  static bool liftJacobian(const double* x, double* jacobian);
+  static bool liftJacobian(const double *x, double *jacobian);
 
   /// \brief The parameter block dimension.
-  virtual int GlobalSize() const
-  {
+  virtual int GlobalSize() const {
     return 4;
   }
 
   /// \brief The parameter block local dimension.
-  virtual int LocalSize() const
-  {
+  virtual int LocalSize() const {
     return 3;
   }
 };

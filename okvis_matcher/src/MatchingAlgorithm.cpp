@@ -48,6 +48,7 @@ namespace okvis {
 
 MatchingAlgorithm::MatchingAlgorithm() {
 }
+
 MatchingAlgorithm::~MatchingAlgorithm() {
 }
 
@@ -58,6 +59,7 @@ MatchingAlgorithm::listB_tree_structure_t::iterator MatchingAlgorithm::getListBS
       "To use the listB iterators, implement this interface in your matching algorithm subclass.");
   return dummy_.end();
 }
+
 MatchingAlgorithm::listB_tree_structure_t::iterator MatchingAlgorithm::getListBEndIterator(
     size_t /* indexA */) {
   OKVIS_THROW(

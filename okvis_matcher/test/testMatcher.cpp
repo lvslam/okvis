@@ -2,10 +2,13 @@
 #include <math.h>
 #include <gtest/gtest.h>
 
-class TestMatchingAlgorithm : public okvis::MatchingAlgorithm {
- public:
+
+class TestMatchingAlgorithm : public okvis::MatchingAlgorithm
+{
+public:
   TestMatchingAlgorithm() {
   }
+
   virtual ~TestMatchingAlgorithm() {
   }
 
@@ -17,6 +20,7 @@ class TestMatchingAlgorithm : public okvis::MatchingAlgorithm {
   virtual size_t sizeA() const {
     return listA.size();
   }
+
   /// \brief what is the size of list B?
   virtual size_t sizeB() const {
     return listB.size();
@@ -66,8 +70,8 @@ class TestMatchingAlgorithm : public okvis::MatchingAlgorithm {
   std::vector<std::pair<int, int> > matches;
 };
 
-TEST(DenseMatcherTestSuite, denseMatcherTest)
-{
+
+TEST(DenseMatcherTestSuite, denseMatcherTest) {
   TestMatchingAlgorithm tma;
 
   tma.listA.push_back(1.0);
@@ -91,27 +95,25 @@ TEST(DenseMatcherTestSuite, denseMatcherTest)
 
   ASSERT_EQ(3u, tma.matches.size());
 
-  for(size_t i = 0; i < tma.matches.size(); ++i)
-  {
-    switch(tma.matches[i].first)
-    {
+  for (size_t i = 0; i < tma.matches.size(); ++i) {
+    switch (tma.matches[i].first) {
       case 1:
-      ASSERT_EQ(2, tma.matches[i].second);
-      break;
+        ASSERT_EQ(2, tma.matches[i].second);
+        break;
       case 2:
-      ASSERT_EQ(1, tma.matches[i].second);
-      break;
+        ASSERT_EQ(1, tma.matches[i].second);
+        break;
       case 3:
-      ASSERT_EQ(3, tma.matches[i].second);
-      break;
+        ASSERT_EQ(3, tma.matches[i].second);
+        break;
       default:
-      FAIL() << "Unexpected match " << tma.matches[i].first << " --> " << tma.matches[i].second;
+        FAIL() << "Unexpected match " << tma.matches[i].first << " --> " << tma.matches[i].second;
     }
   }
 }
 
-TEST(DenseMatcherTestSuite, denseMatcherDistanceRatioTest)
-{
+
+TEST(DenseMatcherTestSuite, denseMatcherDistanceRatioTest) {
   TestMatchingAlgorithm tma;
 
   tma.listA.push_back(8.0);
@@ -138,18 +140,16 @@ TEST(DenseMatcherTestSuite, denseMatcherDistanceRatioTest)
 
   ASSERT_EQ(2u, tma.matches.size());
 
-  for(size_t i = 0; i < tma.matches.size(); ++i)
-  {
-    switch(tma.matches[i].first)
-    {
+  for (size_t i = 0; i < tma.matches.size(); ++i) {
+    switch (tma.matches[i].first) {
       case 1:
-      ASSERT_EQ(3, tma.matches[i].second);
-      break;
+        ASSERT_EQ(3, tma.matches[i].second);
+        break;
       case 3:
-      ASSERT_EQ(1, tma.matches[i].second);
-      break;
+        ASSERT_EQ(1, tma.matches[i].second);
+        break;
       default:
-      FAIL() << "Unexpected match " << tma.matches[i].first << " --> " << tma.matches[i].second;
+        FAIL() << "Unexpected match " << tma.matches[i].first << " --> " << tma.matches[i].second;
     }
   }
 }

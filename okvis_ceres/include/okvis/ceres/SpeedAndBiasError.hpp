@@ -54,11 +54,15 @@ namespace ceres {
 class SpeedAndBiasError : public ::ceres::SizedCostFunction<
     9 /* number of residuals */,
     9 /* size of first parameter */>,
-    public ErrorInterface {
- public:
+                          public ErrorInterface
+{
+public:
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
+
+
+  OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /// \brief The base class type.
   typedef ::ceres::SizedCostFunction<9, 9> base_t;
@@ -78,15 +82,15 @@ class SpeedAndBiasError : public ::ceres::SizedCostFunction<
   /// \brief Construct with measurement and information matrix
   /// @param[in] measurement The measurement.
   /// @param[in] information The information (weight) matrix.
-  SpeedAndBiasError(const okvis::SpeedAndBias & measurement,
-                    const information_t & information);
+  SpeedAndBiasError(const okvis::SpeedAndBias &measurement,
+                    const information_t &information);
 
   /// \brief Construct with measurement and variance.
   /// @param[in] measurement The measurement.
   /// @param[in] speedVariance The variance of the speed measurement, i.e. information_ has variance in its diagonal.
   /// @param[in] gyrBiasVariance The variance of the gyro bias measurement, i.e. information_ has variance in its diagonal.
   /// @param[in] accBiasVariance The variance of the accelerometer bias measurement, i.e. information_ has variance in its diagonal.
-  SpeedAndBiasError(const okvis::SpeedAndBiases& measurement,
+  SpeedAndBiasError(const okvis::SpeedAndBiases &measurement,
                     double speedVariance, double gyrBiasVariance,
                     double accBiasVariance);
 
@@ -97,30 +101,30 @@ class SpeedAndBiasError : public ::ceres::SizedCostFunction<
   // setters
   /// \brief Set the measurement.
   /// @param[in] measurement The measurement.
-  void setMeasurement(const okvis::SpeedAndBias & measurement) {
+  void setMeasurement(const okvis::SpeedAndBias &measurement) {
     measurement_ = measurement;
   }
 
   /// \brief Set the information.
   /// @param[in] information The information (weight) matrix.
-  void setInformation(const information_t & information);
+  void setInformation(const information_t &information);
 
   // getters
   /// \brief Get the measurement.
   /// \return The measurement vector.
-  const okvis::SpeedAndBias& measurement() const {
+  const okvis::SpeedAndBias &measurement() const {
     return measurement_;
   }
 
   /// \brief Get the information matrix.
   /// \return The information (weight) matrix.
-  const information_t& information() const {
+  const information_t &information() const {
     return information_;
   }
 
   /// \brief Get the covariance matrix.
   /// \return The inverse information (covariance) matrix.
-  const covariance_t& covariance() const {
+  const covariance_t &covariance() const {
     return covariance_;
   }
 
@@ -132,8 +136,8 @@ class SpeedAndBiasError : public ::ceres::SizedCostFunction<
    * @param jacobians Pointer to the Jacobians (see ceres)
    * @return success of th evaluation.
    */
-  virtual bool Evaluate(double const* const * parameters, double* residuals,
-                        double** jacobians) const;
+  virtual bool Evaluate(double const *const *parameters, double *residuals,
+                        double **jacobians) const;
 
   /**
    * @brief This evaluates the error term and additionally computes
@@ -144,10 +148,10 @@ class SpeedAndBiasError : public ::ceres::SizedCostFunction<
    * @param jacobiansMinimal Pointer to the minimal Jacobians (equivalent to jacobians).
    * @return Success of the evaluation.
    */
-  virtual bool EvaluateWithMinimalJacobians(double const* const * parameters,
-                                            double* residuals,
-                                            double** jacobians,
-                                            double** jacobiansMinimal) const;
+  virtual bool EvaluateWithMinimalJacobians(double const *const *parameters,
+                                            double *residuals,
+                                            double **jacobians,
+                                            double **jacobiansMinimal) const;
 
   // sizes
   /// \brief Residual dimension.
@@ -172,7 +176,7 @@ class SpeedAndBiasError : public ::ceres::SizedCostFunction<
     return "SpeedAndBiasError";
   }
 
- protected:
+protected:
 
   // the measurement
   okvis::SpeedAndBias measurement_; ///< The (9D) measurement.

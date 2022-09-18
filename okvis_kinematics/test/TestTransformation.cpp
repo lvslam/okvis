@@ -34,6 +34,7 @@
 #include <iostream>
 #include "gtest/gtest.h"
 
+
 TEST(Transformation, operations) {
   for (size_t i = 0; i < 100; ++i) {
     okvis::kinematics::Transformation T_AB;
@@ -44,7 +45,7 @@ TEST(Transformation, operations) {
     // Test inverse
     EXPECT_TRUE(
         ((T_AB * T_AB.inverse()).T() - Eigen::Matrix4d::Identity()).norm()
-            < 1e-8);
+        < 1e-8);
 
     // Test composition
     EXPECT_TRUE(((T_AB * T_BC).T() - T_AB.T() * T_BC.T()).norm() < 1e-8);
@@ -87,9 +88,9 @@ TEST(Transformation, operations) {
       /*jacobian_numDiff.block<7, 1>(0, i) = (T_AB_p.parameters()
           - T_AB_m.parameters()) / (2.0 * dp);*/
       jacobian_numDiff.block<3, 1>(0, i) = (T_AB_p.r() - T_AB_m.r())
-          / (2.0 * dp);
+                                           / (2.0 * dp);
       jacobian_numDiff.block<4, 1>(3, i) = (T_AB_p.q().coeffs()
-          - T_AB_m.q().coeffs()) / (2.0 * dp);
+                                            - T_AB_m.q().coeffs()) / (2.0 * dp);
     }
     Eigen::Matrix<double, 7, 6, Eigen::RowMajor> jacobian;
     T_AB.oplusJacobian(jacobian);

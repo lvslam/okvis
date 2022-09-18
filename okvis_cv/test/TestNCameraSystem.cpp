@@ -34,18 +34,22 @@
 #include <gtest/gtest.h>
 #include <memory>
 #include <vector>
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+
 #include <brisk/brisk.h>
+
 #pragma GCC diagnostic pop
+
 #include "okvis/cameras/PinholeCamera.hpp"
 #include "okvis/cameras/NoDistortion.hpp"
 #include "okvis/cameras/RadialTangentialDistortion.hpp"
 #include "okvis/cameras/EquidistantDistortion.hpp"
 #include "okvis/cameras/NCameraSystem.hpp"
 
-TEST(NCameraSystem, functions)
-{
+
+TEST(NCameraSystem, functions) {
 
   // instantiate all possible versions of test cameras
   std::vector<std::shared_ptr<const okvis::cameras::CameraBase> > cameras;

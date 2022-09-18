@@ -53,10 +53,14 @@ namespace ceres {
 /// \brief Absolute error of a homogeneous point (landmark).
 class HomogeneousPointError : public ::ceres::SizedCostFunction<
     3 /* number of residuals */, 4 /* size of first parameter */>,
-    public ErrorInterface {
- public:
+                              public ErrorInterface
+{
+public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
+
+
+  OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /// \brief The base class type.
   typedef ::ceres::SizedCostFunction<3, 4> base_t;
@@ -76,13 +80,13 @@ class HomogeneousPointError : public ::ceres::SizedCostFunction<
   /// \brief Construct with measurement and information matrix.
   /// @param[in] measurement The measurement.
   /// @param[in] information The information (weight) matrix.
-  HomogeneousPointError(const Eigen::Vector4d & measurement,
-                        const information_t & information);
+  HomogeneousPointError(const Eigen::Vector4d &measurement,
+                        const information_t &information);
 
   /// \brief Construct with measurement and variance.
   /// @param[in] measurement The measurement.
   /// @param[in] variance The variance of the measurement, i.e. information_ has variance in its diagonal.
-  HomogeneousPointError(const Eigen::Vector4d & measurement, double variance);
+  HomogeneousPointError(const Eigen::Vector4d &measurement, double variance);
 
   /// \brief Trivial destructor.
   virtual ~HomogeneousPointError() {
@@ -91,30 +95,30 @@ class HomogeneousPointError : public ::ceres::SizedCostFunction<
   // setters
   /// \brief Set the measurement.
   /// @param[in] measurement The measurement.
-  void setMeasurement(const Eigen::Vector4d & measurement) {
+  void setMeasurement(const Eigen::Vector4d &measurement) {
     measurement_ = measurement;
   }
 
   /// \brief Set the information.
   /// @param[in] information The information (weight) matrix.
-  void setInformation(const information_t & information);
+  void setInformation(const information_t &information);
 
   // getters
   /// \brief Get the measurement.
   /// \return The measurement vector.
-  const Eigen::Vector4d& measurement() const {
+  const Eigen::Vector4d &measurement() const {
     return measurement_;
   }
 
   /// \brief Get the information matrix.
   /// \return The information (weight) matrix.
-  const information_t& information() const {
+  const information_t &information() const {
     return information_;
   }
 
   /// \brief Get the covariance matrix.
   /// \return The inverse information (covariance) matrix.
-  const information_t& covariance() const {
+  const information_t &covariance() const {
     return covariance_;
   }
 
@@ -125,8 +129,8 @@ class HomogeneousPointError : public ::ceres::SizedCostFunction<
    * @param jacobians Pointer to the Jacobians (see ceres)
    * @return success of th evaluation.
    */
-  virtual bool Evaluate(double const* const * parameters, double* residuals,
-                        double** jacobians) const;
+  virtual bool Evaluate(double const *const *parameters, double *residuals,
+                        double **jacobians) const;
 
   /**
    * @brief EvaluateWithMinimalJacobians This evaluates the error term and additionally computes
@@ -137,10 +141,10 @@ class HomogeneousPointError : public ::ceres::SizedCostFunction<
    * @param jacobiansMinimal Pointer to the minimal Jacobians (equivalent to jacobians).
    * @return Success of the evaluation.
    */
-  virtual bool EvaluateWithMinimalJacobians(double const* const * parameters,
-                                            double* residuals,
-                                            double** jacobians,
-                                            double** jacobiansMinimal) const;
+  virtual bool EvaluateWithMinimalJacobians(double const *const *parameters,
+                                            double *residuals,
+                                            double **jacobians,
+                                            double **jacobiansMinimal) const;
 
   // sizes
   /// \brief Residual dimension.
@@ -165,7 +169,7 @@ class HomogeneousPointError : public ::ceres::SizedCostFunction<
     return "HomogeneousPointError";
   }
 
- protected:
+protected:
 
   // the measurement
   Eigen::Vector4d measurement_; ///< The (4D) measurement.

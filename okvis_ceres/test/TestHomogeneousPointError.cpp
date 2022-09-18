@@ -45,6 +45,7 @@
 #include <okvis/FrameTypedefs.hpp>
 #include <okvis/assert_macros.hpp>
 
+
 TEST(okvisTestSuite, HomogeneousPointError) {
   // initialize random number generator
   //srand((unsigned int) time(0)); // disabled: make unit tests deterministic...
@@ -85,7 +86,7 @@ TEST(okvisTestSuite, HomogeneousPointError) {
 
     // check Jacobian
     OKVIS_ASSERT_TRUE(Exception, map.isJacobianCorrect(id),
-                   "Jacobian verification on homogeneous point error failed.");
+                      "Jacobian verification on homogeneous point error failed.");
   }
 
   // Run the solver!

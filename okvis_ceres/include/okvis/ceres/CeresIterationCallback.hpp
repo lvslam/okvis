@@ -54,8 +54,9 @@ namespace ceres {
  *        optimization. It does not guarantee to stay within the time budget as
  *        it assumes the next iteration takes as long as the previous iteration.
  */
-class CeresIterationCallback : public ::ceres::IterationCallback {
- public:
+class CeresIterationCallback : public ::ceres::IterationCallback
+{
+public:
 
   /**
    * @brief The constructor.
@@ -75,11 +76,11 @@ class CeresIterationCallback : public ::ceres::IterationCallback {
   /// @brief This method is called after every iteration in ceres.
   /// @param[in] summary The iteration summary.
   ::ceres::CallbackReturnType operator()(
-      const ::ceres::IterationSummary& summary) {
+      const ::ceres::IterationSummary &summary) {
     // assume next iteration takes the same time as current iteration
     if (summary.iteration >= iterationMinimum_
         && summary.cumulative_time_in_seconds
-            + summary.iteration_time_in_seconds > timeLimit_) {
+           + summary.iteration_time_in_seconds > timeLimit_) {
       return ::ceres::SOLVER_TERMINATE_SUCCESSFULLY;
     }
     return ::ceres::SOLVER_CONTINUE;
@@ -105,7 +106,7 @@ class CeresIterationCallback : public ::ceres::IterationCallback {
     iterationMinimum_ = iterationMinimum;
   }
 
- private:
+private:
   double timeLimit_; ///< The set time limit.
   int iterationMinimum_; ///< The set maximum no. iterations.
 };

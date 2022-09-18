@@ -56,10 +56,14 @@ namespace ceres {
 /// @tparam MinDim  Minimal dimension of parameter block
 /// @tparam T       The type of the estimate
 template<int Dim, int MinDim, class T>
-class ParameterBlockSized : public okvis::ceres::ParameterBlock {
- public:
+class ParameterBlockSized : public okvis::ceres::ParameterBlock
+{
+public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
+
+
+  OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /// @brief Dimension of the parameter block.
   static const int Dimension = Dim;
@@ -85,11 +89,11 @@ class ParameterBlockSized : public okvis::ceres::ParameterBlock {
 
   /// @brief Set estimate of this parameter block.
   /// @param[in] estimate The estimate to set this to.
-  virtual void setEstimate(const parameter_t& estimate)=0;
+  virtual void setEstimate(const parameter_t &estimate) = 0;
 
   /// @brief Set exact parameters of this parameter block.
   /// @param[in] parameters The parameters to set this to.
-  virtual void setParameters(const double* parameters) {
+  virtual void setParameters(const double *parameters) {
     OKVIS_ASSERT_TRUE_DBG(Exception, parameters != 0, "Null pointer");
     memcpy(parameters_, parameters, Dimension * sizeof(double));
   }
@@ -105,13 +109,13 @@ class ParameterBlockSized : public okvis::ceres::ParameterBlock {
 
   /// @brief Get parameters -- as a pointer.
   /// \return Pointer to the parameters allocated in here.
-  virtual double* parameters() {
+  virtual double *parameters() {
     return parameters_;
   }
 
   /// @brief Get parameters -- as a pointer.
   /// \return Pointer to the parameters allocated in here.
-  virtual const double* parameters() const {
+  virtual const double *parameters() const {
     return parameters_;
   }
 
@@ -132,17 +136,17 @@ class ParameterBlockSized : public okvis::ceres::ParameterBlock {
   /// @name File read/write - implement in derived class, if needed
   /// @{
   /// \brief Reading from file -- not implemented
-  virtual bool read(std::istream& /*not implemented: is*/) {
+  virtual bool read(std::istream & /*not implemented: is*/) {
     return false;
   }
 
   /// \brief Writing to file -- not implemented
-  virtual bool write(std::ostream& /*not implemented: os*/) const {
+  virtual bool write(std::ostream & /*not implemented: os*/) const {
     return false;
   }
   /// @}
 
- protected:
+protected:
   /// @brief Parameters
   double parameters_[Dimension];
 };

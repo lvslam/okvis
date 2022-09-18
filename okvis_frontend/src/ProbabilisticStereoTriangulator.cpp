@@ -74,8 +74,8 @@ template<class CAMERA_GEOMETRY_T>
 ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::ProbabilisticStereoTriangulator(
     std::shared_ptr<okvis::MultiFrame> frameA_ptr,
     std::shared_ptr<okvis::MultiFrame> frameB_ptr, size_t camIdA, size_t camIdB,
-    const okvis::kinematics::Transformation& T_AB,
-    const Eigen::Matrix<double, 6, 6>& UOplus, double pixelSigma)
+    const okvis::kinematics::Transformation &T_AB,
+    const Eigen::Matrix<double, 6, 6> &UOplus, double pixelSigma)
     : frameA_(frameA_ptr),
       frameB_(frameB_ptr),
       camIdA_(camIdA),
@@ -97,9 +97,9 @@ ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::ProbabilisticStereoTriangula
       okvis::kinematics::Transformation(), 0, okvis::Time(0));
   double residuals[6];
   // evaluate to get the jacobian
-  double* parameters = poseB_.parameters();
-  double* jacobians = J.data();
-  double* jacobians_minimal = J_minimal.data();
+  double *parameters = poseB_.parameters();
+  double *jacobians = J.data();
+  double *jacobians_minimal = J_minimal.data();
   poseError.EvaluateWithMinimalJacobians(&parameters, &residuals[0], &jacobians,
                                          &jacobians_minimal);
   // prepare lhs of Gauss-Newton:
@@ -107,9 +107,9 @@ ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::ProbabilisticStereoTriangula
   H_.topLeftCorner<6, 6>() = J_minimal.transpose() * J_minimal;
 
   sigmaRay_ = pixelSigma
-      / std::min(
-          frameA_->geometryAs<CAMERA_GEOMETRY_T>(camIdA_)->focalLengthU(),
-          frameB_->geometryAs<CAMERA_GEOMETRY_T>(camIdB_)->focalLengthU());
+              / std::min(
+      frameA_->geometryAs<CAMERA_GEOMETRY_T>(camIdA_)->focalLengthU(),
+      frameB_->geometryAs<CAMERA_GEOMETRY_T>(camIdB_)->focalLengthU());
 }
 
 // Reset frames and relative transformation.
@@ -117,8 +117,8 @@ template<class CAMERA_GEOMETRY_T>
 void ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::resetFrames(
     std::shared_ptr<okvis::MultiFrame> frameA_ptr,
     std::shared_ptr<okvis::MultiFrame> frameB_ptr, size_t camIdA, size_t camIdB,
-    const okvis::kinematics::Transformation& T_AB,
-    const Eigen::Matrix<double, 6, 6>& UOplus) {
+    const okvis::kinematics::Transformation &T_AB,
+    const Eigen::Matrix<double, 6, 6> &UOplus) {
   T_AB_ = T_AB;
   T_BA_ = T_AB_.inverse();
 
@@ -142,9 +142,9 @@ void ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::resetFrames(
       okvis::kinematics::Transformation(), 0, okvis::Time(0));
   double residuals[6];
   // evaluate to get the jacobian
-  double* parameters = poseB_.parameters();
-  double* jacobians = J.data();
-  double* jacobians_minimal = J_minimal.data();
+  double *parameters = poseB_.parameters();
+  double *jacobians = J.data();
+  double *jacobians_minimal = J_minimal.data();
   poseError.EvaluateWithMinimalJacobians(&parameters, &residuals[0], &jacobians,
                                          &jacobians_minimal);
   // prepare lhs of Gauss-Newton:
@@ -152,9 +152,9 @@ void ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::resetFrames(
   H_.topLeftCorner<6, 6>() = J_minimal.transpose() * J_minimal;
 
   sigmaRay_ = 0.5
-      / std::min(
-          frameA_->geometryAs<CAMERA_GEOMETRY_T>(camIdA_)->focalLengthU(),
-          frameB_->geometryAs<CAMERA_GEOMETRY_T>(camIdB_)->focalLengthU());
+              / std::min(
+      frameA_->geometryAs<CAMERA_GEOMETRY_T>(camIdA_)->focalLengthU(),
+      frameB_->geometryAs<CAMERA_GEOMETRY_T>(camIdB_)->focalLengthU());
 
 }
 
@@ -167,11 +167,11 @@ ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::~ProbabilisticStereoTriangul
 template<class CAMERA_GEOMETRY_T>
 bool ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::stereoTriangulate(
     size_t keypointIdxA, size_t keypointIdxB,
-    Eigen::Vector4d& outHomogeneousPoint_A,
-    bool & outCanBeInitializedInaccuarate,
+    Eigen::Vector4d &outHomogeneousPoint_A,
+    bool &outCanBeInitializedInaccuarate,
     double sigmaRay) const {
 
-  OKVIS_ASSERT_TRUE_DBG(Exception,frameA_&&frameB_,"initialize with frames before use!");
+  OKVIS_ASSERT_TRUE_DBG(Exception, frameA_ && frameB_, "initialize with frames before use!");
 
   // chose the source of uncertainty
   double sigmaR = sigmaRay;
@@ -230,14 +230,14 @@ bool ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::stereoTriangulate(
 template<class CAMERA_GEOMETRY_T>
 bool ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::stereoTriangulate(
     size_t keypointIdxA, size_t keypointIdxB,
-    Eigen::Vector4d& outHomogeneousPoint_A, Eigen::Matrix3d& outPointUOplus_A,
-    bool& outCanBeInitialized, double sigmaRay) const {
-  OKVIS_ASSERT_TRUE_DBG(Exception,frameA_&&frameB_,"initialize with frames before use!");
+    Eigen::Vector4d &outHomogeneousPoint_A, Eigen::Matrix3d &outPointUOplus_A,
+    bool &outCanBeInitialized, double sigmaRay) const {
+  OKVIS_ASSERT_TRUE_DBG(Exception, frameA_ && frameB_, "initialize with frames before use!");
 
   // get the triangulation
   bool canBeInitialized;
   if (!stereoTriangulate(keypointIdxA, keypointIdxB, outHomogeneousPoint_A, canBeInitialized,
-                         sigmaRay)){
+                         sigmaRay)) {
     return false;
   }
 
@@ -252,9 +252,9 @@ bool ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::stereoTriangulate(
 template<class CAMERA_GEOMETRY_T>
 void ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::getUncertainty(
     size_t keypointIdxA, size_t keypointIdxB,
-    const Eigen::Vector4d& homogeneousPoint_A,
-    Eigen::Matrix3d& outPointUOplus_A, bool& outCanBeInitialized) const {
-  OKVIS_ASSERT_TRUE_DBG(Exception,frameA_&&frameB_,"initialize with frames before use!");
+    const Eigen::Vector4d &homogeneousPoint_A,
+    Eigen::Matrix3d &outPointUOplus_A, bool &outCanBeInitialized) const {
+  OKVIS_ASSERT_TRUE_DBG(Exception, frameA_ && frameB_, "initialize with frames before use!");
 
   // also get the point in the other coordinate representation
   //Eigen::Vector4d& homogeneousPoint_B=_T_BA*homogeneousPoint_A;
@@ -275,7 +275,7 @@ void ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::getUncertainty(
   frameA_->getKeypointSize(camIdA_, keypointIdxA, keypointStdDev);
   keypointStdDev = 0.8 * keypointStdDev / 12.0;
   Eigen::Matrix2d inverseMeasurementCovariance = Eigen::Matrix2d::Identity()
-      * (1.0 / (keypointStdDev * keypointStdDev));
+                                                 * (1.0 / (keypointStdDev * keypointStdDev));
   ::okvis::ceres::ReprojectionError<CAMERA_GEOMETRY_T> reprojectionErrorA(
       frameA_->geometryAs<CAMERA_GEOMETRY_T>(camIdA_), 0, kptA,
       inverseMeasurementCovariance);
@@ -283,15 +283,15 @@ void ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::getUncertainty(
   Eigen::Matrix<double, 2, 1> residualA;
   Eigen::Matrix<double, 2, 4, Eigen::RowMajor> J_hpA;
   Eigen::Matrix<double, 2, 3, Eigen::RowMajor> J_hpA_min;
-  double* jacobiansA[3];
+  double *jacobiansA[3];
   jacobiansA[0] = 0;  // do not calculate, T_WA is fixed identity transform
   jacobiansA[1] = J_hpA.data();
   jacobiansA[2] = 0;  // fixed extrinsics
-  double* jacobiansA_min[3];
+  double *jacobiansA_min[3];
   jacobiansA_min[0] = 0;  // do not calculate, T_WA is fixed identity transform
   jacobiansA_min[1] = J_hpA_min.data();
   jacobiansA_min[2] = 0;  // fixed extrinsics
-  const double* parametersA[3];
+  const double *parametersA[3];
   //const double* test = _poseA.parameters();
   parametersA[0] = poseA_.parameters();
   parametersA[1] = hPA.data();
@@ -312,15 +312,15 @@ void ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::getUncertainty(
   Eigen::Matrix<double, 2, 6, Eigen::RowMajor> J_TB_min;
   Eigen::Matrix<double, 2, 4, Eigen::RowMajor> J_hpB;
   Eigen::Matrix<double, 2, 3, Eigen::RowMajor> J_hpB_min;
-  double* jacobiansB[3];
+  double *jacobiansB[3];
   jacobiansB[0] = J_TB.data();
   jacobiansB[1] = J_hpB.data();
   jacobiansB[2] = 0;  // fixed extrinsics
-  double* jacobiansB_min[3];
+  double *jacobiansB_min[3];
   jacobiansB_min[0] = J_TB_min.data();
   jacobiansB_min[1] = J_hpB_min.data();
   jacobiansB_min[2] = 0;  // fixed extrinsics
-  const double* parametersB[3];
+  const double *parametersB[3];
   parametersB[0] = poseB_.parameters();
   parametersB[1] = hPA.data();
   parametersB[2] = extrinsics_.parameters();
@@ -329,7 +329,7 @@ void ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::getUncertainty(
 
   // evaluate again closer:
   hPA.head<3>() = 0.8 * (hPA.head<3>() - T_AB_.r() / 2.0 * hPA[3])
-      + T_AB_.r() / 2.0 * hPA[3];
+                  + T_AB_.r() / 2.0 * hPA[3];
   reprojectionErrorB.EvaluateWithMinimalJacobians(parametersB, residualB.data(),
                                                   jacobiansB, jacobiansB_min);
   if (residualB.transpose() * residualB < 4.0)
@@ -357,12 +357,12 @@ void ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::getUncertainty(
 // Compute the reprojection error.
 template<class CAMERA_GEOMETRY_T>
 bool ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::computeReprojectionError4(
-    const std::shared_ptr<okvis::MultiFrame>& frame, size_t camId,
-    size_t keypointId, const Eigen::Vector4d& homogeneousPoint,
-    double& outError) const {
+    const std::shared_ptr<okvis::MultiFrame> &frame, size_t camId,
+    size_t keypointId, const Eigen::Vector4d &homogeneousPoint,
+    double &outError) const {
 
   OKVIS_ASSERT_LT_DBG(Exception, keypointId, frame->numKeypoints(camId),
-      "Index out of bounds");
+                      "Index out of bounds");
   Eigen::Vector2d y;
   okvis::cameras::CameraBase::ProjectionStatus status = frame
       ->geometryAs<CAMERA_GEOMETRY_T>(camId)->projectHomogeneous(
@@ -379,16 +379,25 @@ bool ProbabilisticStereoTriangulator<CAMERA_GEOMETRY_T>::computeReprojectionErro
     y -= k;
     outError = y.dot(inverseCov * y);
     return true;
-  } else
+  }
+  else
     return false;
 }
 
-template class ProbabilisticStereoTriangulator<
-    okvis::cameras::PinholeCamera<okvis::cameras::EquidistantDistortion> > ;
-template class ProbabilisticStereoTriangulator<
-    okvis::cameras::PinholeCamera<okvis::cameras::RadialTangentialDistortion> > ;
-template class ProbabilisticStereoTriangulator<
-    okvis::cameras::PinholeCamera<okvis::cameras::RadialTangentialDistortion8> > ;
+
+template
+class ProbabilisticStereoTriangulator<
+    okvis::cameras::PinholeCamera<okvis::cameras::EquidistantDistortion> >;
+
+
+template
+class ProbabilisticStereoTriangulator<
+    okvis::cameras::PinholeCamera<okvis::cameras::RadialTangentialDistortion> >;
+
+
+template
+class ProbabilisticStereoTriangulator<
+    okvis::cameras::PinholeCamera<okvis::cameras::RadialTangentialDistortion8> >;
 
 }  // namespace triangulation
 }  // namespace okvis

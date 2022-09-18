@@ -59,14 +59,19 @@ namespace okvis {
  * \tparam CAMERA_GEOMETRY_T Camera geometry model. See also okvis::cameras::CameraBase.
  */
 template<class CAMERA_GEOMETRY_T>
-class VioKeyframeWindowMatchingAlgorithm : public okvis::MatchingAlgorithm {
- public:
+class VioKeyframeWindowMatchingAlgorithm : public okvis::MatchingAlgorithm
+{
+public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+
   OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   typedef CAMERA_GEOMETRY_T camera_geometry_t;
 
-  enum MatchingTypes {
+  enum MatchingTypes
+  {
     Match3D2D = 1,  ///< Match 3D position of established landmarks to 2D keypoint position
     Match2D2D = 2   ///< Match 2D position of established landmarks to 2D keypoint position
   };
@@ -78,7 +83,7 @@ class VioKeyframeWindowMatchingAlgorithm : public okvis::MatchingAlgorithm {
    * @param distanceThreshold   Descriptor distance threshold.
    * @param usePoseUncertainty  Use the pose uncertainty for matching.
    */
-  VioKeyframeWindowMatchingAlgorithm(okvis::Estimator& estimator,
+  VioKeyframeWindowMatchingAlgorithm(okvis::Estimator &estimator,
                                      int matchingType, float distanceThreshold,
                                      bool usePoseUncertainty = true);
 
@@ -160,16 +165,16 @@ class VioKeyframeWindowMatchingAlgorithm : public okvis::MatchingAlgorithm {
   size_t numUncertainMatches();
 
   /// \brief access the matching result.
-  const okvis::Matches & getMatches() const;
+  const okvis::Matches &getMatches() const;
 
   /// \brief assess the validity of the relative uncertainty computation.
   bool isRelativeUncertaintyValid() {
     return validRelativeUncertainty_;
   }
 
- private:
+private:
   /// \brief This is essentially the map.
-  okvis::Estimator* estimator_;
+  okvis::Estimator *estimator_;
 
   /// \name Which frames to take
   /// \{
@@ -244,8 +249,8 @@ class VioKeyframeWindowMatchingAlgorithm : public okvis::MatchingAlgorithm {
   /// \brief Calculates the distance between two descriptors.
   // copy from BriskDescriptor.hpp
   uint32_t specificDescriptorDistance(
-      const unsigned char * descriptorA,
-      const unsigned char * descriptorB) const {
+      const unsigned char *descriptorA,
+      const unsigned char *descriptorB) const {
     OKVIS_ASSERT_TRUE_DBG(
         Exception, descriptorA != NULL && descriptorB != NULL,
         "Trying to compare a descriptor with a null description vector");

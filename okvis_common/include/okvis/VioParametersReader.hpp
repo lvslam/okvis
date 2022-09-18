@@ -45,7 +45,9 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+
 #include <opencv2/core/core.hpp>
+
 #pragma GCC diagnostic pop
 
 #include <okvis/assert_macros.hpp>
@@ -57,10 +59,14 @@ namespace okvis {
 /**
  * @brief This class reads and parses config file.
  */
-class VioParametersReader{
- public:
+class VioParametersReader
+{
+public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
+
+
+  OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /// \brief The default constructor.
   VioParametersReader();
@@ -69,17 +75,18 @@ class VioParametersReader{
    * @brief The constructor. This calls readConfigFile().
    * @param filename Configuration filename.
    */
-  VioParametersReader(const std::string& filename);
+  VioParametersReader(const std::string &filename);
 
   /// @brief Trivial destructor.
-  virtual ~VioParametersReader() {}
+  virtual ~VioParametersReader() {
+  }
 
   /**
    * @brief Read and parse a config file.
    *        To get the result call getParameters().
    * @param filename Configuration filename.
    */
-  void readConfigFile(const std::string& filename);
+  void readConfigFile(const std::string &filename);
 
   /**
    * @brief Get parameters.
@@ -87,8 +94,8 @@ class VioParametersReader{
    * @return True if parameters have been read from a configuration file. If it
    *         returns false then the variable \e parameters has not been changed.
    */
-  bool getParameters(okvis::VioParameters& parameters) const{
-    if(readConfigFile_)
+  bool getParameters(okvis::VioParameters &parameters) const {
+    if (readConfigFile_)
       parameters = vioParameters_;
     return readConfigFile_;
   }
@@ -98,10 +105,11 @@ class VioParametersReader{
 
   std::shared_ptr<void> viSensor;
 
- protected:
+protected:
 
   /// @brief Struct that contains all the camera calibration information.
-  struct CameraCalibration {
+  struct CameraCalibration
+  {
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     okvis::kinematics::Transformation T_SC;   ///< Transformation from camera to sensor (IMU) frame.
     Eigen::Vector2d imageDimension;           ///< Image dimension. [pixels]
@@ -110,6 +118,7 @@ class VioParametersReader{
     Eigen::Vector2d principalPoint;           ///< Principal point.
     std::string distortionType;               ///< Distortion type. ('radialtangential' 'plumb_bob' 'equdistant')
   };
+
 
   /// If readConfigFile() has been called at least once this is true
   bool readConfigFile_;
@@ -123,7 +132,7 @@ class VioParametersReader{
    * @return True if parsing was successful. If it returns false then the variable \e val has not
    *         been changed.
    */
-  bool parseBoolean(cv::FileNode node, bool& val) const;
+  bool parseBoolean(cv::FileNode node, bool &val) const;
 
   /**
    * @brief Get the camera calibration. This looks for the calibration in the
@@ -135,8 +144,8 @@ class VioParametersReader{
    * @return True if reading of the calibration was successful.
    */
   virtual bool getCameraCalibration(
-      std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> & calibrations,
-      cv::FileStorage& configurationFile);
+      std::vector<CameraCalibration, Eigen::aligned_allocator<CameraCalibration>> &calibrations,
+      cv::FileStorage &configurationFile);
 
   /**
    * @brief Get the camera calibration via the configuration file.
@@ -145,7 +154,7 @@ class VioParametersReader{
    * @return True if reading and parsing of calibration was successful.
    */
   bool getCalibrationViaConfig(
-      std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> & calibrations,
+      std::vector<CameraCalibration, Eigen::aligned_allocator<CameraCalibration>> &calibrations,
       cv::FileNode cameraNode) const;
 
   /**
@@ -154,7 +163,7 @@ class VioParametersReader{
    * @return True if successful.
    */
   bool getCalibrationViaVisensorAPI(
-      std::vector<CameraCalibration,Eigen::aligned_allocator<CameraCalibration>> & calibrations) const;
+      std::vector<CameraCalibration, Eigen::aligned_allocator<CameraCalibration>> &calibrations) const;
 
 };
 

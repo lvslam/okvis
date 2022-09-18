@@ -57,7 +57,7 @@
 /// \brief okvis Main namespace of this package.
 namespace okvis {
 
-VioVisualizer::VioVisualizer(okvis::VioParameters& parameters)
+VioVisualizer::VioVisualizer(okvis::VioParameters &parameters)
     : parameters_(parameters) {
   if (parameters.nCameraSystem.numCameras() > 0) {
     init(parameters);
@@ -67,11 +67,11 @@ VioVisualizer::VioVisualizer(okvis::VioParameters& parameters)
 VioVisualizer::~VioVisualizer() {
 }
 
-void VioVisualizer::init(okvis::VioParameters& parameters) {
+void VioVisualizer::init(okvis::VioParameters &parameters) {
   parameters_ = parameters;
 }
 
-cv::Mat VioVisualizer::drawMatches(VisualizationData::Ptr& data,
+cv::Mat VioVisualizer::drawMatches(VisualizationData::Ptr &data,
                                    size_t image_number) {
 
   std::shared_ptr<okvis::MultiFrame> keyframe = data->keyFrames;
@@ -97,7 +97,7 @@ cv::Mat VioVisualizer::drawMatches(VisualizationData::Ptr& data,
   Eigen::Vector2d keypoint;
   Eigen::Vector4d landmark;
   okvis::kinematics::Transformation lastKeyframeT_CW = parameters_.nCameraSystem
-      .T_SC(image_number)->inverse() * data->T_WS_keyFrame.inverse();
+                                                           .T_SC(image_number)->inverse() * data->T_WS_keyFrame.inverse();
 
   // find distortion type
   okvis::cameras::NCameraSystem::DistortionType distortionType = parameters_.nCameraSystem
@@ -109,7 +109,7 @@ cv::Mat VioVisualizer::drawMatches(VisualizationData::Ptr& data,
   }
 
   for (auto it = data->observations.begin(); it != data->observations.end();
-      ++it) {
+       ++it) {
     if (it->cameraIdx != image_number)
       continue;
 
@@ -117,7 +117,8 @@ cv::Mat VioVisualizer::drawMatches(VisualizationData::Ptr& data,
 
     if (it->landmarkId != 0) {
       color = cv::Scalar(255, 0, 0);  // blue
-    } else {
+    }
+    else {
       color = cv::Scalar(0, 0, 255);  // red
     }
 
@@ -127,7 +128,8 @@ cv::Mat VioVisualizer::drawMatches(VisualizationData::Ptr& data,
       Eigen::Vector4d hPoint = it->landmark_W;
       if (it->isInitialized) {
         color = cv::Scalar(0, 255, 0);  // green
-      } else {
+      }
+      else {
         color = cv::Scalar(0, 255, 255);  // yellow
       }
       Eigen::Vector2d keyframePt;
@@ -136,36 +138,35 @@ cv::Mat VioVisualizer::drawMatches(VisualizationData::Ptr& data,
       switch (distortionType) {
         case okvis::cameras::NCameraSystem::RadialTangential: {
           if (frame
-              ->geometryAs<
-                  okvis::cameras::PinholeCamera<
-                      okvis::cameras::RadialTangentialDistortion>>(image_number)
-              ->projectHomogeneous(hP_C, &keyframePt)
+                  ->geometryAs<
+                      okvis::cameras::PinholeCamera<
+                          okvis::cameras::RadialTangentialDistortion>>(image_number)
+                  ->projectHomogeneous(hP_C, &keyframePt)
               == okvis::cameras::CameraBase::ProjectionStatus::Successful)
             isVisibleInKeyframe = true;
           break;
         }
         case okvis::cameras::NCameraSystem::Equidistant: {
           if (frame
-              ->geometryAs<
-                  okvis::cameras::PinholeCamera<
-                      okvis::cameras::EquidistantDistortion>>(image_number)
-              ->projectHomogeneous(hP_C, &keyframePt)
+                  ->geometryAs<
+                      okvis::cameras::PinholeCamera<
+                          okvis::cameras::EquidistantDistortion>>(image_number)
+                  ->projectHomogeneous(hP_C, &keyframePt)
               == okvis::cameras::CameraBase::ProjectionStatus::Successful)
             isVisibleInKeyframe = true;
           break;
         }
         case okvis::cameras::NCameraSystem::RadialTangential8: {
           if (frame
-              ->geometryAs<
-                  okvis::cameras::PinholeCamera<
-                      okvis::cameras::RadialTangentialDistortion8>>(
-              image_number)->projectHomogeneous(hP_C, &keyframePt)
+                  ->geometryAs<
+                      okvis::cameras::PinholeCamera<
+                          okvis::cameras::RadialTangentialDistortion8>>(
+                      image_number)->projectHomogeneous(hP_C, &keyframePt)
               == okvis::cameras::CameraBase::ProjectionStatus::Successful)
             isVisibleInKeyframe = true;
           break;
         }
-        default:
-          OKVIS_THROW(Exception, "Unsupported distortion type.")
+        default: OKVIS_THROW(Exception, "Unsupported distortion type.")
           break;
       }
       if (fabs(hP_C[3]) > 1.0e-8) {
@@ -186,7 +187,7 @@ cv::Mat VioVisualizer::drawMatches(VisualizationData::Ptr& data,
     // draw keypoint
     const double r = 0.5 * it->keypointSize;
     cv::circle(current, cv::Point2f(keypoint[0], keypoint[1]), r, color, 1,
-    CV_AA);
+               CV_AA);
     cv::KeyPoint cvKeypoint;
     frame->getCvKeypoint(image_number, it->keypointIdx, cvKeypoint);
     const double angle = cvKeypoint.angle / 180.0 * M_PI;
@@ -194,14 +195,14 @@ cv::Mat VioVisualizer::drawMatches(VisualizationData::Ptr& data,
         outimg,
         cv::Point2f(keypoint[0], keypoint[1] + rowJump),
         cv::Point2f(keypoint[0], keypoint[1] + rowJump)
-            + cv::Point2f(cos(angle), sin(angle)) * r,
+        + cv::Point2f(cos(angle), sin(angle)) * r,
         color, 1,
         CV_AA);
   }
   return outimg;
 }
 
-cv::Mat VioVisualizer::drawKeypoints(VisualizationData::Ptr& data,
+cv::Mat VioVisualizer::drawKeypoints(VisualizationData::Ptr &data,
                                      size_t cameraIndex) {
 
   std::shared_ptr<okvis::MultiFrame> currentFrames = data->currentFrames;
@@ -230,7 +231,7 @@ cv::Mat VioVisualizer::drawKeypoints(VisualizationData::Ptr& data,
   return outimg;
 }
 
-void VioVisualizer::showDebugImages(VisualizationData::Ptr& data) {
+void VioVisualizer::showDebugImages(VisualizationData::Ptr &data) {
   std::vector<cv::Mat> out_images(parameters_.nCameraSystem.numCameras());
   for (size_t i = 0; i < parameters_.nCameraSystem.numCameras(); ++i) {
     out_images[i] = drawMatches(data, i);
@@ -241,7 +242,7 @@ void VioVisualizer::showDebugImages(VisualizationData::Ptr& data) {
     std::stringstream windowname;
     windowname << "OKVIS camera " << im;
     cv::imshow(windowname.str(), out_images[im]);
-	cv::waitKey(1);
+    cv::waitKey(1);
   }
 }
 

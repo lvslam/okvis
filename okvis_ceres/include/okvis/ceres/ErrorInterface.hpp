@@ -50,14 +50,19 @@ namespace okvis {
 namespace ceres {
 
 /// @brief Simple interface class the errors implemented here should inherit from.
-class ErrorInterface {
- public:
+class ErrorInterface
+{
+public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+
   OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /// @brief Constructor
   ErrorInterface() {
   }
+
   /// @brief Destructor (does nothing).
   virtual ~ErrorInterface() {
   }
@@ -92,8 +97,8 @@ class ErrorInterface {
    * @return Success of the evaluation.
    */
   virtual bool EvaluateWithMinimalJacobians(
-      double const* const * parameters, double* residuals, double** jacobians,
-      double** jacobiansMinimal) const = 0;
+      double const *const *parameters, double *residuals, double **jacobians,
+      double **jacobiansMinimal) const = 0;
 
   /// @brief Residual block type as string
   virtual std::string typeInfo() const = 0;

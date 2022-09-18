@@ -49,17 +49,17 @@
 
 // Constructor.
 opengv::absolute_pose::FrameNoncentralAbsoluteAdapter::FrameNoncentralAbsoluteAdapter(
-    const okvis::Estimator & estimator,
-    const okvis::cameras::NCameraSystem & nCameraSystem,
+    const okvis::Estimator &estimator,
+    const okvis::cameras::NCameraSystem &nCameraSystem,
     std::shared_ptr<okvis::MultiFrame> frame) {
 
   size_t numCameras = nCameraSystem.numCameras();
 
   // find distortion type
-  okvis::cameras::NCameraSystem::DistortionType distortionType= nCameraSystem.distortionType(0);
+  okvis::cameras::NCameraSystem::DistortionType distortionType = nCameraSystem.distortionType(0);
   for (size_t i = 1; i < nCameraSystem.numCameras(); ++i) {
     OKVIS_ASSERT_TRUE(Exception, distortionType == nCameraSystem.distortionType(i),
-                            "mixed frame types are not supported yet");
+                      "mixed frame types are not supported yet");
   }
 
   for (size_t im = 0; im < numCameras; ++im) {
@@ -137,8 +137,7 @@ opengv::absolute_pose::FrameNoncentralAbsoluteAdapter::FrameNoncentralAbsoluteAd
           fu = frame->geometryAs<okvis::cameras::PinholeCamera<okvis::cameras::EquidistantDistortion> >(im)->focalLengthU();
           break;
         }
-        default:
-          OKVIS_THROW(Exception, "Unsupported distortion type")
+        default: OKVIS_THROW(Exception, "Unsupported distortion type")
           break;
       }
 

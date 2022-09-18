@@ -44,8 +44,7 @@ namespace okvis {
 namespace cameras {
 
 // Set the mask. It must be the same size as the image and
-bool CameraBase::setMask(const cv::Mat & mask)
-{
+bool CameraBase::setMask(const cv::Mat &mask) {
   // check type
   if (mask.type() != CV_8UC1) {
     return false;
@@ -62,26 +61,22 @@ bool CameraBase::setMask(const cv::Mat & mask)
 }
 
 /// Was a nonzero mask set?
-bool CameraBase::removeMask()
-{
+bool CameraBase::removeMask() {
   mask_.resize(0);
   return true;
 }
 
 // Was a nonzero mask set?
-bool CameraBase::hasMask() const
-{
+bool CameraBase::hasMask() const {
   return (mask_.data);
 }
 
 // Get the mask.
-const cv::Mat & CameraBase::mask() const
-{
+const cv::Mat &CameraBase::mask() const {
   return mask_;
 }
 
-bool CameraBase::isMasked(const Eigen::Vector2d& imagePoint) const
-{
+bool CameraBase::isMasked(const Eigen::Vector2d &imagePoint) const {
   if (!isInImage(imagePoint)) {
     return true;
   }
@@ -92,8 +87,7 @@ bool CameraBase::isMasked(const Eigen::Vector2d& imagePoint) const
 }
 
 // Check if the keypoint is in the image.
-bool CameraBase::isInImage(const Eigen::Vector2d& imagePoint) const
-{
+bool CameraBase::isInImage(const Eigen::Vector2d &imagePoint) const {
   if (imagePoint[0] < 0.0 || imagePoint[1] < 0.0) {
     return false;
   }

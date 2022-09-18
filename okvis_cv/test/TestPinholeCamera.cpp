@@ -40,8 +40,8 @@
 #include "okvis/cameras/RadialTangentialDistortion8.hpp"
 #include "okvis/cameras/EquidistantDistortion.hpp"
 
-TEST(PinholeCamera, functions)
-{
+
+TEST(PinholeCamera, functions) {
   const size_t NUM_POINTS = 100;
 
   // instantiate all possible versions of test cameras
@@ -77,7 +77,7 @@ TEST(PinholeCamera, functions)
       Eigen::Matrix2Xd J_intrinsics;
       EXPECT_TRUE(
           cameras.at(c)->project(ray, &imagePoint2, &J, &J_intrinsics)
-              == okvis::cameras::CameraBase::ProjectionStatus::Successful);
+          == okvis::cameras::CameraBase::ProjectionStatus::Successful);
 
       // check they are the same
       EXPECT_TRUE((imagePoint2 - imagePoint).norm() < 0.01);
@@ -87,11 +87,11 @@ TEST(PinholeCamera, functions)
       Eigen::Matrix<double, 2, 3> J_numDiff;
       for (size_t d = 0; d < 3; ++d) {
         Eigen::Vector3d point_p = ray
-            + Eigen::Vector3d(d == 0 ? dp : 0, d == 1 ? dp : 0,
-                              d == 2 ? dp : 0);
+                                  + Eigen::Vector3d(d == 0 ? dp : 0, d == 1 ? dp : 0,
+                                                    d == 2 ? dp : 0);
         Eigen::Vector3d point_m = ray
-            - Eigen::Vector3d(d == 0 ? dp : 0, d == 1 ? dp : 0,
-                              d == 2 ? dp : 0);
+                                  - Eigen::Vector3d(d == 0 ? dp : 0, d == 1 ? dp : 0,
+                                                    d == 2 ? dp : 0);
         Eigen::Vector2d imagePoint_p;
         Eigen::Vector2d imagePoint_m;
         cameras.at(c)->project(point_p, &imagePoint_p);
@@ -105,7 +105,7 @@ TEST(PinholeCamera, functions)
       Eigen::VectorXd intrinsics;
       cameras.at(c)->getIntrinsics(intrinsics);
       Eigen::Matrix2Xd J_numDiff_intrinsics;
-      J_numDiff_intrinsics.resize(2,numIntrinsics);
+      J_numDiff_intrinsics.resize(2, numIntrinsics);
       for (int d = 0; d < numIntrinsics; ++d) {
         Eigen::VectorXd di;
         di.resize(numIntrinsics);
@@ -113,8 +113,8 @@ TEST(PinholeCamera, functions)
         di[d] = dp;
         Eigen::Vector2d imagePoint_p;
         Eigen::Vector2d imagePoint_m;
-        Eigen::VectorXd intrinsics_p = intrinsics+di;
-        Eigen::VectorXd intrinsics_m = intrinsics-di;
+        Eigen::VectorXd intrinsics_p = intrinsics + di;
+        Eigen::VectorXd intrinsics_m = intrinsics - di;
         cameras.at(c)->projectWithExternalParameters(ray, intrinsics_p, &imagePoint_p);
         cameras.at(c)->projectWithExternalParameters(ray, intrinsics_m, &imagePoint_m);
         J_numDiff_intrinsics.col(d) = (imagePoint_p - imagePoint_m) / (2 * dp);

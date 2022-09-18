@@ -49,7 +49,7 @@ namespace okvis {
 /// \brief ceres Namespace for ceres-related functionality implemented in okvis.
 namespace ceres {
 
-inline void conservativeResize(Eigen::MatrixXd& matrixXd, int rows, int cols) {
+inline void conservativeResize(Eigen::MatrixXd &matrixXd, int rows, int cols) {
   Eigen::MatrixXd tmp(rows, cols);
   const int common_rows = std::min(rows, (int) matrixXd.rows());
   const int common_cols = std::min(cols, (int) matrixXd.cols());
@@ -58,13 +58,14 @@ inline void conservativeResize(Eigen::MatrixXd& matrixXd, int rows, int cols) {
   matrixXd.swap(tmp);
 }
 
-inline void conservativeResize(Eigen::VectorXd& vectorXd, int size) {
+inline void conservativeResize(Eigen::VectorXd &vectorXd, int size) {
   if (vectorXd.rows() == 1) {
     Eigen::VectorXd tmp(size);  //Eigen::VectorXd tmp = Eigen::VectorXd::Zero(size,Eigen::RowMajor);
     const int common_size = std::min((int) vectorXd.cols(), size);
     tmp.head(common_size) = vectorXd.head(common_size);
     vectorXd.swap(tmp);
-  } else {
+  }
+  else {
     Eigen::VectorXd tmp(size);  //Eigen::VectorXd tmp = Eigen::VectorXd::Zero(size);
     const int common_size = std::min((int) vectorXd.rows(), size);
     tmp.head(common_size) = vectorXd.head(common_size);
@@ -81,7 +82,7 @@ MarginalizationError::MarginalizationError() {
 }
 
 // Default constructor from okvis::ceres::Map.
-MarginalizationError::MarginalizationError(Map& map) {
+MarginalizationError::MarginalizationError(Map &map) {
   setMap(map);
   denseIndices_ = 0;
   residualBlockId_ = 0;
@@ -89,7 +90,7 @@ MarginalizationError::MarginalizationError(Map& map) {
 }
 
 MarginalizationError::MarginalizationError(
-    Map& map, std::vector< ::ceres::ResidualBlockId> & residualBlockIds) {
+    Map &map, std::vector<::ceres::ResidualBlockId> &residualBlockIds) {
   setMap(map);
   denseIndices_ = 0;
   residualBlockId_ = 0;
@@ -102,15 +103,15 @@ MarginalizationError::MarginalizationError(
 }
 
 // Set the underlying okvis::ceres::Map.
-void MarginalizationError::setMap(Map& map) {
+void MarginalizationError::setMap(Map &map) {
   mapPtr_ = &map;
   residualBlockId_ = 0;  // reset.
 }
 
 // Add some residuals to this marginalisation error. This means, they will get linearised.
 bool MarginalizationError::addResidualBlocks(
-    const std::vector< ::ceres::ResidualBlockId> & residualBlockIds,
-    const std::vector<bool> & keepResidualBlocks) {
+    const std::vector<::ceres::ResidualBlockId> &residualBlockIds,
+    const std::vector<bool> &keepResidualBlocks) {
   // add one block after the other
   for (size_t i = 0; i < residualBlockIds.size(); ++i) {
     bool keep = false;
@@ -131,7 +132,7 @@ bool MarginalizationError::addResidualBlock(
   std::shared_ptr<ErrorInterface> errorInterfacePtr =
       mapPtr_->errorInterfacePtr(residualBlockId);
   OKVIS_ASSERT_TRUE_DBG(Exception, errorInterfacePtr,
-      "residual block id does not exist.");
+                        "residual block id does not exist.");
   if (errorInterfacePtr == 0) {
     return false;
   }
@@ -151,7 +152,7 @@ bool MarginalizationError::addResidualBlock(
     std::map<uint64_t, size_t>::iterator it =
         parameterBlockId2parameterBlockInfoIdx_.find(parameterBlockSpec.first);
     if (it == parameterBlockId2parameterBlockInfoIdx_.end()) {  // not found. add it.
-        // let's see, if it is actually a landmark, because then it will go into the sparse part
+      // let's see, if it is actually a landmark, because then it will go into the sparse part
       bool isLandmark = false;
       if (std::dynamic_pointer_cast<HomogeneousPointParameterBlock>(
           parameterBlockSpec.second) != 0) {
@@ -167,9 +168,9 @@ bool MarginalizationError::addResidualBlock(
 
       if (denseIndices_ > 0)
         denseSize = parameterBlockInfos_.at(denseIndices_ - 1).orderingIdx
-            + parameterBlockInfos_.at(denseIndices_ - 1).minimalDimension;
+                    + parameterBlockInfos_.at(denseIndices_ - 1).minimalDimension;
 
-      if(additionalSize>0) {
+      if (additionalSize > 0) {
         if (!isLandmark) {
           // insert
           // lhs
@@ -194,7 +195,8 @@ bool MarginalizationError::addResidualBlock(
 
           b0_.tail(origSize - denseSize) = b1;
           b0_.segment(denseSize, additionalSize).setZero();
-        } else {
+        }
+        else {
           conservativeResize(H_, origSize + additionalSize,
                              origSize + additionalSize);  // lhs
           conservativeResize(b0_, origSize + additionalSize);  // rhs
@@ -230,13 +232,14 @@ bool MarginalizationError::addResidualBlock(
           parameterBlockId2parameterBlockInfoIdx_[parameterBlockInfos_.at(j)
               .parameterBlockPtr->id()] += 1;
         }
-      } else {
+      }
+      else {
         // just add at the end
         info = ParameterBlockInfo(
             parameterBlockSpec.first,
             parameterBlockSpec.second,
             parameterBlockInfos_.back().orderingIdx
-                + parameterBlockInfos_.back().minimalDimension,
+            + parameterBlockInfos_.back().minimalDimension,
             isLandmark);
         parameterBlockInfos_.push_back(info);
         parameterBlockId2parameterBlockInfoIdx_.insert(
@@ -249,7 +252,8 @@ bool MarginalizationError::addResidualBlock(
       assert(
           parameterBlockInfos_[parameterBlockId2parameterBlockInfoIdx_[parameterBlockSpec
               .first]].parameterBlockId == parameterBlockSpec.first);
-    } else {
+    }
+    else {
 
 #ifdef USE_NEW_LINEARIZATION_POINT
       // switch linearization point - easy to do on the linearized part...
@@ -271,18 +275,18 @@ bool MarginalizationError::addResidualBlock(
   // update base_t book-keeping on residuals
   base_t::set_num_residuals(H_.cols());
 
-  double** parametersRaw = new double*[parameters.size()];
+  double **parametersRaw = new double *[parameters.size()];
   Eigen::VectorXd residualsEigen(errorInterfacePtr->residualDim());
-  double* residualsRaw = residualsEigen.data();
+  double *residualsRaw = residualsEigen.data();
 
-  double** jacobiansRaw = new double*[parameters.size()];
+  double **jacobiansRaw = new double *[parameters.size()];
   std::vector<
       Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
       Eigen::aligned_allocator<
           Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > > jacobiansEigen(
       parameters.size());
 
-  double** jacobiansMinimalRaw = new double*[parameters.size()];
+  double **jacobiansMinimalRaw = new double *[parameters.size()];
   std::vector<
       Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
       Eigen::aligned_allocator<
@@ -291,7 +295,7 @@ bool MarginalizationError::addResidualBlock(
 
   for (size_t i = 0; i < parameters.size(); ++i) {
     OKVIS_ASSERT_TRUE_DBG(Exception, isParameterBlockConnected(parameters[i].first),
-        "okvis bug: no linearization point, since not connected.");
+                          "okvis bug: no linearization point, since not connected.");
     parametersRaw[i] =
         parameterBlockInfos_[parameterBlockId2parameterBlockInfoIdx_[parameters[i]
             .first]].linearizationPoint.get();  // first estimate Jacobian!!
@@ -312,7 +316,7 @@ bool MarginalizationError::addResidualBlock(
 
   // correct for loss function if applicable
 
-  ::ceres::LossFunction* lossFunction = mapPtr_
+  ::ceres::LossFunction *lossFunction = mapPtr_
       ->residualBlockId2ResidualBlockSpecMap().find(residualBlockId)->second
       .lossFunctionPtr;
   if (lossFunction) {
@@ -333,7 +337,8 @@ bool MarginalizationError::addResidualBlock(
       residual_scaling = sqrt_rho1;
       alpha_sq_norm = 0.0;
 
-    } else {
+    }
+    else {
       // Calculate the smaller of the two solutions to the equation
       //
       // 0.5 *  alpha^2 - alpha - rho'' / rho' *  z'z = 0.
@@ -355,9 +360,9 @@ bool MarginalizationError::addResidualBlock(
     // correct Jacobians (Equation 11 in BANS)
     for (size_t i = 0; i < parameters.size(); ++i) {
       jacobiansMinimalEigen[i] = sqrt_rho1
-          * (jacobiansMinimalEigen[i]
-              - alpha_sq_norm * residualsEigen
-                  * (residualsEigen.transpose() * jacobiansMinimalEigen[i]));
+                                 * (jacobiansMinimalEigen[i]
+                                    - alpha_sq_norm * residualsEigen
+                                      * (residualsEigen.transpose() * jacobiansMinimalEigen[i]));
     }
 
     // correct residuals (caution: must be after "correct Jacobians"):
@@ -379,7 +384,7 @@ bool MarginalizationError::addResidualBlock(
     if (parameterBlockInfo_i.minimalDimension == 0)
       continue;
 
-    OKVIS_ASSERT_TRUE_DBG(Exception,H_.allFinite(),"WTF1");
+    OKVIS_ASSERT_TRUE_DBG(Exception, H_.allFinite(), "WTF1");
 
     H_.block(parameterBlockInfo_i.orderingIdx, parameterBlockInfo_i.orderingIdx,
              parameterBlockInfo_i.minimalDimension,
@@ -387,10 +392,10 @@ bool MarginalizationError::addResidualBlock(
         i).transpose().eval() * jacobiansMinimalEigen.at(i);
     b0_.segment(parameterBlockInfo_i.orderingIdx,
                 parameterBlockInfo_i.minimalDimension) -= jacobiansMinimalEigen
-        .at(i).transpose().eval() * residualsEigen;
+                                                              .at(i).transpose().eval() * residualsEigen;
 
-    OKVIS_ASSERT_TRUE_DBG(Exception,H_.allFinite(),
-                      "WTF2 " <<jacobiansMinimalEigen.at(i).transpose().eval() * jacobiansMinimalEigen.at(i));
+    OKVIS_ASSERT_TRUE_DBG(Exception, H_.allFinite(),
+                          "WTF2 " << jacobiansMinimalEigen.at(i).transpose().eval() * jacobiansMinimalEigen.at(i));
 
     for (size_t j = 0; j < i; ++j) {
       ParameterBlockInfo parameterBlockInfo_j = parameterBlockInfos_.at(
@@ -409,13 +414,13 @@ bool MarginalizationError::addResidualBlock(
                parameterBlockInfo_j.orderingIdx,
                parameterBlockInfo_i.minimalDimension,
                parameterBlockInfo_j.minimalDimension) += jacobiansMinimalEigen
-          .at(i).transpose().eval() * jacobiansMinimalEigen.at(j);
+                                                             .at(i).transpose().eval() * jacobiansMinimalEigen.at(j);
       // lower triangular:
       H_.block(parameterBlockInfo_j.orderingIdx,
                parameterBlockInfo_i.orderingIdx,
                parameterBlockInfo_j.minimalDimension,
                parameterBlockInfo_i.minimalDimension) += jacobiansMinimalEigen
-          .at(j).transpose().eval() * jacobiansMinimalEigen.at(i);
+                                                             .at(j).transpose().eval() * jacobiansMinimalEigen.at(i);
     }
   }
 
@@ -438,7 +443,7 @@ bool MarginalizationError::addResidualBlock(
 bool MarginalizationError::isParameterBlockConnected(
     uint64_t parameterBlockId) {
   OKVIS_ASSERT_TRUE_DBG(Exception, mapPtr_->parameterBlockExists(parameterBlockId),
-      "this parameter block does not even exist in the map...");
+                        "this parameter block does not even exist in the map...");
   std::map<uint64_t, size_t>::iterator it =
       parameterBlockId2parameterBlockInfoIdx_.find(parameterBlockId);
   if (it == parameterBlockId2parameterBlockInfoIdx_.end())
@@ -452,33 +457,41 @@ void MarginalizationError::check() {
 // check basic sizes
   OKVIS_ASSERT_TRUE_DBG(
       Exception,
-      base_t::parameter_block_sizes().size()==parameterBlockInfos_.size(),
-      "check failed"); OKVIS_ASSERT_TRUE_DBG(
-      Exception,
-      parameterBlockId2parameterBlockInfoIdx_.size()==parameterBlockInfos_.size(),
-      "check failed"); OKVIS_ASSERT_TRUE_DBG(Exception, base_t::num_residuals()==H_.cols(), "check failed"); OKVIS_ASSERT_TRUE_DBG(Exception, base_t::num_residuals()==H_.rows(), "check failed"); OKVIS_ASSERT_TRUE_DBG(Exception, base_t::num_residuals()==b0_.rows(),
-      "check failed"); OKVIS_ASSERT_TRUE_DBG(Exception, parameterBlockInfos_.size()>=denseIndices_,
+      base_t::parameter_block_sizes().size() == parameterBlockInfos_.size(),
       "check failed");
+  OKVIS_ASSERT_TRUE_DBG(
+      Exception,
+      parameterBlockId2parameterBlockInfoIdx_.size() == parameterBlockInfos_.size(),
+      "check failed");
+  OKVIS_ASSERT_TRUE_DBG(Exception, base_t::num_residuals() == H_.cols(), "check failed");
+  OKVIS_ASSERT_TRUE_DBG(Exception, base_t::num_residuals() == H_.rows(), "check failed");
+  OKVIS_ASSERT_TRUE_DBG(Exception, base_t::num_residuals() == b0_.rows(),
+                        "check failed");
+  OKVIS_ASSERT_TRUE_DBG(Exception, parameterBlockInfos_.size() >= denseIndices_,
+                        "check failed");
   int totalsize = 0;
   // check parameter block sizes
   for (size_t i = 0; i < parameterBlockInfos_.size(); ++i) {
     totalsize += parameterBlockInfos_[i].minimalDimension;
     OKVIS_ASSERT_TRUE_DBG(
         Exception,
-        parameterBlockInfos_[i].dimension==size_t(base_t::parameter_block_sizes()[i]),
-        "check failed"); OKVIS_ASSERT_TRUE_DBG(
+        parameterBlockInfos_[i].dimension == size_t(base_t::parameter_block_sizes()[i]),
+        "check failed");
+    OKVIS_ASSERT_TRUE_DBG(
         Exception,
         mapPtr_->parameterBlockExists(parameterBlockInfos_[i].parameterBlockId),
-        "check failed"); OKVIS_ASSERT_TRUE_DBG(
+        "check failed");
+    OKVIS_ASSERT_TRUE_DBG(
         Exception,
-        parameterBlockId2parameterBlockInfoIdx_[parameterBlockInfos_[i].parameterBlockId]==i,
+        parameterBlockId2parameterBlockInfoIdx_[parameterBlockInfos_[i].parameterBlockId] == i,
         "check failed");
     if (i < denseIndices_) {
       OKVIS_ASSERT_TRUE_DBG(Exception, !parameterBlockInfos_[i].isLandmark,
-          "check failed");
-    } else {
+                            "check failed");
+    }
+    else {
       OKVIS_ASSERT_TRUE_DBG(Exception, parameterBlockInfos_[i].isLandmark,
-                        "check failed");
+                            "check failed");
     }
 
   }
@@ -486,18 +499,19 @@ void MarginalizationError::check() {
   for (size_t i = 1; i < parameterBlockInfos_.size(); ++i) {
     OKVIS_ASSERT_TRUE_DBG(
         Exception,
-        parameterBlockInfos_[i-1].orderingIdx+parameterBlockInfos_[i-1].minimalDimension==parameterBlockInfos_[i].orderingIdx,
-        "check failed "<<parameterBlockInfos_[i-1].orderingIdx<<"+"<<parameterBlockInfos_[i-1].minimalDimension<<"=="<<parameterBlockInfos_[i].orderingIdx);
+        parameterBlockInfos_[i - 1].orderingIdx + parameterBlockInfos_[i - 1].minimalDimension == parameterBlockInfos_[i].orderingIdx,
+        "check failed " << parameterBlockInfos_[i - 1].orderingIdx << "+" << parameterBlockInfos_[i - 1].minimalDimension << "=="
+                        << parameterBlockInfos_[i].orderingIdx);
   }
 // check dimension again
-  OKVIS_ASSERT_TRUE_DBG(Exception, base_t::num_residuals()==totalsize, "check failed");
+  OKVIS_ASSERT_TRUE_DBG(Exception, base_t::num_residuals() == totalsize, "check failed");
 }
 
 // Call this in order to (re-)add this error term after whenever it had been modified.
 void MarginalizationError::getParameterBlockPtrs(
-    std::vector<std::shared_ptr<okvis::ceres::ParameterBlock> >& parameterBlockPtrs) {
+    std::vector<std::shared_ptr<okvis::ceres::ParameterBlock> > &parameterBlockPtrs) {
 //OKVIS_ASSERT_TRUE_DBG(Exception,_errorComputationValid,"Call updateErrorComputation() before addToMap!");
-  OKVIS_ASSERT_TRUE_DBG(Exception, mapPtr_!=0, "no Map object passed ever!");
+  OKVIS_ASSERT_TRUE_DBG(Exception, mapPtr_ != 0, "no Map object passed ever!");
   for (size_t i = 0; i < parameterBlockInfos_.size(); ++i) {
     parameterBlockPtrs.push_back(parameterBlockInfos_[i].parameterBlockPtr);
   }
@@ -505,8 +519,8 @@ void MarginalizationError::getParameterBlockPtrs(
 
 // Marginalise out a set of parameter blocks.
 bool MarginalizationError::marginalizeOut(
-    const std::vector<uint64_t>& parameterBlockIds,
-    const std::vector<bool> & keepParameterBlocks) {
+    const std::vector<uint64_t> &parameterBlockIds,
+    const std::vector<bool> &keepParameterBlocks) {
   if (parameterBlockIds.size() == 0) {
     return false;
   }
@@ -517,8 +531,9 @@ bool MarginalizationError::marginalizeOut(
     OKVIS_ASSERT_TRUE_DBG(
         Exception,
         keepParameterBlocks.size() == 0,
-        "input vectors must either be of same size or omit optional parameter keepParameterBlocks: "<<
-        parameterBlockIds.size()<<" vs "<<keepParameterBlocks.size());
+        "input vectors must either be of same size or omit optional parameter keepParameterBlocks: " <<
+                                                                                                     parameterBlockIds.size() << " vs "
+                                                                                                     << keepParameterBlocks.size());
   }
   std::map<uint64_t, bool> keepParameterBlocksCopy;
   for (size_t i = 0; i < parameterBlockIdsCopy.size(); ++i) {
@@ -552,7 +567,7 @@ bool MarginalizationError::marginalizeOut(
     OKVIS_ASSERT_TRUE(
         Exception,
         it != parameterBlockId2parameterBlockInfoIdx_.end(),
-        "trying to marginalize out unconnected parameter block id = "<<parameterBlockIdsCopy[i])
+        "trying to marginalize out unconnected parameter block id = " << parameterBlockIdsCopy[i])
     if (it == parameterBlockId2parameterBlockInfoIdx_.end())
       return false;
 
@@ -563,7 +578,8 @@ bool MarginalizationError::marginalizeOut(
       marginalizationStartIdxAndLengthPairslandmarks.push_back(
           std::pair<int, int>(startIdx, minDim));
       marginalizationParametersLandmarks += minDim;
-    } else {
+    }
+    else {
       marginalizationStartIdxAndLengthPairsDense.push_back(
           std::pair<int, int>(startIdx, minDim));
       marginalizationParametersDense += minDim;
@@ -573,18 +589,18 @@ bool MarginalizationError::marginalizeOut(
   // make sure the marginalization pairs are ordered
   std::sort(marginalizationStartIdxAndLengthPairslandmarks.begin(),
             marginalizationStartIdxAndLengthPairslandmarks.end(),
-            [](std::pair<int,int> left, std::pair<int,int> right) {
+            [](std::pair<int, int> left, std::pair<int, int> right) {
               return left.first < right.first;
             });
   std::sort(marginalizationStartIdxAndLengthPairsDense.begin(),
             marginalizationStartIdxAndLengthPairsDense.end(),
-            [](std::pair<int,int> left, std::pair<int,int> right) {
+            [](std::pair<int, int> left, std::pair<int, int> right) {
               return left.first < right.first;
             });
 
   // unify contiguous marginalization requests
   for (size_t m = 1; m < marginalizationStartIdxAndLengthPairslandmarks.size();
-      ++m) {
+       ++m) {
     if (marginalizationStartIdxAndLengthPairslandmarks.at(m - 1).first
         + marginalizationStartIdxAndLengthPairslandmarks.at(m - 1).second
         == marginalizationStartIdxAndLengthPairslandmarks.at(m).first) {
@@ -596,7 +612,7 @@ bool MarginalizationError::marginalizeOut(
     }
   }
   for (size_t m = 1; m < marginalizationStartIdxAndLengthPairsDense.size();
-      ++m) {
+       ++m) {
     if (marginalizationStartIdxAndLengthPairsDense.at(m - 1).first
         + marginalizationStartIdxAndLengthPairsDense.at(m - 1).second
         == marginalizationStartIdxAndLengthPairsDense.at(m).first) {
@@ -617,7 +633,7 @@ bool MarginalizationError::marginalizeOut(
   if (marginalizationStartIdxAndLengthPairslandmarks.size() > 0) {
 
     // preconditioner
-    Eigen::VectorXd p = (H_.diagonal().array() > 1.0e-9).select(H_.diagonal().cwiseSqrt(),1.0e-3);
+    Eigen::VectorXd p = (H_.diagonal().array() > 1.0e-9).select(H_.diagonal().cwiseSqrt(), 1.0e-3);
     Eigen::VectorXd p_inv = p.cwiseInverse();
 
     // scale H and b
@@ -666,14 +682,15 @@ bool MarginalizationError::marginalizeOut(
       MarginalizationError::pseudoInverseSymmSqrt(V1, V_inv_sqrt);
       Eigen::MatrixXd M = W.block(0, i, W.rows(), sdim) * V_inv_sqrt;
       Eigen::MatrixXd M1 = W.block(0, i, W.rows(), sdim) * V_inv_sqrt
-          * V_inv_sqrt.transpose();
+                           * V_inv_sqrt.transpose();
       // accumulate
       delta_H.at(idx).resize(U.rows(), U.cols());
       delta_b.at(idx).resize(b_a.rows());
       if (i == 0) {
         delta_H.at(idx) = M * M.transpose();
         delta_b.at(idx) = M1 * b_b.segment<sdim>(i);
-      } else {
+      }
+      else {
         delta_H.at(idx) = delta_H.at(idx - 1) + M * M.transpose();
         delta_b.at(idx) = delta_b.at(idx - 1) + M1 * b_b.segment<sdim>(i);
       }
@@ -692,7 +709,7 @@ bool MarginalizationError::marginalizeOut(
   if (marginalizationStartIdxAndLengthPairsDense.size() > 0) {
 
     // preconditioner
-    Eigen::VectorXd p = (H_.diagonal().array() > 1.0e-9).select(H_.diagonal().cwiseSqrt(),1.0e-3);
+    Eigen::VectorXd p = (H_.diagonal().array() > 1.0e-9).select(H_.diagonal().cwiseSqrt(), 1.0e-3);
     Eigen::VectorXd p_inv = p.cwiseInverse();
 
     // scale H and b
@@ -743,7 +760,7 @@ bool MarginalizationError::marginalizeOut(
   // also adapt the ceres-internal size information
   base_t::set_num_residuals(
       base_t::num_residuals() - marginalizationParametersDense
-          - marginalizationParametersLandmarks);
+      - marginalizationParametersLandmarks);
 
   /* delete all the book-keeping */
   for (size_t i = 0; i < parameterBlockIdsCopy.size(); ++i) {
@@ -784,14 +801,15 @@ bool MarginalizationError::marginalizeOut(
       mapPtr_->printParameterBlockInfo(parameterBlockIdsCopy[i]);
     OKVIS_ASSERT_TRUE_DBG(
         Exception,
-        residuals.size()==0 || keepParameterBlocksCopy.at(parameterBlockIdsCopy[i]) == true,
+        residuals.size() == 0 || keepParameterBlocksCopy.at(parameterBlockIdsCopy[i]) == true,
         "trying to marginalize out a parameterBlock that is still connected to other error terms."
-        <<" keep = "<<int(keepParameterBlocksCopy.at(parameterBlockIdsCopy[i])));
+            << " keep = " << int(keepParameterBlocksCopy.at(parameterBlockIdsCopy[i])));
   }
   for (size_t i = 0; i < parameterBlockIdsCopy.size(); ++i) {
     if (keepParameterBlocksCopy.at(parameterBlockIdsCopy[i])) {
-      OKVIS_THROW(Exception,"unmarginalizeLandmark(parameterBlockIdsCopy[i]) not implemented.")
-    } else {
+      OKVIS_THROW(Exception, "unmarginalizeLandmark(parameterBlockIdsCopy[i]) not implemented.")
+    }
+    else {
       mapPtr_->removeParameterBlock(parameterBlockIdsCopy[i]);
     }
   }
@@ -811,16 +829,16 @@ void MarginalizationError::updateErrorComputation() {
   base_t::set_num_residuals(H_.cols());
 
   // preconditioner
-  Eigen::VectorXd p = (H_.diagonal().array() > 1.0e-9).select(H_.diagonal().cwiseSqrt(),1.0e-3);
+  Eigen::VectorXd p = (H_.diagonal().array() > 1.0e-9).select(H_.diagonal().cwiseSqrt(), 1.0e-3);
   Eigen::VectorXd p_inv = p.cwiseInverse();
 
   // lhs SVD: _H = J^T*J = _U*S*_U^T
   Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> saes(
-      0.5  * p_inv.asDiagonal() * (H_ + H_.transpose())  * p_inv.asDiagonal() );
+      0.5 * p_inv.asDiagonal() * (H_ + H_.transpose()) * p_inv.asDiagonal());
 
   static const double epsilon = std::numeric_limits<double>::epsilon();
   double tolerance = epsilon * H_.cols()
-      * saes.eigenvalues().array().maxCoeff();
+                     * saes.eigenvalues().array().maxCoeff();
   S_ = Eigen::VectorXd(
       (saes.eigenvalues().array() > tolerance).select(
           saes.eigenvalues().array(), 0));
@@ -836,7 +854,7 @@ void MarginalizationError::updateErrorComputation() {
 
   // constant error (residual) _e0 := (-pinv(J^T) * _b):
   Eigen::MatrixXd J_pinv_T = (S_pinv_sqrt_.asDiagonal())
-      * saes.eigenvectors().transpose()  *p_inv.asDiagonal() ;
+                             * saes.eigenvectors().transpose() * p_inv.asDiagonal();
   e0_ = (-J_pinv_T * b0_);
 
   // reconstruct. TODO: check if this really improves quality --- doesn't seem so...
@@ -846,7 +864,7 @@ void MarginalizationError::updateErrorComputation() {
 }
 
 // Computes the linearized deviation from the references (linearization points)
-bool MarginalizationError::computeDeltaChi(Eigen::VectorXd& DeltaChi) const {
+bool MarginalizationError::computeDeltaChi(Eigen::VectorXd &DeltaChi) const {
   DeltaChi.resize(H_.rows());
   for (size_t i = 0; i < parameterBlockInfos_.size(); ++i) {
     // stack Delta_Chi vector
@@ -858,14 +876,14 @@ bool MarginalizationError::computeDeltaChi(Eigen::VectorXd& DeltaChi) const {
           Delta_Chi_i.data());
       DeltaChi.segment(parameterBlockInfos_[i].orderingIdx,
                        parameterBlockInfos_[i].minimalDimension) = Delta_Chi_i;
-			}
+    }
   }
   return true;
 }
 
 // Computes the linearized deviation from the references (linearization points)
-bool MarginalizationError::computeDeltaChi(double const* const * parameters,
-                                           Eigen::VectorXd& DeltaChi) const {
+bool MarginalizationError::computeDeltaChi(double const *const *parameters,
+                                           Eigen::VectorXd &DeltaChi) const {
   DeltaChi.resize(H_.rows());
   for (size_t i = 0; i < parameterBlockInfos_.size(); ++i) {
     // stack Delta_Chi vector
@@ -876,23 +894,23 @@ bool MarginalizationError::computeDeltaChi(double const* const * parameters,
           Delta_Chi_i.data());
       DeltaChi.segment(parameterBlockInfos_[i].orderingIdx,
                        parameterBlockInfos_[i].minimalDimension) = Delta_Chi_i;
-			}
+    }
   }
   return true;
 }
 
 //This evaluates the error term and additionally computes the Jacobians.
-bool MarginalizationError::Evaluate(double const* const * parameters,
-                                    double* residuals,
-                                    double** jacobians) const {
+bool MarginalizationError::Evaluate(double const *const *parameters,
+                                    double *residuals,
+                                    double **jacobians) const {
   return EvaluateWithMinimalJacobians(parameters, residuals, jacobians, NULL);
 }
 
 // This evaluates the error term and additionally computes
 // the Jacobians in the minimal internal representation.
 bool MarginalizationError::EvaluateWithMinimalJacobians(
-    double const* const * parameters, double* residuals, double** jacobians,
-    double** jacobiansMinimal) const {
+    double const *const *parameters, double *residuals, double **jacobians,
+    double **jacobiansMinimal) const {
   OKVIS_ASSERT_TRUE_DBG(
       Exception,
       errorComputationValid_,

@@ -43,57 +43,49 @@ namespace okvis {
 
 // a constructor that uses the specified geometry,
 /// detector and extractor
-Frame::Frame(const cv::Mat & image,
-             std::shared_ptr<cameras::CameraBase> & cameraGeometry,
-             std::shared_ptr<cv::FeatureDetector> & detector,
-             std::shared_ptr<cv::DescriptorExtractor> & extractor)
+Frame::Frame(const cv::Mat &image,
+             std::shared_ptr<cameras::CameraBase> &cameraGeometry,
+             std::shared_ptr<cv::FeatureDetector> &detector,
+             std::shared_ptr<cv::DescriptorExtractor> &extractor)
     : image_(image),
       cameraGeometry_(cameraGeometry),
       detector_(detector),
-      extractor_(extractor)
-{
+      extractor_(extractor) {
 }
 
 // set the frame image;
-void Frame::setImage(const cv::Mat & image)
-{
+void Frame::setImage(const cv::Mat &image) {
   image_ = image;
 }
 
 // set the geometry
-void Frame::setGeometry(std::shared_ptr<const cameras::CameraBase> cameraGeometry)
-{
+void Frame::setGeometry(std::shared_ptr<const cameras::CameraBase> cameraGeometry) {
   cameraGeometry_ = cameraGeometry;
 }
 
 // set the detector
-void Frame::setDetector(std::shared_ptr<cv::FeatureDetector> detector)
-{
+void Frame::setDetector(std::shared_ptr<cv::FeatureDetector> detector) {
   detector_ = detector;
 }
 
 // set the extractor
-void Frame::setExtractor(std::shared_ptr<cv::DescriptorExtractor> extractor)
-{
+void Frame::setExtractor(std::shared_ptr<cv::DescriptorExtractor> extractor) {
   extractor_ = extractor;
 }
 
 // obtain the image
-const cv::Mat & Frame::image() const
-{
+const cv::Mat &Frame::image() const {
   return image_;
 }
 
 // get the base class geometry (will be slow to use)
-std::shared_ptr<const cameras::CameraBase> Frame::geometry() const
-{
+std::shared_ptr<const cameras::CameraBase> Frame::geometry() const {
   return cameraGeometry_;
 }
 
 // get the specific geometry (will be fast to use)
 template<class GEOMETRY_T>
-std::shared_ptr<const GEOMETRY_T> Frame::geometryAs() const
-{
+std::shared_ptr<const GEOMETRY_T> Frame::geometryAs() const {
 #ifndef NDEBUG
   OKVIS_ASSERT_TRUE(
       Exception, std::dynamic_pointer_cast<const GEOMETRY_T>(cameraGeometry_),
@@ -107,8 +99,7 @@ std::shared_ptr<const GEOMETRY_T> Frame::geometryAs() const
 // detect keypoints. This uses virtual function calls.
 ///        That's a negligibly small overhead for many detections.
 ///        returns the number of detected points.
-int Frame::detect()
-{
+int Frame::detect() {
   // make sure things are set to zero for safety
   keypoints_.clear();
   descriptors_.resize(0);
@@ -125,8 +116,7 @@ int Frame::detect()
 ///        That's a negligibly small overhead for many detections.
 ///        \param extractionDirection the extraction direction in camera frame
 ///        returns the number of detected points.
-int Frame::describe(const Eigen::Vector3d & extractionDirection)
-{
+int Frame::describe(const Eigen::Vector3d &extractionDirection) {
   // check initialisation
   OKVIS_ASSERT_TRUE_DBG(Exception, extractor_ != NULL,
                         "Detector not initialised!");
@@ -137,7 +127,7 @@ int Frame::describe(const Eigen::Vector3d & extractionDirection)
   Eigen::Matrix<double, 2, 3> Jacobian;
   Eigen::Vector2d eg_projected;
   for (size_t k = 0; k < keypoints_.size(); ++k) {
-    cv::KeyPoint& ckp = keypoints_[k];
+    cv::KeyPoint &ckp = keypoints_[k];
     // project ray
     cameraGeometry_->backProject(Eigen::Vector2d(ckp.pt.x, ckp.pt.y), &ep);
     // obtain image Jacobian
@@ -151,16 +141,16 @@ int Frame::describe(const Eigen::Vector3d & extractionDirection)
 
   // extraction
   extractor_->compute(image_, keypoints_, descriptors_);
-  landmarkIds_ = std::vector<uint64_t>(keypoints_.size(),0);
+  landmarkIds_ = std::vector<uint64_t>(keypoints_.size(), 0);
   return keypoints_.size();
 }
+
 // describe keypoints. This uses virtual function calls.
 ///        That's a negligibly small overhead for many detections.
 ///        \param extractionDirection the extraction direction in camera frame
 ///        returns the number of detected points.
 template<class GEOMETRY_T>
-int Frame::describeAs(const Eigen::Vector3d & extractionDirection)
-{
+int Frame::describeAs(const Eigen::Vector3d &extractionDirection) {
   // check initialisation
   OKVIS_ASSERT_TRUE_DBG(Exception, extractor_ != NULL,
                         "Detector not initialised!");
@@ -171,7 +161,7 @@ int Frame::describeAs(const Eigen::Vector3d & extractionDirection)
   Eigen::Matrix<double, 2, 3> Jacobian;
   Eigen::Vector2d eg_projected;
   for (size_t k = 0; k < keypoints_.size(); ++k) {
-    cv::KeyPoint& ckp = keypoints_[k];
+    cv::KeyPoint &ckp = keypoints_[k];
     // project ray
     geometryAs<GEOMETRY_T>()->backProject(Eigen::Vector2d(ckp.pt.x, ckp.pt.y),
                                           &ep);
@@ -190,14 +180,13 @@ int Frame::describeAs(const Eigen::Vector3d & extractionDirection)
 }
 
 // access a specific keypoint in OpenCV format
-bool Frame::getCvKeypoint(size_t keypointIdx, cv::KeyPoint & keypoint) const
-{
+bool Frame::getCvKeypoint(size_t keypointIdx, cv::KeyPoint &keypoint) const {
 #ifndef NDEBUG
   OKVIS_ASSERT_TRUE(
       Exception,
       keypointIdx < keypoints_.size(),
       "keypointIdx " << keypointIdx << "out of range: keypoints has size "
-          << keypoints_.size());
+                     << keypoints_.size());
   keypoint = keypoints_[keypointIdx];
   return keypointIdx < keypoints_.size();
 #else
@@ -207,14 +196,13 @@ bool Frame::getCvKeypoint(size_t keypointIdx, cv::KeyPoint & keypoint) const
 }
 
 // get a specific keypoint
-bool Frame::getKeypoint(size_t keypointIdx, Eigen::Vector2d & keypoint) const
-{
+bool Frame::getKeypoint(size_t keypointIdx, Eigen::Vector2d &keypoint) const {
 #ifndef NDEBUG
   OKVIS_ASSERT_TRUE(
       Exception,
       keypointIdx < keypoints_.size(),
       "keypointIdx " << keypointIdx << "out of range: keypoints has size "
-          << keypoints_.size());
+                     << keypoints_.size());
   keypoint = Eigen::Vector2d(keypoints_[keypointIdx].pt.x,
                              keypoints_[keypointIdx].pt.y);
   return keypointIdx < keypoints_.size();
@@ -225,14 +213,13 @@ bool Frame::getKeypoint(size_t keypointIdx, Eigen::Vector2d & keypoint) const
 }
 
 // get the size of a specific keypoint
-bool Frame::getKeypointSize(size_t keypointIdx, double & keypointSize) const
-{
+bool Frame::getKeypointSize(size_t keypointIdx, double &keypointSize) const {
 #ifndef NDEBUG
   OKVIS_ASSERT_TRUE(
       Exception,
       keypointIdx < keypoints_.size(),
       "keypointIdx " << keypointIdx << "out of range: keypoints has size "
-          << keypoints_.size());
+                     << keypoints_.size());
   keypointSize = keypoints_[keypointIdx].size;
   return keypointIdx < keypoints_.size();
 #else
@@ -243,14 +230,13 @@ bool Frame::getKeypointSize(size_t keypointIdx, double & keypointSize) const
 
 // access the descriptor -- CAUTION: high-speed version.
 ///        returns NULL if out of bounds.
-const unsigned char * Frame::keypointDescriptor(size_t keypointIdx)
-{
+const unsigned char *Frame::keypointDescriptor(size_t keypointIdx) {
 #ifndef NDEBUG
   OKVIS_ASSERT_TRUE(
       Exception,
       keypointIdx < keypoints_.size(),
       "keypointIdx " << keypointIdx << "out of range: keypoints has size "
-          << keypoints_.size());
+                     << keypoints_.size());
   return descriptors_.data + descriptors_.cols * keypointIdx;
 #else
   return descriptors_.data + descriptors_.cols * keypointIdx;
@@ -258,14 +244,13 @@ const unsigned char * Frame::keypointDescriptor(size_t keypointIdx)
 }
 
 // Set the landmark ID
-bool Frame::setLandmarkId(size_t keypointIdx, uint64_t landmarkId)
-{
+bool Frame::setLandmarkId(size_t keypointIdx, uint64_t landmarkId) {
 #ifndef NDEBUG
   OKVIS_ASSERT_TRUE(
       Exception,
       keypointIdx < landmarkIds_.size(),
       "keypointIdx " << keypointIdx << "out of range: landmarkIds_ has size "
-          << landmarkIds_.size());
+                     << landmarkIds_.size());
   landmarkIds_[keypointIdx] = landmarkId;
   return keypointIdx < keypoints_.size();
 #else
@@ -275,14 +260,13 @@ bool Frame::setLandmarkId(size_t keypointIdx, uint64_t landmarkId)
 }
 
 // Access the landmark ID
-uint64_t Frame::landmarkId(size_t keypointIdx) const
-{
+uint64_t Frame::landmarkId(size_t keypointIdx) const {
 #ifndef NDEBUG
   OKVIS_ASSERT_TRUE(
       Exception,
       keypointIdx < landmarkIds_.size(),
       "keypointIdx " << keypointIdx << "out of range: landmarkIds has size "
-          << landmarkIds_.size());
+                     << landmarkIds_.size());
   return landmarkIds_[keypointIdx];
 #else
   return landmarkIds_[keypointIdx];
@@ -290,14 +274,14 @@ uint64_t Frame::landmarkId(size_t keypointIdx) const
 }
 
 // provide keypoints externally
-inline bool Frame::resetKeypoints(const std::vector<cv::KeyPoint> & keypoints) {
+inline bool Frame::resetKeypoints(const std::vector<cv::KeyPoint> &keypoints) {
   keypoints_ = keypoints;
-  landmarkIds_ =  std::vector<uint64_t>(keypoints_.size(),0);
+  landmarkIds_ = std::vector<uint64_t>(keypoints_.size(), 0);
   return true;
 }
 
 // provide descriptors externally
-inline bool Frame::resetDescriptors(const cv::Mat & descriptors) {
+inline bool Frame::resetDescriptors(const cv::Mat &descriptors) {
   descriptors_ = descriptors;
   return true;
 }

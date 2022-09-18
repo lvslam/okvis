@@ -57,14 +57,18 @@ namespace opengv {
 namespace relative_pose {
 
 /// \brief Adapter for relative pose RANSAC (2D2D)
-class FrameRelativeAdapter : public RelativeAdapterBase {
- private:
+class FrameRelativeAdapter : public RelativeAdapterBase
+{
+private:
   using RelativeAdapterBase::_t12;
   using RelativeAdapterBase::_R12;
 
- public:
+public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+
   OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /**
    * @brief Constructor
@@ -77,8 +81,8 @@ class FrameRelativeAdapter : public RelativeAdapterBase {
    * @param camIdB        The camera index for the second multiframe.
    *                      in order to access the relevant frame.
    */
-  FrameRelativeAdapter(const okvis::Estimator & estimator,
-                       const okvis::cameras::NCameraSystem & nCameraSystem,
+  FrameRelativeAdapter(const okvis::Estimator &estimator,
+                       const okvis::cameras::NCameraSystem &nCameraSystem,
                        uint64_t multiFrameIdA, size_t camIdA,
                        uint64_t multiFrameIdB, size_t camIdB);
 
@@ -153,6 +157,7 @@ class FrameRelativeAdapter : public RelativeAdapterBase {
    * @return The standard deviation in [rad].
    */
   double getSigmaAngle2(size_t index);
+
   /**
    * @brief Get the keypoint index in frame 1 of a correspondence.
    * @param index The serialized index of the correspondence.
@@ -161,6 +166,7 @@ class FrameRelativeAdapter : public RelativeAdapterBase {
   size_t getMatchKeypointIdxA(size_t index) {
     return matches_.at(index).idxA;
   }
+
   /**
    * @brief Get the keypoint index in frame 2 of a correspondence.
    * @param index The serialized index of the correspondence.
@@ -169,6 +175,7 @@ class FrameRelativeAdapter : public RelativeAdapterBase {
   size_t getMatchKeypointIdxB(size_t index) {
     return matches_.at(index).idxB;
   }
+
   /**
    * \brief Retrieve the weight of a correspondence. The weight is supposed to
    *        reflect the quality of a correspondence, and typically is between
@@ -179,7 +186,7 @@ class FrameRelativeAdapter : public RelativeAdapterBase {
     return 1.0;
   }  // TODO : figure out, if this is needed
 
- private:
+private:
   /// The bearing vectors of the correspondences in frame 1.
   opengv::bearingVectors_t bearingVectors1_;
   /// The bearing vectors of the correspondences in frame 2.

@@ -41,10 +41,14 @@
 
 #include <opengv/types.hpp>
 #include <opengv/absolute_pose/methods.hpp>
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+
 #include <opengv/sac_problems/absolute_pose/AbsolutePoseSacProblem.hpp>
+
 #pragma GCC diagnostic pop
+
 #include <opengv/absolute_pose/FrameNoncentralAbsoluteAdapter.hpp>
 #include <okvis/assert_macros.hpp>
 
@@ -67,9 +71,11 @@ namespace absolute_pose {
  *        and non-central ones). Used in a sample-consenus paradigm for rejecting
  *        outlier correspondences.
  */
-class FrameAbsolutePoseSacProblem : public AbsolutePoseSacProblem {
- public:
-  OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
+class FrameAbsolutePoseSacProblem : public AbsolutePoseSacProblem
+{
+public:
+  OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   typedef AbsolutePoseSacProblem base_t;
 
@@ -86,13 +92,13 @@ class FrameAbsolutePoseSacProblem : public AbsolutePoseSacProblem {
    * @param[in] algorithm The algorithm we want to use.
    * @warning Only okvis::absolute_pose::FrameNoncentralAbsoluteAdapter supported.
    */
-  FrameAbsolutePoseSacProblem(adapter_t & adapter, algorithm_t algorithm)
+  FrameAbsolutePoseSacProblem(adapter_t &adapter, algorithm_t algorithm)
       : base_t(adapter, algorithm),
         adapterDerived_(
-            *static_cast<opengv::absolute_pose::FrameNoncentralAbsoluteAdapter*>(&_adapter)) {
+            *static_cast<opengv::absolute_pose::FrameNoncentralAbsoluteAdapter *>(&_adapter)) {
     OKVIS_ASSERT_TRUE(
         Exception,
-        dynamic_cast<opengv::absolute_pose::FrameNoncentralAbsoluteAdapter*>(&_adapter),
+        dynamic_cast<opengv::absolute_pose::FrameNoncentralAbsoluteAdapter *>(&_adapter),
         "only opengv::absolute_pose::FrameNoncentralAbsoluteAdapter supported");
   }
 
@@ -104,14 +110,14 @@ class FrameAbsolutePoseSacProblem : public AbsolutePoseSacProblem {
    *                    correspondences.
    * @warning Only okvis::absolute_pose::FrameNoncentralAbsoluteAdapter supported.
    */
-  FrameAbsolutePoseSacProblem(adapter_t & adapter, algorithm_t algorithm,
-                              const std::vector<int> & indices)
+  FrameAbsolutePoseSacProblem(adapter_t &adapter, algorithm_t algorithm,
+                              const std::vector<int> &indices)
       : base_t(adapter, algorithm, indices),
         adapterDerived_(
-            *static_cast<opengv::absolute_pose::FrameNoncentralAbsoluteAdapter*>(&_adapter)) {
+            *static_cast<opengv::absolute_pose::FrameNoncentralAbsoluteAdapter *>(&_adapter)) {
     OKVIS_ASSERT_TRUE(
         Exception,
-        dynamic_cast<opengv::absolute_pose::FrameNoncentralAbsoluteAdapter*>(&_adapter),
+        dynamic_cast<opengv::absolute_pose::FrameNoncentralAbsoluteAdapter *>(&_adapter),
         "only opengv::absolute_pose::FrameNoncentralAbsoluteAdapter supported");
   }
 
@@ -126,9 +132,9 @@ class FrameAbsolutePoseSacProblem : public AbsolutePoseSacProblem {
    * \param[out] scores The resulting distances of the selected samples. Low
    *                    distances mean a good fit.
    */
-  virtual void getSelectedDistancesToModel(const model_t & model,
-                                           const std::vector<int> & indices,
-                                           std::vector<double> & scores) const {
+  virtual void getSelectedDistancesToModel(const model_t &model,
+                                           const std::vector<int> &indices,
+                                           std::vector<double> &scores) const {
     //compute the reprojection error of all points
 
     //compute inverse transformation
@@ -147,22 +153,22 @@ class FrameAbsolutePoseSacProblem : public AbsolutePoseSacProblem {
       //non-central case)
       point_t bodyReprojection = inverseSolution * p_hom;
       point_t reprojection = adapterDerived_.getCamRotation(indices[i])
-          .transpose()
-          * (bodyReprojection - adapterDerived_.getCamOffset(indices[i]));
+                                 .transpose()
+                             * (bodyReprojection - adapterDerived_.getCamOffset(indices[i]));
       reprojection = reprojection / reprojection.norm();
 
       //compute the score
       point_t error = (reprojection
-          - adapterDerived_.getBearingVector(indices[i]));
+                       - adapterDerived_.getBearingVector(indices[i]));
       double error_squared = error.transpose() * error;
       scores.push_back(
           error_squared / adapterDerived_.getSigmaAngle(indices[i]));
     }
   }
 
- protected:
+protected:
   /// The adapter holding the bearing, correspondences etc.
-  opengv::absolute_pose::FrameNoncentralAbsoluteAdapter & adapterDerived_;
+  opengv::absolute_pose::FrameNoncentralAbsoluteAdapter &adapterDerived_;
 
 };
 

@@ -47,8 +47,7 @@ namespace okvis {
 namespace cameras {
 
 /// \brief compute all the overlaps of fields of view. Attention: can be expensive.
-void NCameraSystem::computeOverlaps()
-{
+void NCameraSystem::computeOverlaps() {
   OKVIS_ASSERT_TRUE_DBG(
       Exception, T_SC_.size() == cameraGeometries_.size(),
       "Number of extrinsics must match number of camera models!");
@@ -56,11 +55,11 @@ void NCameraSystem::computeOverlaps()
   overlapMats_.resize(cameraGeometries_.size());
   overlaps_.resize(cameraGeometries_.size());
   for (size_t cameraIndexSeenBy = 0; cameraIndexSeenBy < overlapMats_.size();
-      ++cameraIndexSeenBy) {
+       ++cameraIndexSeenBy) {
     overlapMats_[cameraIndexSeenBy].resize(cameraGeometries_.size());
     overlaps_[cameraIndexSeenBy].resize(cameraGeometries_.size());
     for (size_t cameraIndex = 0; cameraIndex < overlapMats_.size();
-        ++cameraIndex) {
+         ++cameraIndex) {
 
       std::shared_ptr<const CameraBase> camera = cameraGeometries_[cameraIndex];
 
@@ -70,11 +69,12 @@ void NCameraSystem::computeOverlaps()
         overlapMats_[cameraIndexSeenBy][cameraIndex] = cv::Mat::ones(
             camera->imageHeight(), camera->imageWidth(), CV_8UC1);
         overlaps_[cameraIndexSeenBy][cameraIndex] = true;
-      } else {
+      }
+      else {
         // sizing the overlap map:
         const size_t height = camera->imageHeight();
         const size_t width = camera->imageWidth();
-        cv::Mat& overlapMat = overlapMats_[cameraIndexSeenBy][cameraIndex];
+        cv::Mat &overlapMat = overlapMats_[cameraIndexSeenBy][cameraIndex];
         overlapMat = cv::Mat::zeros(height, width, CV_8UC1);
         // go through all the pixels:
         std::shared_ptr<const CameraBase> otherCamera =
@@ -97,13 +97,13 @@ void NCameraSystem::computeOverlaps()
             if (status == CameraBase::ProjectionStatus::Successful) {
 
               Eigen::Vector3d verificationRay;
-              otherCamera->backProject(imagePointInOtherCamera,&verificationRay);
+              otherCamera->backProject(imagePointInOtherCamera, &verificationRay);
 
               // to avoid an artefact of some distortion models, check again
               // note: (this should be fixed in the distortion implementation)
-              if(fabs(ray_Cother.normalized().transpose()*verificationRay.normalized()-1.0)<1.0e-10) {
+              if (fabs(ray_Cother.normalized().transpose() * verificationRay.normalized() - 1.0) < 1.0e-10) {
                 // fill in the matrix:
-                overlapMat.at<uchar>(v,u) = 1;
+                overlapMat.at<uchar>(v, u) = 1;
                 // and remember there is some overlap at all.
                 if (!hasOverlap) {
                   overlaps_[cameraIndexSeenBy][cameraIndex] = true;

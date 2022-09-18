@@ -71,24 +71,24 @@
 # unsets all public (designed to be used externally) variables and reports
 # error message at priority depending upon [REQUIRED/QUIET/<NONE>] argument.
 MACRO(CXSPARSE_REPORT_NOT_FOUND REASON_MSG)
-  UNSET(CXSPARSE_FOUND)
-  UNSET(CXSPARSE_INCLUDE_DIRS)
-  UNSET(CXSPARSE_LIBRARIES)
-  # Make results of search visible in the CMake GUI if CXSparse has not
-  # been found so that user does not have to toggle to advanced view.
-  MARK_AS_ADVANCED(CLEAR CXSPARSE_INCLUDE_DIR
-                         CXSPARSE_LIBRARY)
-  # Note <package>_FIND_[REQUIRED/QUIETLY] variables defined by FindPackage()
-  # use the camelcase library name, not uppercase.
-  IF (CXSparse_FIND_QUIETLY)
-    MESSAGE(STATUS "Failed to find CXSparse - " ${REASON_MSG} ${ARGN})
-  ELSEIF (CXSparse_FIND_REQUIRED)
-    MESSAGE(FATAL_ERROR "Failed to find CXSparse - " ${REASON_MSG} ${ARGN})
-  ELSE()
-    # Neither QUIETLY nor REQUIRED, use no priority which emits a message
-    # but continues configuration and allows generation.
-    MESSAGE("-- Failed to find CXSparse - " ${REASON_MSG} ${ARGN})
-  ENDIF ()
+    UNSET(CXSPARSE_FOUND)
+    UNSET(CXSPARSE_INCLUDE_DIRS)
+    UNSET(CXSPARSE_LIBRARIES)
+    # Make results of search visible in the CMake GUI if CXSparse has not
+    # been found so that user does not have to toggle to advanced view.
+    MARK_AS_ADVANCED(CLEAR CXSPARSE_INCLUDE_DIR
+            CXSPARSE_LIBRARY)
+    # Note <package>_FIND_[REQUIRED/QUIETLY] variables defined by FindPackage()
+    # use the camelcase library name, not uppercase.
+    IF (CXSparse_FIND_QUIETLY)
+        MESSAGE(STATUS "Failed to find CXSparse - " ${REASON_MSG} ${ARGN})
+    ELSEIF (CXSparse_FIND_REQUIRED)
+        MESSAGE(FATAL_ERROR "Failed to find CXSparse - " ${REASON_MSG} ${ARGN})
+    ELSE ()
+        # Neither QUIETLY nor REQUIRED, use no priority which emits a message
+        # but continues configuration and allows generation.
+        MESSAGE("-- Failed to find CXSparse - " ${REASON_MSG} ${ARGN})
+    ENDIF ()
 ENDMACRO(CXSPARSE_REPORT_NOT_FOUND)
 
 # Search user-installed locations first, so that we prefer user installs
@@ -96,40 +96,40 @@ ENDMACRO(CXSPARSE_REPORT_NOT_FOUND)
 #
 # TODO: Add standard Windows search locations for CXSparse.
 LIST(APPEND CXSPARSE_CHECK_INCLUDE_DIRS
-  /usr/local/include
-  /usr/local/homebrew/include # Mac OS X
-  /opt/local/var/macports/software # Mac OS X.
-  /opt/local/include
-  /usr/include)
+        /usr/local/include
+        /usr/local/homebrew/include # Mac OS X
+        /opt/local/var/macports/software # Mac OS X.
+        /opt/local/include
+        /usr/include)
 LIST(APPEND CXSPARSE_CHECK_LIBRARY_DIRS
-  /usr/local/lib
-  /usr/local/homebrew/lib # Mac OS X.
-  /opt/local/lib
-  /usr/lib)
+        /usr/local/lib
+        /usr/local/homebrew/lib # Mac OS X.
+        /opt/local/lib
+        /usr/lib)
 
 # Search supplied hint directories first if supplied.
 FIND_PATH(CXSPARSE_INCLUDE_DIR
-  NAMES cs.h
-  PATHS ${CXSPARSE_INCLUDE_DIR_HINTS}
-  ${CXSPARSE_CHECK_INCLUDE_DIRS})
+        NAMES cs.h
+        PATHS ${CXSPARSE_INCLUDE_DIR_HINTS}
+        ${CXSPARSE_CHECK_INCLUDE_DIRS})
 IF (NOT CXSPARSE_INCLUDE_DIR OR
-    NOT EXISTS ${CXSPARSE_INCLUDE_DIR})
-  CXSPARSE_REPORT_NOT_FOUND(
-    "Could not find CXSparse include directory, set CXSPARSE_INCLUDE_DIR "
-    "to directory containing cs.h")
+        NOT EXISTS ${CXSPARSE_INCLUDE_DIR})
+    CXSPARSE_REPORT_NOT_FOUND(
+            "Could not find CXSparse include directory, set CXSPARSE_INCLUDE_DIR "
+            "to directory containing cs.h")
 ENDIF (NOT CXSPARSE_INCLUDE_DIR OR
-       NOT EXISTS ${CXSPARSE_INCLUDE_DIR})
+        NOT EXISTS ${CXSPARSE_INCLUDE_DIR})
 
 FIND_LIBRARY(CXSPARSE_LIBRARY NAMES cxsparse
-  PATHS ${CXSPARSE_LIBRARY_DIR_HINTS}
-  ${CXSPARSE_CHECK_LIBRARY_DIRS})
+        PATHS ${CXSPARSE_LIBRARY_DIR_HINTS}
+        ${CXSPARSE_CHECK_LIBRARY_DIRS})
 IF (NOT CXSPARSE_LIBRARY OR
-    NOT EXISTS ${CXSPARSE_LIBRARY})
-  CXSPARSE_REPORT_NOT_FOUND(
-    "Could not find CXSparse library, set CXSPARSE_LIBRARY "
-    "to full path to libcxsparse.")
+        NOT EXISTS ${CXSPARSE_LIBRARY})
+    CXSPARSE_REPORT_NOT_FOUND(
+            "Could not find CXSparse library, set CXSPARSE_LIBRARY "
+            "to full path to libcxsparse.")
 ENDIF (NOT CXSPARSE_LIBRARY OR
-       NOT EXISTS ${CXSPARSE_LIBRARY})
+        NOT EXISTS ${CXSPARSE_LIBRARY})
 
 # Mark internally as found, then verify. CXSPARSE_REPORT_NOT_FOUND() unsets
 # if called.
@@ -137,34 +137,34 @@ SET(CXSPARSE_FOUND TRUE)
 
 # Extract CXSparse version from cs.h
 IF (CXSPARSE_INCLUDE_DIR)
-  SET(CXSPARSE_VERSION_FILE ${CXSPARSE_INCLUDE_DIR}/cs.h)
-  IF (NOT EXISTS ${CXSPARSE_VERSION_FILE})
-    CXSPARSE_REPORT_NOT_FOUND(
-      "Could not find file: ${CXSPARSE_VERSION_FILE} "
-      "containing version information in CXSparse install located at: "
-      "${CXSPARSE_INCLUDE_DIR}.")
-  ELSE (NOT EXISTS ${CXSPARSE_VERSION_FILE})
-    FILE(READ ${CXSPARSE_INCLUDE_DIR}/cs.h CXSPARSE_VERSION_FILE_CONTENTS)
+    SET(CXSPARSE_VERSION_FILE ${CXSPARSE_INCLUDE_DIR}/cs.h)
+    IF (NOT EXISTS ${CXSPARSE_VERSION_FILE})
+        CXSPARSE_REPORT_NOT_FOUND(
+                "Could not find file: ${CXSPARSE_VERSION_FILE} "
+                "containing version information in CXSparse install located at: "
+                "${CXSPARSE_INCLUDE_DIR}.")
+    ELSE (NOT EXISTS ${CXSPARSE_VERSION_FILE})
+        FILE(READ ${CXSPARSE_INCLUDE_DIR}/cs.h CXSPARSE_VERSION_FILE_CONTENTS)
 
-    STRING(REGEX MATCH "#define CS_VER [0-9]+"
-      CXSPARSE_MAIN_VERSION "${CXSPARSE_VERSION_FILE_CONTENTS}")
-    STRING(REGEX REPLACE "#define CS_VER ([0-9]+)" "\\1"
-      CXSPARSE_MAIN_VERSION "${CXSPARSE_MAIN_VERSION}")
+        STRING(REGEX MATCH "#define CS_VER [0-9]+"
+                CXSPARSE_MAIN_VERSION "${CXSPARSE_VERSION_FILE_CONTENTS}")
+        STRING(REGEX REPLACE "#define CS_VER ([0-9]+)" "\\1"
+                CXSPARSE_MAIN_VERSION "${CXSPARSE_MAIN_VERSION}")
 
-    STRING(REGEX MATCH "#define CS_SUBVER [0-9]+"
-      CXSPARSE_SUB_VERSION "${CXSPARSE_VERSION_FILE_CONTENTS}")
-    STRING(REGEX REPLACE "#define CS_SUBVER ([0-9]+)" "\\1"
-      CXSPARSE_SUB_VERSION "${CXSPARSE_SUB_VERSION}")
+        STRING(REGEX MATCH "#define CS_SUBVER [0-9]+"
+                CXSPARSE_SUB_VERSION "${CXSPARSE_VERSION_FILE_CONTENTS}")
+        STRING(REGEX REPLACE "#define CS_SUBVER ([0-9]+)" "\\1"
+                CXSPARSE_SUB_VERSION "${CXSPARSE_SUB_VERSION}")
 
-    STRING(REGEX MATCH "#define CS_SUBSUB [0-9]+"
-      CXSPARSE_SUBSUB_VERSION "${CXSPARSE_VERSION_FILE_CONTENTS}")
-    STRING(REGEX REPLACE "#define CS_SUBSUB ([0-9]+)" "\\1"
-      CXSPARSE_SUBSUB_VERSION "${CXSPARSE_SUBSUB_VERSION}")
+        STRING(REGEX MATCH "#define CS_SUBSUB [0-9]+"
+                CXSPARSE_SUBSUB_VERSION "${CXSPARSE_VERSION_FILE_CONTENTS}")
+        STRING(REGEX REPLACE "#define CS_SUBSUB ([0-9]+)" "\\1"
+                CXSPARSE_SUBSUB_VERSION "${CXSPARSE_SUBSUB_VERSION}")
 
-    # This is on a single line s/t CMake does not interpret it as a list of
-    # elements and insert ';' separators which would result in 3.;1.;2 nonsense.
-    SET(CXSPARSE_VERSION "${CXSPARSE_MAIN_VERSION}.${CXSPARSE_SUB_VERSION}.${CXSPARSE_SUBSUB_VERSION}")
-  ENDIF (NOT EXISTS ${CXSPARSE_VERSION_FILE})
+        # This is on a single line s/t CMake does not interpret it as a list of
+        # elements and insert ';' separators which would result in 3.;1.;2 nonsense.
+        SET(CXSPARSE_VERSION "${CXSPARSE_MAIN_VERSION}.${CXSPARSE_SUB_VERSION}.${CXSPARSE_SUBSUB_VERSION}")
+    ENDIF (NOT EXISTS ${CXSPARSE_VERSION_FILE})
 ENDIF (CXSPARSE_INCLUDE_DIR)
 
 # Catch the case when the caller has set CXSPARSE_LIBRARY in the cache / GUI and
@@ -175,30 +175,30 @@ ENDIF (CXSPARSE_INCLUDE_DIR)
 #       this check be better?
 STRING(TOLOWER "${CXSPARSE_LIBRARY}" LOWERCASE_CXSPARSE_LIBRARY)
 IF (CXSPARSE_LIBRARY AND
-    EXISTS ${CXSPARSE_LIBRARY} AND
-    NOT "${LOWERCASE_CXSPARSE_LIBRARY}" MATCHES ".*cxsparse[^/]*")
-  CXSPARSE_REPORT_NOT_FOUND(
-    "Caller defined CXSPARSE_LIBRARY: "
-    "${CXSPARSE_LIBRARY} does not match CXSparse.")
+        EXISTS ${CXSPARSE_LIBRARY} AND
+        NOT "${LOWERCASE_CXSPARSE_LIBRARY}" MATCHES ".*cxsparse[^/]*")
+    CXSPARSE_REPORT_NOT_FOUND(
+            "Caller defined CXSPARSE_LIBRARY: "
+            "${CXSPARSE_LIBRARY} does not match CXSparse.")
 ENDIF (CXSPARSE_LIBRARY AND
-       EXISTS ${CXSPARSE_LIBRARY} AND
-       NOT "${LOWERCASE_CXSPARSE_LIBRARY}" MATCHES ".*cxsparse[^/]*")
+        EXISTS ${CXSPARSE_LIBRARY} AND
+        NOT "${LOWERCASE_CXSPARSE_LIBRARY}" MATCHES ".*cxsparse[^/]*")
 
 # Set standard CMake FindPackage variables if found.
 IF (CXSPARSE_FOUND)
-  SET(CXSPARSE_INCLUDE_DIRS ${CXSPARSE_INCLUDE_DIR})
-  SET(CXSPARSE_LIBRARIES ${CXSPARSE_LIBRARY})
+    SET(CXSPARSE_INCLUDE_DIRS ${CXSPARSE_INCLUDE_DIR})
+    SET(CXSPARSE_LIBRARIES ${CXSPARSE_LIBRARY})
 ENDIF (CXSPARSE_FOUND)
 
 # Handle REQUIRED / QUIET optional arguments and version.
 INCLUDE(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(CXSparse
-  REQUIRED_VARS CXSPARSE_INCLUDE_DIRS CXSPARSE_LIBRARIES
-  VERSION_VAR CXSPARSE_VERSION)
+        REQUIRED_VARS CXSPARSE_INCLUDE_DIRS CXSPARSE_LIBRARIES
+        VERSION_VAR CXSPARSE_VERSION)
 
 # Only mark internal variables as advanced if we found CXSparse, otherwise
 # leave them visible in the standard GUI for the user to set manually.
 IF (CXSPARSE_FOUND)
-  MARK_AS_ADVANCED(FORCE CXSPARSE_INCLUDE_DIR
-                         CXSPARSE_LIBRARY)
+    MARK_AS_ADVANCED(FORCE CXSPARSE_INCLUDE_DIR
+            CXSPARSE_LIBRARY)
 ENDIF (CXSPARSE_FOUND)

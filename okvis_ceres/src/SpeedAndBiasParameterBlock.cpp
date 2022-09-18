@@ -55,8 +55,8 @@ SpeedAndBiasParameterBlock::~SpeedAndBiasParameterBlock() {
 
 // Constructor with estimate and time.
 SpeedAndBiasParameterBlock::SpeedAndBiasParameterBlock(
-    const SpeedAndBias& speedAndBias, uint64_t id,
-    const okvis::Time& timestamp) {
+    const SpeedAndBias &speedAndBias, uint64_t id,
+    const okvis::Time &timestamp) {
   setEstimate(speedAndBias);
   setId(id);
   setTimestamp(timestamp);
@@ -65,7 +65,7 @@ SpeedAndBiasParameterBlock::SpeedAndBiasParameterBlock(
 
 // setters
 // Set estimate of this parameter block.
-void SpeedAndBiasParameterBlock::setEstimate(const SpeedAndBias& speedAndBias) {
+void SpeedAndBiasParameterBlock::setEstimate(const SpeedAndBias &speedAndBias) {
   for (int i = 0; i < base_t::Dimension; ++i)
     parameters_[i] = speedAndBias[i];
 }

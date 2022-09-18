@@ -59,10 +59,14 @@ namespace triangulation {
  * \tparam CAMERA_GEOMETRY_T Camera geometry model. See also okvis::cameras::CameraBase.
  */
 template<class CAMERA_GEOMETRY_T>
-class ProbabilisticStereoTriangulator {
- public:
+class ProbabilisticStereoTriangulator
+{
+public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+
   OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /**
    * \brief Default constructor; make sure to call resetFrames before triangulation!
@@ -85,8 +89,8 @@ class ProbabilisticStereoTriangulator {
   ProbabilisticStereoTriangulator(std::shared_ptr<okvis::MultiFrame> frameA_ptr,
                                   std::shared_ptr<okvis::MultiFrame> frameB_ptr,
                                   size_t camIdA, size_t camIdB,
-                                  const okvis::kinematics::Transformation& T_AB,
-                                  const Eigen::Matrix<double, 6, 6>& UOplus,
+                                  const okvis::kinematics::Transformation &T_AB,
+                                  const Eigen::Matrix<double, 6, 6> &UOplus,
                                   double pixelSigma = 0.5);
 
   /**
@@ -100,8 +104,8 @@ class ProbabilisticStereoTriangulator {
    */
   void resetFrames(std::shared_ptr<okvis::MultiFrame> frameA_ptr,
                    std::shared_ptr<okvis::MultiFrame> frameB_ptr, size_t camIdA,
-                   size_t camIdB, const okvis::kinematics::Transformation& T_AB,
-                   const Eigen::Matrix<double, 6, 6>& UOplus);
+                   size_t camIdB, const okvis::kinematics::Transformation &T_AB,
+                   const Eigen::Matrix<double, 6, 6> &UOplus);
 
   /// \brief Default destructor.
   ~ProbabilisticStereoTriangulator();
@@ -117,8 +121,8 @@ class ProbabilisticStereoTriangulator {
    * \return 3-sigma consistency check result, in A-coordinates.
    */
   bool stereoTriangulate(size_t keypointIdxA, size_t keypointIdxB,
-                         Eigen::Vector4d & outHomogeneousPoint_A,
-                         bool & outCanBeInitializedInaccuarate,
+                         Eigen::Vector4d &outHomogeneousPoint_A,
+                         bool &outCanBeInitializedInaccuarate,
                          double sigmaRay = -1.0) const;
 
   /**
@@ -132,9 +136,9 @@ class ProbabilisticStereoTriangulator {
    *  \return 3-sigma consistency check result.
    */
   bool stereoTriangulate(size_t keypointIdxA, size_t keypointIdxB,
-                         Eigen::Vector4d & outHomogeneousPoint_A,
-                         Eigen::Matrix3d & outPointUOplus_A,
-                         bool & outCanBeInitialized,
+                         Eigen::Vector4d &outHomogeneousPoint_A,
+                         Eigen::Matrix3d &outPointUOplus_A,
+                         bool &outCanBeInitialized,
                          double sigmaRay = -1.0) const;
 
   /**
@@ -146,11 +150,11 @@ class ProbabilisticStereoTriangulator {
    *  \param[out] outCanBeInitialized Whether or not the triangulation can be considered initialized.
    */
   void getUncertainty(size_t keypointIdxA, size_t keypointIdxB,
-                      const Eigen::Vector4d & homogeneousPoint_A,
-                      Eigen::Matrix3d& outPointUOplus_A,
-                      bool & outCanBeInitialized) const;
+                      const Eigen::Vector4d &homogeneousPoint_A,
+                      Eigen::Matrix3d &outPointUOplus_A,
+                      bool &outCanBeInitialized) const;
 
- protected:
+protected:
   double sigmaRay_;  ///< ray uncertainty
   /// The multiframe A.
   std::shared_ptr<okvis::MultiFrame> frameA_;
@@ -188,8 +192,8 @@ class ProbabilisticStereoTriangulator {
    */
   bool computeReprojectionError4(
       const std::shared_ptr<okvis::MultiFrame> &frame, size_t camId,
-      size_t keypointId, const Eigen::Vector4d& homogeneousPoint,
-      double& outError) const;
+      size_t keypointId, const Eigen::Vector4d &homogeneousPoint,
+      double &outError) const;
 };
 
 }  // namespace triangulation

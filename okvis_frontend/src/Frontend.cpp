@@ -91,8 +91,8 @@ Frontend::Frontend(size_t numCameras)
 // Detection and descriptor extraction on a per image basis.
 bool Frontend::detectAndDescribe(size_t cameraIndex,
                                  std::shared_ptr<okvis::MultiFrame> frameOut,
-                                 const okvis::kinematics::Transformation& T_WC,
-                                 const std::vector<cv::KeyPoint> * keypoints) {
+                                 const okvis::kinematics::Transformation &T_WC,
+                                 const std::vector<cv::KeyPoint> *keypoints) {
   OKVIS_ASSERT_TRUE_DBG(Exception, cameraIndex < numCameras_, "Camera index exceeds number of cameras.");
   std::lock_guard<std::mutex> lock(*featureDetectorMutexes_[cameraIndex]);
 
@@ -115,8 +115,8 @@ bool Frontend::detectAndDescribe(size_t cameraIndex,
 
 // Matching as well as initialization of landmarks and state.
 bool Frontend::dataAssociationAndInitialization(
-    okvis::Estimator& estimator,
-    okvis::kinematics::Transformation& /*T_WS_propagated*/, // TODO sleutenegger: why is this not used here?
+    okvis::Estimator &estimator,
+    okvis::kinematics::Transformation & /*T_WS_propagated*/, // TODO sleutenegger: why is this not used here?
     const okvis::VioParameters &params,
     const std::shared_ptr<okvis::MapPointVector> /*map*/, // TODO sleutenegger: why is this not used here?
     std::shared_ptr<okvis::MultiFrame> framesInOut,
@@ -176,8 +176,7 @@ bool Frontend::dataAssociationAndInitialization(
             &uncertainMatchFraction);
         break;
       }
-      default:
-        OKVIS_THROW(Exception, "Unsupported distortion type.")
+      default: OKVIS_THROW(Exception, "Unsupported distortion type.")
         break;
     }
     matchKeyframesTimer.stop();
@@ -226,12 +225,12 @@ bool Frontend::dataAssociationAndInitialization(
 
         break;
       }
-      default:
-        OKVIS_THROW(Exception, "Unsupported distortion type.")
+      default: OKVIS_THROW(Exception, "Unsupported distortion type.")
         break;
     }
     matchToLastFrameTimer.stop();
-  } else
+  }
+  else
     *asKeyframe = true;  // first frame needs to be keyframe
 
   // do stereo match to get new landmarks
@@ -261,8 +260,7 @@ bool Frontend::dataAssociationAndInitialization(
                                                                    framesInOut);
       break;
     }
-    default:
-      OKVIS_THROW(Exception, "Unsupported distortion type.")
+    default: OKVIS_THROW(Exception, "Unsupported distortion type.")
       break;
   }
   matchStereoTimer.stop();
@@ -271,13 +269,13 @@ bool Frontend::dataAssociationAndInitialization(
 }
 
 // Propagates pose, speeds and biases with given IMU measurements.
-bool Frontend::propagation(const okvis::ImuMeasurementDeque & imuMeasurements,
-                           const okvis::ImuParameters & imuParams,
-                           okvis::kinematics::Transformation& T_WS_propagated,
-                           okvis::SpeedAndBias & speedAndBiases,
-                           const okvis::Time& t_start, const okvis::Time& t_end,
-                           Eigen::Matrix<double, 15, 15>* covariance,
-                           Eigen::Matrix<double, 15, 15>* jacobian) const {
+bool Frontend::propagation(const okvis::ImuMeasurementDeque &imuMeasurements,
+                           const okvis::ImuParameters &imuParams,
+                           okvis::kinematics::Transformation &T_WS_propagated,
+                           okvis::SpeedAndBias &speedAndBiases,
+                           const okvis::Time &t_start, const okvis::Time &t_end,
+                           Eigen::Matrix<double, 15, 15> *covariance,
+                           Eigen::Matrix<double, 15, 15> *jacobian) const {
   if (imuMeasurements.size() < 2) {
     LOG(WARNING)
         << "- Skipping propagation as only one IMU measurement has been given to frontend."
@@ -293,7 +291,7 @@ bool Frontend::propagation(const okvis::ImuMeasurementDeque & imuMeasurements,
 
 // Decision whether a new frame should be keyframe or not.
 bool Frontend::doWeNeedANewKeyframe(
-    const okvis::Estimator& estimator,
+    const okvis::Estimator &estimator,
     std::shared_ptr<okvis::MultiFrame> currentFrame) {
 
   if (estimator.numFrames() < 2) {
@@ -353,7 +351,7 @@ bool Frontend::doWeNeedANewKeyframe(
       }
     }
     double matchingRatio = double(frameBMatches.size())
-        / double(pointsInFrameBMatchesArea);
+                           / double(pointsInFrameBMatchesArea);
 
     // calculate overlap score
     overlap = std::max(overlapArea, overlap);
@@ -370,12 +368,12 @@ bool Frontend::doWeNeedANewKeyframe(
 
 // Match a new multiframe to existing keyframes
 template<class MATCHING_ALGORITHM>
-int Frontend::matchToKeyframes(okvis::Estimator& estimator,
-                               const okvis::VioParameters & params,
+int Frontend::matchToKeyframes(okvis::Estimator &estimator,
+                               const okvis::VioParameters &params,
                                const uint64_t currentFrameId,
-                               bool& rotationOnly,
+                               bool &rotationOnly,
                                bool usePoseUncertainty,
-                               double* uncertainMatchFraction,
+                               double *uncertainMatchFraction,
                                bool removeOutliers) {
   rotationOnly = true;
   if (estimator.numFrames() < 2) {
@@ -461,8 +459,8 @@ int Frontend::matchToKeyframes(okvis::Estimator& estimator,
 
 // Match a new multiframe to the last frame.
 template<class MATCHING_ALGORITHM>
-int Frontend::matchToLastFrame(okvis::Estimator& estimator,
-                               const okvis::VioParameters& params,
+int Frontend::matchToLastFrame(okvis::Estimator &estimator,
+                               const okvis::VioParameters &params,
                                const uint64_t currentFrameId,
                                bool usePoseUncertainty,
                                bool removeOutliers) {
@@ -519,7 +517,7 @@ int Frontend::matchToLastFrame(okvis::Estimator& estimator,
 
 // Match the frames inside the multiframe to each other to initialise new landmarks.
 template<class MATCHING_ALGORITHM>
-void Frontend::matchStereo(okvis::Estimator& estimator,
+void Frontend::matchStereo(okvis::Estimator &estimator,
                            std::shared_ptr<okvis::MultiFrame> multiFrame) {
 
   const size_t camNumber = multiFrame->numFrames();
@@ -531,7 +529,7 @@ void Frontend::matchStereo(okvis::Estimator& estimator,
       // FIXME: implement this in the Multiframe...!!
 
       // check overlap
-      if(!multiFrame->hasOverlap(im0, im1)){
+      if (!multiFrame->hasOverlap(im0, im1)) {
         continue;
       }
 
@@ -572,8 +570,8 @@ void Frontend::matchStereo(okvis::Estimator& estimator,
 }
 
 // Perform 3D/2D RANSAC.
-int Frontend::runRansac3d2d(okvis::Estimator& estimator,
-                            const okvis::cameras::NCameraSystem& nCameraSystem,
+int Frontend::runRansac3d2d(okvis::Estimator &estimator,
+                            const okvis::cameras::NCameraSystem &nCameraSystem,
                             std::shared_ptr<okvis::MultiFrame> currentFrame,
                             bool removeOutliers) {
   if (estimator.numFrames() < 2) {
@@ -642,12 +640,12 @@ int Frontend::runRansac3d2d(okvis::Estimator& estimator,
 }
 
 // Perform 2D/2D RANSAC.
-int Frontend::runRansac2d2d(okvis::Estimator& estimator,
-                            const okvis::VioParameters& params,
+int Frontend::runRansac2d2d(okvis::Estimator &estimator,
+                            const okvis::VioParameters &params,
                             uint64_t currentFrameId, uint64_t olderFrameId,
                             bool initializePose,
                             bool removeOutliers,
-                            bool& rotationOnly) {
+                            bool &rotationOnly) {
   // match 2d2d
   rotationOnly = false;
   const size_t numCameras = params.nCameraSystem.numCameras();
@@ -687,7 +685,7 @@ int Frontend::runRansac2d2d(okvis::Estimator& estimator,
     // get quality
     int rotation_only_inliers = rotation_only_ransac.inliers_.size();
     float rotation_only_ratio = float(rotation_only_inliers)
-        / float(numCorrespondences);
+                                / float(numCorrespondences);
 
     // now the rel_pose one:
     typedef opengv::sac_problems::relative_pose::FrameRelativePoseSacProblem FrameRelativePoseSacProblem;
@@ -717,7 +715,8 @@ int Frontend::runRansac2d2d(okvis::Estimator& estimator,
       for (size_t k = 0; k < rotation_only_ransac.inliers_.size(); ++k) {
         inliers.at(rotation_only_ransac.inliers_.at(k)) = true;
       }
-    } else {
+    }
+    else {
       if (rel_pose_inliers > 10) {
         rel_pose_success = true;
       }
@@ -745,7 +744,7 @@ int Frontend::runRansac2d2d(okvis::Estimator& estimator,
         multiFrame->setLandmarkId(im, k, 0);
         // remove observation
         if (removeOutliers) {
-          if (lmId != 0 && estimator.isLandmarkAdded(lmId)){
+          if (lmId != 0 && estimator.isLandmarkAdded(lmId)) {
             estimator.removeObservation(lmId, currentFrameId, im, idxB);
           }
         }
@@ -778,14 +777,15 @@ int Frontend::runRansac2d2d(okvis::Estimator& estimator,
         //initialize with projected length according to motion prior.
 
         okvis::kinematics::Transformation T_C1C2 = T_SCA.inverse()
-            * T_WSA.inverse() * T_WS0 * T_SC0;
+                                                   * T_WSA.inverse() * T_WS0 * T_SC0;
         T_C1C2_mat.topRightCorner<3, 1>() = T_C1C2_mat.topRightCorner<3, 1>()
-            * std::max(
-                0.0,
-                double(
-                    T_C1C2_mat.topRightCorner<3, 1>().transpose()
-                        * T_C1C2.r()));
-      } else {
+                                            * std::max(
+            0.0,
+            double(
+                T_C1C2_mat.topRightCorner<3, 1>().transpose()
+                * T_C1C2.r()));
+      }
+      else {
         // rotation only assigned...
         T_C1C2_mat.topLeftCorner<3, 3>() = rotation_only_ransac
             .model_coefficients_;
@@ -795,7 +795,7 @@ int Frontend::runRansac2d2d(okvis::Estimator& estimator,
       estimator.set_T_WS(
           id0,
           T_WSA * T_SCA * okvis::kinematics::Transformation(T_C1C2_mat)
-              * T_SC0.inverse());
+          * T_SC0.inverse());
     }
   }
 
@@ -812,7 +812,7 @@ int Frontend::runRansac2d2d(okvis::Estimator& estimator,
 // (re)instantiates feature detectors and descriptor extractors. Used after settings changed or at startup.
 void Frontend::initialiseBriskFeatureDetectors() {
   for (auto it = featureDetectorMutexes_.begin();
-      it != featureDetectorMutexes_.end(); ++it) {
+       it != featureDetectorMutexes_.end(); ++it) {
     (*it)->lock();
   }
   featureDetectors_.clear();
@@ -826,7 +826,7 @@ void Frontend::initialiseBriskFeatureDetectors() {
                 briskDetectionMaximumKeypoints_, 7, 4 ))); // from config file, except the 7x4...
 #else
             new brisk::ScaleSpaceFeatureDetector<brisk::HarrisScoreCalculator>(
-                briskDetectionThreshold_, briskDetectionOctaves_, 
+                briskDetectionThreshold_, briskDetectionOctaves_,
                 briskDetectionAbsoluteThreshold_,
                 briskDetectionMaximumKeypoints_)));
 #endif
@@ -837,7 +837,7 @@ void Frontend::initialiseBriskFeatureDetectors() {
                 briskDescriptionScaleInvariance_)));
   }
   for (auto it = featureDetectorMutexes_.begin();
-      it != featureDetectorMutexes_.end(); ++it) {
+       it != featureDetectorMutexes_.end(); ++it) {
     (*it)->unlock();
   }
 }

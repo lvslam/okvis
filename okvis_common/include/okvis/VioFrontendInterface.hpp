@@ -58,6 +58,7 @@
 #include <okvis/VioBackendInterface.hpp>
 #include <okvis/MultiFrame.hpp>
 
+
 class Estimator;
 
 /// \brief okvis Main namespace of this package.
@@ -66,10 +67,12 @@ namespace okvis {
 /**
  * @brief The VioFrontendInterface class is an interface for frontends.
  */
-class VioFrontendInterface {
- public:
+class VioFrontendInterface
+{
+public:
   VioFrontendInterface() {
   }
+
   virtual ~VioFrontendInterface() {
   }
   /// @name
@@ -87,8 +90,8 @@ class VioFrontendInterface {
    */
   virtual bool detectAndDescribe(
       size_t cameraIndex, std::shared_ptr<okvis::MultiFrame> frameOut,
-      const okvis::kinematics::Transformation& T_WC,
-      const std::vector<cv::KeyPoint> * keypoints) = 0;
+      const okvis::kinematics::Transformation &T_WC,
+      const std::vector<cv::KeyPoint> *keypoints) = 0;
 
   /**
    * @brief Matching as well as initialization of landmarks and state.
@@ -101,11 +104,11 @@ class VioFrontendInterface {
    * @return True if successful.
    */
   virtual bool dataAssociationAndInitialization(
-      okvis::Estimator& estimator,
-      okvis::kinematics::Transformation& T_WS_propagated,
-      const okvis::VioParameters & params,
+      okvis::Estimator &estimator,
+      okvis::kinematics::Transformation &T_WS_propagated,
+      const okvis::VioParameters &params,
       const std::shared_ptr<okvis::MapPointVector> map,
-      std::shared_ptr<okvis::MultiFrame> framesInOut, bool* asKeyframe) = 0;
+      std::shared_ptr<okvis::MultiFrame> framesInOut, bool *asKeyframe) = 0;
 
   /**
    * @brief Propagates pose, speeds and biases with given IMU measurements.
@@ -120,13 +123,13 @@ class VioFrontendInterface {
    * @param[out] jacobian Jacobian w.r.t. start states.
    * @return True on success.
    */
-  virtual bool propagation(const okvis::ImuMeasurementDeque & imuMeasurements,
-                           const okvis::ImuParameters & imuParams,
-                           okvis::kinematics::Transformation& T_WS_propagated,
-                           okvis::SpeedAndBias & speedAndBiases,
-                           const okvis::Time& t_start, const okvis::Time& t_end,
-                           Eigen::Matrix<double, 15, 15>* covariance,
-                           Eigen::Matrix<double, 15, 15>* jacobian) const = 0;
+  virtual bool propagation(const okvis::ImuMeasurementDeque &imuMeasurements,
+                           const okvis::ImuParameters &imuParams,
+                           okvis::kinematics::Transformation &T_WS_propagated,
+                           okvis::SpeedAndBias &speedAndBiases,
+                           const okvis::Time &t_start, const okvis::Time &t_end,
+                           Eigen::Matrix<double, 15, 15> *covariance,
+                           Eigen::Matrix<double, 15, 15> *jacobian) const = 0;
 
   ///@}
 };

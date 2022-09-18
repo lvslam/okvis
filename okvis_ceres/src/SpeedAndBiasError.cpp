@@ -44,14 +44,14 @@ namespace okvis {
 namespace ceres {
 
 // Construct with measurement and information matrix
-SpeedAndBiasError::SpeedAndBiasError(const okvis::SpeedAndBias & measurement,
-                                     const information_t & information) {
+SpeedAndBiasError::SpeedAndBiasError(const okvis::SpeedAndBias &measurement,
+                                     const information_t &information) {
   setMeasurement(measurement);
   setInformation(information);
 }
 
 // Construct with measurement and variance.
-SpeedAndBiasError::SpeedAndBiasError(const okvis::SpeedAndBiases& measurement,
+SpeedAndBiasError::SpeedAndBiasError(const okvis::SpeedAndBiases &measurement,
                                      double speedVariance,
                                      double gyrBiasVariance,
                                      double accBiasVariance) {
@@ -60,17 +60,17 @@ SpeedAndBiasError::SpeedAndBiasError(const okvis::SpeedAndBiases& measurement,
   information_t information;
   information.setZero();
   information.topLeftCorner<3, 3>() = Eigen::Matrix3d::Identity() * 1.0
-      / speedVariance;
+                                      / speedVariance;
   information.block<3, 3>(3, 3) = Eigen::Matrix3d::Identity() * 1.0
-      / gyrBiasVariance;
+                                  / gyrBiasVariance;
   information.bottomRightCorner<3, 3>() = Eigen::Matrix3d::Identity() * 1.0
-      / accBiasVariance;
+                                          / accBiasVariance;
 
   setInformation(information);
 }
 
 // Set the information.
-void SpeedAndBiasError::setInformation(const information_t & information) {
+void SpeedAndBiasError::setInformation(const information_t &information) {
   information_ = information;
   covariance_ = information.inverse();
   // perform the Cholesky decomposition on order to obtain the correct error weighting
@@ -79,16 +79,16 @@ void SpeedAndBiasError::setInformation(const information_t & information) {
 }
 
 // This evaluates the error term and additionally computes the Jacobians.
-bool SpeedAndBiasError::Evaluate(double const* const * parameters,
-                                 double* residuals, double** jacobians) const {
+bool SpeedAndBiasError::Evaluate(double const *const *parameters,
+                                 double *residuals, double **jacobians) const {
   return EvaluateWithMinimalJacobians(parameters, residuals, jacobians, NULL);
 }
 
 // This evaluates the error term and additionally computes
 // the Jacobians in the minimal internal representation.
 bool SpeedAndBiasError::EvaluateWithMinimalJacobians(
-    double const* const * parameters, double* residuals, double** jacobians,
-    double** jacobiansMinimal) const {
+    double const *const *parameters, double *residuals, double **jacobians,
+    double **jacobiansMinimal) const {
 
   // compute error
   Eigen::Map<const okvis::SpeedAndBias> estimate(parameters[0]);

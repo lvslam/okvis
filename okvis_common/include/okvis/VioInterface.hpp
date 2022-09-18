@@ -49,9 +49,12 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+
 #include <opencv2/core/core.hpp>
 #include <opencv2/features2d/features2d.hpp>
+
 #pragma GCC diagnostic pop
+
 #include <okvis/assert_macros.hpp>
 #include <okvis/Time.hpp>
 #include <okvis/FrameTypedefs.hpp>
@@ -63,12 +66,14 @@ namespace okvis {
 /**
  * @brief An abstract base class for interfaces between Front- and Backend.
  */
-class VioInterface {
- public:
-  OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
+class VioInterface
+{
+public:
+  OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   typedef std::function<
-  void(const okvis::Time &, const okvis::kinematics::Transformation &)> StateCallback;
+      void(const okvis::Time &, const okvis::kinematics::Transformation &)> StateCallback;
   typedef std::function<
       void(const okvis::Time &, const okvis::kinematics::Transformation &,
            const Eigen::Matrix<double, 9, 1> &,
@@ -80,7 +85,7 @@ class VioInterface {
           const Eigen::Matrix<double, 9, 1> &,
           const Eigen::Matrix<double, 3, 1> &,
           const std::vector<okvis::kinematics::Transformation,
-              Eigen::aligned_allocator<okvis::kinematics::Transformation> >&)> FullStateCallbackWithExtrinsics;
+              Eigen::aligned_allocator<okvis::kinematics::Transformation> > &)> FullStateCallbackWithExtrinsics;
   typedef Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> EigenImage;
   typedef std::function<
       void(const okvis::Time &, const okvis::MapPointVector &,
@@ -94,33 +99,33 @@ class VioInterface {
 
   /// \brief              Set a CVS file where the IMU data will be saved to.
   /// \param csvFile      The file.
-  bool setImuCsvFile(std::fstream& csvFile);
+  bool setImuCsvFile(std::fstream &csvFile);
   /// \brief              Set a CVS file where the IMU data will be saved to.
   /// \param csvFileName  The filename of a new file.
-  bool setImuCsvFile(const std::string& csvFileName);
+  bool setImuCsvFile(const std::string &csvFileName);
 
   /// \brief              Set a CVS file where the tracks (data associations) will be saved to.
   /// \param cameraId     The camera ID.
   /// \param csvFile      The file.
-  bool setTracksCsvFile(size_t cameraId, std::fstream& csvFile);
+  bool setTracksCsvFile(size_t cameraId, std::fstream &csvFile);
   /// \brief              Set a CVS file where the tracks (data associations) will be saved to.
   /// \param cameraId     The camera ID.
   /// \param csvFileName  The filename of a new file.
-  bool setTracksCsvFile(size_t cameraId, const std::string& csvFileName);
+  bool setTracksCsvFile(size_t cameraId, const std::string &csvFileName);
 
   /// \brief              Set a CVS file where the position measurements will be saved to.
   /// \param csvFile      The file.
-  bool setPosCsvFile(std::fstream& csvFile);
+  bool setPosCsvFile(std::fstream &csvFile);
   /// \brief              Set a CVS file where the position measurements will be saved to.
   /// \param csvFileName  The filename of a new file.
-  bool setPosCsvFile(const std::string& csvFileName);
+  bool setPosCsvFile(const std::string &csvFileName);
 
   /// \brief              Set a CVS file where the magnetometer measurements will be saved to.
   /// \param csvFile      The file.
-  bool setMagCsvFile(std::fstream& csvFile);
+  bool setMagCsvFile(std::fstream &csvFile);
   /// \brief              Set a CVS file where the magnetometer measurements will be saved to.
   /// \param csvFileName  The filename of a new file.
-  bool setMagCsvFile(const std::string& csvFileName);
+  bool setMagCsvFile(const std::string &csvFileName);
 
   /// \}
   /// \name Add measurements to the algorithm
@@ -136,10 +141,10 @@ class VioInterface {
    * \warning Already specifying whether this frame should be a keyframe is not implemented yet.
    * \return             Returns true normally. False, if the previous one has not been processed yet.
    */
-  virtual bool addImage(const okvis::Time & stamp, size_t cameraIndex,
-                        const cv::Mat & image,
-                        const std::vector<cv::KeyPoint> * keypoints = 0,
-                        bool* asKeyframe = 0) = 0;
+  virtual bool addImage(const okvis::Time &stamp, size_t cameraIndex,
+                        const cv::Mat &image,
+                        const std::vector<cv::KeyPoint> *keypoints = 0,
+                        bool *asKeyframe = 0) = 0;
 
   /**
    * \brief             Add an abstracted image observation.
@@ -151,19 +156,19 @@ class VioInterface {
    * \param asKeyframe  Optionally force keyframe or not.
    * \return            Returns true normally. False, if the previous one has not been processed yet.
    */
-  virtual bool addKeypoints(const okvis::Time & stamp, size_t cameraIndex,
-                            const std::vector<cv::KeyPoint> & keypoints,
-                            const std::vector<uint64_t> & landmarkIds,
-                            const cv::Mat& descriptors = cv::Mat(),
-                            bool* asKeyframe = 0) = 0;
+  virtual bool addKeypoints(const okvis::Time &stamp, size_t cameraIndex,
+                            const std::vector<cv::KeyPoint> &keypoints,
+                            const std::vector<uint64_t> &landmarkIds,
+                            const cv::Mat &descriptors = cv::Mat(),
+                            bool *asKeyframe = 0) = 0;
 
   /// \brief          Add an IMU measurement.
   /// \param stamp    The measurement timestamp.
   /// \param alpha    The acceleration measured at this time.
   /// \param omega    The angular velocity measured at this time.
-  virtual bool addImuMeasurement(const okvis::Time & stamp,
-                                 const Eigen::Vector3d & alpha,
-                                 const Eigen::Vector3d & omega) = 0;
+  virtual bool addImuMeasurement(const okvis::Time &stamp,
+                                 const Eigen::Vector3d &alpha,
+                                 const Eigen::Vector3d &omega) = 0;
 
   /// \brief                      Add a position measurement.
   /// \warning Not Implemented.
@@ -244,8 +249,8 @@ class VioInterface {
    * @param image       The image.
    * @return Returns true normally. False, if the previous one has not been processed yet.
    */
-  bool addEigenImage(const okvis::Time & stamp, size_t cameraIndex,
-                     const EigenImage & image);
+  bool addEigenImage(const okvis::Time &stamp, size_t cameraIndex,
+                     const EigenImage &image);
 
   /// \}
   /// \name Setters
@@ -257,7 +262,7 @@ class VioInterface {
   ///        where stamp is the timestamp
   ///        and T_w_vk is the transformation (and uncertainty) that
   ///        transforms points from the vehicle frame to the world frame
-  virtual void setStateCallback(const StateCallback & stateCallback);
+  virtual void setStateCallback(const StateCallback &stateCallback);
 
   /// \brief Set the fullStateCallback to be called every time a new state is estimated.
   ///        When an implementing class has an estimate, they can call:
@@ -267,7 +272,7 @@ class VioInterface {
   ///        transforms points from the vehicle frame to the world frame. speedAndBiases contain
   ///        speed in world frame followed by gyro and acc biases. finally, omega_S is the rotation speed.
   virtual void setFullStateCallback(
-      const FullStateCallback & fullStateCallback);
+      const FullStateCallback &fullStateCallback);
 
   /// \brief Set the fullStateCallbackWithExtrinsics to be called every time a new state is estimated.
   ///        When an implementing class has an estimate, they can call:
@@ -279,7 +284,7 @@ class VioInterface {
   ///        omega_S is the rotation speed
   ///        vector_of_T_SCi contains the (uncertain) transformations of extrinsics T_SCi
   virtual void setFullStateCallbackWithExtrinsics(
-      const FullStateCallbackWithExtrinsics & fullStateCallbackWithExtrinsics);
+      const FullStateCallbackWithExtrinsics &fullStateCallbackWithExtrinsics);
 
   /// \brief Set the landmarksCallback to be called every time a new state is estimated.
   ///        When an implementing class has an estimate, they can call:
@@ -287,7 +292,7 @@ class VioInterface {
   ///        where stamp is the timestamp
   ///        landmarksVector contains all 3D-landmarks with id.
   virtual void setLandmarksCallback(
-      const LandmarksCallback & landmarksCallback);
+      const LandmarksCallback &landmarksCallback);
 
   /**
    * \brief Set the blocking variable that indicates whether the addMeasurement() functions
@@ -297,7 +302,7 @@ class VioInterface {
 
   /// \}
 
- protected:
+protected:
 
   /// \brief Write first line of IMU CSV file to describe columns.
   bool writeImuCsvDescription();

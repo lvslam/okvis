@@ -43,10 +43,14 @@
 
 #include <deque>
 #include <vector>
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Woverloaded-virtual"
+
 #include <opencv2/opencv.hpp>
+
 #pragma GCC diagnostic pop
+
 #include <Eigen/Dense>
 #include <okvis/Time.hpp>
 #include <okvis/MultiFrame.hpp>
@@ -65,8 +69,7 @@ struct ExtrinsicsEstimationParameters
       : sigma_absolute_translation(0.0),
         sigma_absolute_orientation(0.0),
         sigma_c_relative_translation(0.0),
-        sigma_c_relative_orientation(0.0)
-  {
+        sigma_c_relative_orientation(0.0) {
   }
 
   /**
@@ -83,8 +86,7 @@ struct ExtrinsicsEstimationParameters
       : sigma_absolute_translation(sigma_absolute_translation),
         sigma_absolute_orientation(sigma_absolute_orientation),
         sigma_c_relative_translation(sigma_c_relative_translation),
-        sigma_c_relative_orientation(sigma_c_relative_orientation)
-  {
+        sigma_c_relative_orientation(sigma_c_relative_orientation) {
   }
 
   // absolute (prior) w.r.t frame S
@@ -96,14 +98,16 @@ struct ExtrinsicsEstimationParameters
   double sigma_c_relative_orientation; ///< Relative orientation noise density. [rad/sqrt(Hz)]
 };
 
+
 /*!
  * \brief IMU parameters.
  *
  * A simple struct to specify properties of an IMU.
  *
  */
-struct ImuParameters{
-	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+struct ImuParameters
+{
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   okvis::kinematics::Transformation T_BS; ///< Transformation from Body frame to IMU (sensor frame S).
   double a_max;  ///< Accelerometer saturation. [m/s^2]
   double g_max;  ///< Gyroscope saturation. [rad/s]
@@ -119,13 +123,15 @@ struct ImuParameters{
   int rate;  ///< IMU rate in Hz.
 };
 
+
 /*!
  * \brief Magnetometer parameters.
  *
  * A simple struct to specify properties of a magnetometer.
  *
  */
-struct MagnetometerParameters{
+struct MagnetometerParameters
+{
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   double stdev; ///< Measurement (white noise part) standard deviation. [uT]
   double priorStdev; ///< Prior. [uT]
@@ -134,16 +140,19 @@ struct MagnetometerParameters{
   double updateFrequency; ///< Related state estimates are inserted at this frequency. [Hz]
 };
 
+
 /*!
  * \brief GPS parameters
  *
  * A simple struct to specify properties of a GPS receiver.
  *
  */
-struct GpsParameters{
+struct GpsParameters
+{
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::Vector3d antennaOffset; ///< The position offset of the antenna in body (B) coordinates.
 };
+
 
 /*!
  * \brief Position sensor parameters.
@@ -151,11 +160,13 @@ struct GpsParameters{
  * A simple struct to specify properties of a position sensor.
  *
  */
-struct PositionSensorParameters{
+struct PositionSensorParameters
+{
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::Vector3d positionSensorOffset; ///< The position offset of the position sensor in body (B) coordinates.
   bool isLeveled; ///< If true, the position sensor measurements are assumed to be world z up (exactly, i.e. only yaw gets estimated).
 };
+
 
 /*!
  * \brief Magnetic ENU z bias
@@ -163,7 +174,8 @@ struct PositionSensorParameters{
  * A simple struct to specify the dynamics of magnetic ENU z component variation.
  *
  */
-struct MagneticEnuZParameters{
+struct MagneticEnuZParameters
+{
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   double priorStdev;  ///< ENU z-component bias prior. [uT]
   double sigma_c;     ///< ENU z-component noise density. [uT/s/sqrt(Hz)]
@@ -171,13 +183,15 @@ struct MagneticEnuZParameters{
   double updateFrequency; ///< Related state estimates are inserted at this frequency. [Hz]
 };
 
+
 /*!
  * \brief Barometer parameters.
  *
  * A simple struct to specify properties of a barometer.
  *
  */
-struct BarometerParameters{
+struct BarometerParameters
+{
   double staticPressureStdev; ///< Measurement (white noise part) standard deviation. [kPa]
   double temperatureStdev; ///< Measurement (white noise part) standard deviation. [kPa]
 };
@@ -188,12 +202,14 @@ struct BarometerParameters{
  * A simple struct to specify the QFF state dynamics.
  *
  */
-struct QffParameters{
+struct QffParameters
+{
   double priorStdev;  ///< Prior of QFF [kPa]
   double sigma_c;     ///< Drift noise density. [kPa/sqrt(s)]
   double tau;         ///< Reversion time constant. [s]
   double updateFrequency; ///< Related state estimates are inserted at this frequency. [Hz]
 };
+
 
 /*!
  * \brief Differential pressure sensor parameters.
@@ -201,7 +217,8 @@ struct QffParameters{
  * A simple struct to specify properties of a differential pressure sensor.
  *
  */
-struct DifferentialPressureSensorParameters{
+struct DifferentialPressureSensorParameters
+{
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   double differentialPressureStdev; ///< Measurement (white noise part) standard deviation. [Pa]
   /// Measurement (white noise part) standard deviation [m/s^2]
@@ -216,13 +233,15 @@ struct DifferentialPressureSensorParameters{
   double A; ///< Reference wing area. [m^2]
 };
 
+
 /*!
  * \brief Wind parameters.
  *
  * A simple struct to specify the wind state dynamics.
  *
  */
-struct WindParameters{
+struct WindParameters
+{
   double priorStdev;  ///< Prior of wind. [m/s]
   double sigma_c;     ///< Drift noise density. [m/s/sqrt(s)]
   double tau;         ///< Reversion time constant. [s];
@@ -232,7 +251,8 @@ struct WindParameters{
 /**
  * @brief Parameters for optimization and related things (detection).
  */
-struct Optimization{
+struct Optimization
+{
   int max_iterations; ///< Maximum iterations the optimization should perform.
   int min_iterations; ///< Minimum iterations the optimization should perform.
   double timeLimitForMatchingAndOptimization; ///< The time limit for both matching and optimization. [s]
@@ -248,7 +268,8 @@ struct Optimization{
 /**
  * @brief Information on camera and IMU setup.
  */
-struct SensorsInformation {
+struct SensorsInformation
+{
   int cameraRate;     ///< Camera rate in Hz.
   double imageDelay;  ///< Camera image delay. [s]
   int imuIdx;         ///< IMU index. Anything other than 0 will probably not work.
@@ -256,28 +277,36 @@ struct SensorsInformation {
 };
 
 /// @brief Some visualization settings.
-struct Visualization {
+struct Visualization
+{
   bool displayImages; ///< Display images?
 };
 
-enum class FrameName { B, S, W, Wc };
+enum class FrameName
+{
+  B, S, W, Wc
+};
+
 
 /// @brief Some publishing parameters.
-struct PublishingParameters {
+struct PublishingParameters
+{
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   int publishRate = 200;  ///< Maximum publishing rate. [Hz]
   bool publishLandmarks = true; ///< Select, if you want to publish landmarks at all.
   float landmarkQualityThreshold = 1.0e-5; ///< Quality threshold under which landmarks are not published. Between 0 and 1.
   float maxLandmarkQuality = 0.05; ///< Quality above which landmarks are assumed to be of the best quality. Between 0 and 1.
-  size_t maxPathLength = 100 ; ///< Maximum length of ros::nav_mgsgs::Path to be published.
+  size_t maxPathLength = 100; ///< Maximum length of ros::nav_mgsgs::Path to be published.
   bool publishImuPropagatedState = true; ///< Should the state that is propagated with IMU messages be published? Or just the optimized ones?
   okvis::kinematics::Transformation T_Wc_W = okvis::kinematics::Transformation::Identity(); ///< Provide custom World frame Wc
   FrameName trackedBodyFrame = FrameName::B; ///< B or S, the frame of reference that will be expressed relative to the selected worldFrame Wc
   FrameName velocitiesFrame = FrameName::B; ///< B or S,  the frames in which the velocities of the selected trackedBodyFrame will be expressed in
 };
 
+
 /// @brief Struct to combine all parameters and settings.
-struct VioParameters {
+struct VioParameters
+{
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Optimization optimization;    ///< Optimization parameters.
   Visualization visualization;  ///< Visualization parameters.

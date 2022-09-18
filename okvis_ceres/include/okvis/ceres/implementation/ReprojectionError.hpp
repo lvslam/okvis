@@ -54,7 +54,7 @@ ReprojectionError<GEOMETRY_T>::ReprojectionError()
 template<class GEOMETRY_T>
 ReprojectionError<GEOMETRY_T>::ReprojectionError(
     std::shared_ptr<const camera_geometry_t> cameraGeometry, uint64_t cameraId,
-    const measurement_t & measurement, const covariance_t & information) {
+    const measurement_t &measurement, const covariance_t &information) {
   setCameraId(cameraId);
   setMeasurement(measurement);
   setInformation(information);
@@ -64,7 +64,7 @@ ReprojectionError<GEOMETRY_T>::ReprojectionError(
 // Set the information.
 template<class GEOMETRY_T>
 void ReprojectionError<GEOMETRY_T>::setInformation(
-    const covariance_t& information) {
+    const covariance_t &information) {
   information_ = information;
   covariance_ = information.inverse();
   // perform the Cholesky decomposition on order to obtain the correct error weighting
@@ -74,9 +74,9 @@ void ReprojectionError<GEOMETRY_T>::setInformation(
 
 // This evaluates the error term and additionally computes the Jacobians.
 template<class GEOMETRY_T>
-bool ReprojectionError<GEOMETRY_T>::Evaluate(double const* const * parameters,
-                                             double* residuals,
-                                             double** jacobians) const {
+bool ReprojectionError<GEOMETRY_T>::Evaluate(double const *const *parameters,
+                                             double *residuals,
+                                             double **jacobians) const {
 
   return EvaluateWithMinimalJacobians(parameters, residuals, jacobians, NULL);  // debug test only
 }
@@ -85,8 +85,8 @@ bool ReprojectionError<GEOMETRY_T>::Evaluate(double const* const * parameters,
 // the Jacobians in the minimal internal representation.
 template<class GEOMETRY_T>
 bool ReprojectionError<GEOMETRY_T>::EvaluateWithMinimalJacobians(
-    double const* const * parameters, double* residuals, double** jacobians,
-    double** jacobiansMinimal) const {
+    double const *const *parameters, double *residuals, double **jacobians,
+    double **jacobiansMinimal) const {
 
   // We avoid the use of okvis::kinematics::Transformation here due to quaternion normalization and so forth.
   // This only matters in order to be able to check Jacobians with numeric differentiation chained,
@@ -127,7 +127,8 @@ bool ReprojectionError<GEOMETRY_T>::EvaluateWithMinimalJacobians(
   if (jacobians != NULL) {
     cameraGeometry_->projectHomogeneous(hp_C, &kp, &Jh);
     Jh_weighted = squareRootInformation_ * Jh;
-  } else {
+  }
+  else {
     cameraGeometry_->projectHomogeneous(hp_C, &kp);
   }
 

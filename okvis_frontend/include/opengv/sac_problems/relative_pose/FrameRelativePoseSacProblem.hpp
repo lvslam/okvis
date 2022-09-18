@@ -65,9 +65,11 @@ namespace relative_pose {
  *        central case). Used in a sample-consenus paradigm for rejecting
  *        outlier correspondences.
  */
-class FrameRelativePoseSacProblem : public CentralRelativePoseSacProblem {
- public:
-  OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
+class FrameRelativePoseSacProblem : public CentralRelativePoseSacProblem
+{
+public:
+  OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   typedef CentralRelativePoseSacProblem base_t;
 
@@ -84,13 +86,13 @@ class FrameRelativePoseSacProblem : public CentralRelativePoseSacProblem {
    * \param[in] algorithm The algorithm we want to use.
    * @warning Only okvis::relative_pose::FrameRelativeAdapter supported.
    */
-  FrameRelativePoseSacProblem(adapter_t & adapter, algorithm_t algorithm)
+  FrameRelativePoseSacProblem(adapter_t &adapter, algorithm_t algorithm)
       : base_t(adapter, algorithm),
         adapterDerived_(
-            *static_cast<opengv::relative_pose::FrameRelativeAdapter*>(&_adapter)) {
+            *static_cast<opengv::relative_pose::FrameRelativeAdapter *>(&_adapter)) {
     OKVIS_ASSERT_TRUE(
         Exception,
-        dynamic_cast<opengv::relative_pose::FrameRelativeAdapter*>(&_adapter),
+        dynamic_cast<opengv::relative_pose::FrameRelativeAdapter *>(&_adapter),
         "only opengv::absolute_pose::FrameRelativeAdapter supported");
   }
 
@@ -102,16 +104,17 @@ class FrameRelativePoseSacProblem : public CentralRelativePoseSacProblem {
    *                    correspondences.
    * @warning Only okvis::relative_pose::FrameRelativeAdapter supported.
    */
-  FrameRelativePoseSacProblem(adapter_t & adapter, algorithm_t algorithm,
-                              const std::vector<int> & indices)
+  FrameRelativePoseSacProblem(adapter_t &adapter, algorithm_t algorithm,
+                              const std::vector<int> &indices)
       : base_t(adapter, algorithm, indices),
         adapterDerived_(
-            *static_cast<opengv::relative_pose::FrameRelativeAdapter*>(&_adapter)) {
+            *static_cast<opengv::relative_pose::FrameRelativeAdapter *>(&_adapter)) {
     OKVIS_ASSERT_TRUE(
         Exception,
-        dynamic_cast<opengv::relative_pose::FrameRelativeAdapter*>(&_adapter),
+        dynamic_cast<opengv::relative_pose::FrameRelativeAdapter *>(&_adapter),
         "only opengv::absolute_pose::FrameRelativeAdapter supported");
   }
+
   virtual ~FrameRelativePoseSacProblem() {
   }
 
@@ -123,9 +126,9 @@ class FrameRelativePoseSacProblem : public CentralRelativePoseSacProblem {
    * \param[out] scores The resulting distances of the selected samples. Low
    *                    distances mean a good fit.
    */
-  virtual void getSelectedDistancesToModel(const model_t & model,
-                                           const std::vector<int> & indices,
-                                           std::vector<double> & scores) const {
+  virtual void getSelectedDistancesToModel(const model_t &model,
+                                           const std::vector<int> &indices,
+                                           std::vector<double> &scores) const {
     translation_t translation = model.col(3);
     rotation_t rotation = model.block<3, 3>(0, 0);
     adapterDerived_.sett12(translation);
@@ -155,14 +158,14 @@ class FrameRelativePoseSacProblem : public CentralRelativePoseSacProblem {
       double error_squared2 = error2.transpose() * error2;
       scores.push_back(
           error_squared1 * 0.5 / adapterDerived_.getSigmaAngle1(indices[i])
-              + error_squared2 * 0.5
-                  / adapterDerived_.getSigmaAngle2(indices[i]));
+          + error_squared2 * 0.5
+            / adapterDerived_.getSigmaAngle2(indices[i]));
     }
   }
 
- protected:
+protected:
   /// The adapter holding the bearing, correspondences etc.
-  opengv::relative_pose::FrameRelativeAdapter & adapterDerived_;
+  opengv::relative_pose::FrameRelativeAdapter &adapterDerived_;
 
 };
 

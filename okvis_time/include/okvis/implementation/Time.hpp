@@ -67,20 +67,22 @@
 #ifdef WIN32
 #include <sys/timeb.h>
 #else
+
 #include <sys/time.h>
+
 #endif
 
 /// \brief okvis Main namespace of this package.
 namespace okvis {
 
 template<class T, class D>
-T& TimeBase<T, D>::fromNSec(uint64_t t) {
+T &TimeBase<T, D>::fromNSec(uint64_t t) {
   sec = (int32_t)(t / 1000000000);
   nsec = (int32_t)(t % 1000000000);
 
   normalizeSecNSec(sec, nsec);
 
-  return *static_cast<T*>(this);
+  return *static_cast<T *>(this);
 }
 
 template<class T, class D>
@@ -91,7 +93,7 @@ D TimeBase<T, D>::operator-(const T &rhs) const {
 
 template<class T, class D>
 T TimeBase<T, D>::operator-(const D &rhs) const {
-  return *static_cast<const T*>(this) + (-rhs);
+  return *static_cast<const T *>(this) + (-rhs);
 }
 
 template<class T, class D>
@@ -107,15 +109,15 @@ T TimeBase<T, D>::operator+(const D &rhs) const {
 }
 
 template<class T, class D>
-T& TimeBase<T, D>::operator+=(const D &rhs) {
+T &TimeBase<T, D>::operator+=(const D &rhs) {
   *this = *this + rhs;
-  return *static_cast<T*>(this);
+  return *static_cast<T *>(this);
 }
 
 template<class T, class D>
-T& TimeBase<T, D>::operator-=(const D &rhs) {
+T &TimeBase<T, D>::operator-=(const D &rhs) {
   *this += (-rhs);
-  return *static_cast<T*>(this);
+  return *static_cast<T *>(this);
 }
 
 template<class T, class D>

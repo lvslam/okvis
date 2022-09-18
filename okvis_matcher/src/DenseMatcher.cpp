@@ -59,21 +59,19 @@ DenseMatcher::~DenseMatcher() {
 }
 
 // Execute a matching algorithm. This is the slow, runtime polymorphic version. Don't use this.
-void DenseMatcher::matchSlow(MatchingAlgorithm & matchingAlgorithm)
-
-{
+void DenseMatcher::matchSlow(MatchingAlgorithm &matchingAlgorithm) {
   match(matchingAlgorithm);
 }
 
 // A recursive function that reassigns weak matches, if a stronger match is found for a particular point
 void DenseMatcher::assignbest(int indexToAssignFromListA,
-                              pairing_list_t& vPairsWithScore,
-                              std::vector<std::vector<pairing_t> >& aiBestList,
-                              std::mutex* mutexes, int startidx) {
+                              pairing_list_t &vPairsWithScore,
+                              std::vector<std::vector<pairing_t> > &aiBestList,
+                              std::mutex *mutexes, int startidx) {
   //the top matches for the current index
-  const std::vector<pairing_t>& aiBest = aiBestList[indexToAssignFromListA];
+  const std::vector<pairing_t> &aiBest = aiBestList[indexToAssignFromListA];
   for (int index = startidx; index < numBest_ && aiBest[index].indexA != -1;
-      ++index) {
+       ++index) {
     //fetch index to pair with myidx
     const int pairIndexFromListB = aiBest[index].indexA;
     // synchronize this
@@ -86,7 +84,8 @@ void DenseMatcher::assignbest(int indexToAssignFromListA,
       vPairsWithScore[pairIndexFromListB].distance = aiBest[index].distance;
       mutexes[pairIndexFromListB].unlock();
       return;
-    } else {
+    }
+    else {
       //already paired, so check the score of that pairing
       if (aiBest[index].distance
           < vPairsWithScore[pairIndexFromListB].distance) {

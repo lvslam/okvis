@@ -51,15 +51,14 @@ PinholeCamera<DISTORTION_T>::PinholeCamera(int imageWidth,
                                            double focalLengthV,
                                            double imageCenterU,
                                            double imageCenterV,
-                                           const distortion_t & distortion,
+                                           const distortion_t &distortion,
                                            uint64_t id)
     : CameraBase(imageWidth, imageHeight, id),
-    distortion_(distortion),
-    fu_(focalLengthU),
-    fv_(focalLengthV),
-    cu_(imageCenterU),
-    cv_(imageCenterV)
-{
+      distortion_(distortion),
+      fu_(focalLengthU),
+      fv_(focalLengthV),
+      cu_(imageCenterU),
+      cv_(imageCenterV) {
   intrinsics_[0] = fu_;  //< focalLengthU
   intrinsics_[1] = fv_;  //< focalLengthV
   intrinsics_[2] = cu_;  //< imageCenterU
@@ -72,8 +71,7 @@ PinholeCamera<DISTORTION_T>::PinholeCamera(int imageWidth,
 // overwrite all intrinsics - use with caution !
 template<class DISTORTION_T>
 bool PinholeCamera<DISTORTION_T>::setIntrinsics(
-    const Eigen::VectorXd & intrinsics)
-{
+    const Eigen::VectorXd &intrinsics) {
   if (intrinsics.cols() != NumIntrinsics) {
     return false;
   }
@@ -91,15 +89,14 @@ bool PinholeCamera<DISTORTION_T>::setIntrinsics(
 }
 
 template<class DISTORTION_T>
-void PinholeCamera<DISTORTION_T>::getIntrinsics(Eigen::VectorXd & intrinsics) const
-  {
-    intrinsics = intrinsics_;
-    Eigen::VectorXd distortionIntrinsics;
-    if(distortion_t::NumDistortionIntrinsics > 0) {
-      distortion_.getParameters(distortionIntrinsics);
-      intrinsics.tail<distortion_t::NumDistortionIntrinsics>() = distortionIntrinsics;
-    }
+void PinholeCamera<DISTORTION_T>::getIntrinsics(Eigen::VectorXd &intrinsics) const {
+  intrinsics = intrinsics_;
+  Eigen::VectorXd distortionIntrinsics;
+  if (distortion_t::NumDistortionIntrinsics > 0) {
+    distortion_.getParameters(distortionIntrinsics);
+    intrinsics.tail<distortion_t::NumDistortionIntrinsics>() = distortionIntrinsics;
   }
+}
 
 //////////////////////////////////////////
 // Methods to project points
@@ -107,8 +104,7 @@ void PinholeCamera<DISTORTION_T>::getIntrinsics(Eigen::VectorXd & intrinsics) co
 // Projects a Euclidean point to a 2d image point (projection).
 template<class DISTORTION_T>
 CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::project(
-    const Eigen::Vector3d & point, Eigen::Vector2d * imagePoint) const
-{
+    const Eigen::Vector3d &point, Eigen::Vector2d *imagePoint) const {
   // handle singularity
   if (fabs(point[2]) < 1.0e-12) {
     return CameraBase::ProjectionStatus::Invalid;
@@ -136,9 +132,10 @@ CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::project(
   if (CameraBase::isMasked(*imagePoint)) {
     return CameraBase::ProjectionStatus::Masked;
   }
-  if(point[2]>0.0){
+  if (point[2] > 0.0) {
     return CameraBase::ProjectionStatus::Successful;
-  } else {
+  }
+  else {
     return CameraBase::ProjectionStatus::Behind;
   }
 }
@@ -146,10 +143,9 @@ CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::project(
 // Projects a Euclidean point to a 2d image point (projection).
 template<class DISTORTION_T>
 CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::project(
-    const Eigen::Vector3d & point, Eigen::Vector2d * imagePoint,
-    Eigen::Matrix<double, 2, 3> * pointJacobian,
-    Eigen::Matrix2Xd * intrinsicsJacobian) const
-{
+    const Eigen::Vector3d &point, Eigen::Vector2d *imagePoint,
+    Eigen::Matrix<double, 2, 3> *pointJacobian,
+    Eigen::Matrix2Xd *intrinsicsJacobian) const {
   // handle singularity
   if (fabs(point[2]) < 1.0e-12) {
     return CameraBase::ProjectionStatus::Invalid;
@@ -179,31 +175,32 @@ CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::project(
     // compute the intrinsics Jacobian
     intrinsicsJacobian->template topLeftCorner<2, 2>() =
         imagePoint2.asDiagonal();
-    intrinsicsJacobian->template block<2, 2>(0,2) = Eigen::Matrix2d::Identity();
+    intrinsicsJacobian->template block<2, 2>(0, 2) = Eigen::Matrix2d::Identity();
 
     if (distortion_t::NumDistortionIntrinsics > 0) {
       intrinsicsJacobian
           ->template bottomRightCorner<2, distortion_t::NumDistortionIntrinsics>() =
           Eigen::Vector2d(fu_, fv_).asDiagonal() * intrinsicsJacobianDistortion;  // chain rule
     }
-  } else {
+  }
+  else {
     // only get point Jacobian
     distortionSuccess = distortion_.distort(imagePointUndistorted, &imagePoint2,
                                             &distortionJacobian);
   }
 
   // compute the point Jacobian in any case
-  Eigen::Matrix<double, 2, 3> & J = *pointJacobian;
+  Eigen::Matrix<double, 2, 3> &J = *pointJacobian;
   J(0, 0) = fu_ * distortionJacobian(0, 0) * rz;
   J(0, 1) = fu_ * distortionJacobian(0, 1) * rz;
   J(0, 2) = -fu_
-      * (point[0] * distortionJacobian(0, 0)
-          + point[1] * distortionJacobian(0, 1)) * rz2;
+            * (point[0] * distortionJacobian(0, 0)
+               + point[1] * distortionJacobian(0, 1)) * rz2;
   J(1, 0) = fv_ * distortionJacobian(1, 0) * rz;
   J(1, 1) = fv_ * distortionJacobian(1, 1) * rz;
   J(1, 2) = -fv_
-      * (point[0] * distortionJacobian(1, 0)
-          + point[1] * distortionJacobian(1, 1)) * rz2;
+            * (point[0] * distortionJacobian(1, 0)
+               + point[1] * distortionJacobian(1, 1)) * rz2;
 
   // scale and offset
   (*imagePoint)[0] = fu_ * imagePoint2[0] + cu_;
@@ -218,9 +215,10 @@ CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::project(
   if (CameraBase::isMasked(*imagePoint)) {
     return CameraBase::ProjectionStatus::Masked;
   }
-  if(point[2]>0.0){
+  if (point[2] > 0.0) {
     return CameraBase::ProjectionStatus::Successful;
-  } else {
+  }
+  else {
     return CameraBase::ProjectionStatus::Behind;
   }
 }
@@ -228,10 +226,9 @@ CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::project(
 // Projects a Euclidean point to a 2d image point (projection).
 template<class DISTORTION_T>
 CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::projectWithExternalParameters(
-    const Eigen::Vector3d & point, const Eigen::VectorXd & parameters,
-    Eigen::Vector2d * imagePoint, Eigen::Matrix<double, 2, 3> * pointJacobian,
-    Eigen::Matrix2Xd * intrinsicsJacobian) const
-{
+    const Eigen::Vector3d &point, const Eigen::VectorXd &parameters,
+    Eigen::Vector2d *imagePoint, Eigen::Matrix<double, 2, 3> *pointJacobian,
+    Eigen::Matrix2Xd *intrinsicsJacobian) const {
   // handle singularity
   if (fabs(point[2]) < 1.0e-12) {
     return CameraBase::ProjectionStatus::Invalid;
@@ -268,39 +265,40 @@ CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::projectWithExternalPar
     intrinsicsJacobian->resize(2, NumIntrinsics);
 
     distortionSuccess = distortion_.distortWithExternalParameters(imagePointUndistorted,
-                                            distortionParameters, &imagePoint2,
-                                            &distortionJacobian,
-                                            &intrinsicsJacobianDistortion);
+                                                                  distortionParameters, &imagePoint2,
+                                                                  &distortionJacobian,
+                                                                  &intrinsicsJacobianDistortion);
     // compute the intrinsics Jacobian
     intrinsicsJacobian->template topLeftCorner<2, 2>() =
         imagePoint2.asDiagonal();
-    intrinsicsJacobian->template block<2, 2>(0,2) = Eigen::Matrix2d::Identity();
+    intrinsicsJacobian->template block<2, 2>(0, 2) = Eigen::Matrix2d::Identity();
 
     if (distortion_t::NumDistortionIntrinsics > 0) {
       intrinsicsJacobian
           ->template bottomRightCorner<2, distortion_t::NumDistortionIntrinsics>() =
           Eigen::Vector2d(fu, fv).asDiagonal() * intrinsicsJacobianDistortion;  // chain rule
     }
-  } else {
+  }
+  else {
     // only get point Jacobian
     distortionSuccess = distortion_.distortWithExternalParameters(imagePointUndistorted,
-                                            distortionParameters, &imagePoint2,
-                                            &distortionJacobian);
+                                                                  distortionParameters, &imagePoint2,
+                                                                  &distortionJacobian);
   }
 
   // compute the point Jacobian, if requested
-  if(pointJacobian) {
-    Eigen::Matrix<double, 2, 3> & J = *pointJacobian;
+  if (pointJacobian) {
+    Eigen::Matrix<double, 2, 3> &J = *pointJacobian;
     J(0, 0) = fu * distortionJacobian(0, 0) * rz;
     J(0, 1) = fu * distortionJacobian(0, 1) * rz;
     J(0, 2) = -fu
-        * (point[0] * distortionJacobian(0, 0)
-            + point[1] * distortionJacobian(0, 1)) * rz2;
+              * (point[0] * distortionJacobian(0, 0)
+                 + point[1] * distortionJacobian(0, 1)) * rz2;
     J(1, 0) = fv * distortionJacobian(1, 0) * rz;
     J(1, 1) = fv * distortionJacobian(1, 1) * rz;
     J(1, 2) = -fv
-        * (point[0] * distortionJacobian(1, 0)
-            + point[1] * distortionJacobian(1, 1)) * rz2;
+              * (point[0] * distortionJacobian(1, 0)
+                 + point[1] * distortionJacobian(1, 1)) * rz2;
   }
 
   // scale and offset
@@ -316,9 +314,10 @@ CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::projectWithExternalPar
   if (CameraBase::isMasked(*imagePoint)) {
     return CameraBase::ProjectionStatus::Masked;
   }
-  if(point[2]>0.0){
+  if (point[2] > 0.0) {
     return CameraBase::ProjectionStatus::Successful;
-  } else {
+  }
+  else {
     return CameraBase::ProjectionStatus::Behind;
   }
 }
@@ -326,16 +325,15 @@ CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::projectWithExternalPar
 // Projects Euclidean points to 2d image points (projection) in a batch.
 template<class DISTORTION_T>
 void PinholeCamera<DISTORTION_T>::projectBatch(
-    const Eigen::Matrix3Xd & points, Eigen::Matrix2Xd * imagePoints,
-    std::vector<CameraBase::ProjectionStatus> * stati) const
-{
+    const Eigen::Matrix3Xd &points, Eigen::Matrix2Xd *imagePoints,
+    std::vector<CameraBase::ProjectionStatus> *stati) const {
   const int numPoints = points.cols();
   for (int i = 0; i < numPoints; ++i) {
     Eigen::Vector3d point = points.col(i);
     Eigen::Vector2d imagePoint;
     CameraBase::ProjectionStatus status = project(point, &imagePoint);
     imagePoints->col(i) = imagePoint;
-    if(stati)
+    if (stati)
       stati->push_back(status);
   }
 }
@@ -343,12 +341,12 @@ void PinholeCamera<DISTORTION_T>::projectBatch(
 // Projects a point in homogenous coordinates to a 2d image point (projection).
 template<class DISTORTION_T>
 CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::projectHomogeneous(
-    const Eigen::Vector4d & point, Eigen::Vector2d * imagePoint) const
-{
+    const Eigen::Vector4d &point, Eigen::Vector2d *imagePoint) const {
   Eigen::Vector3d head = point.head<3>();
   if (point[3] < 0) {
     return project(-head, imagePoint);
-  } else {
+  }
+  else {
     return project(head, imagePoint);
   }
 }
@@ -356,21 +354,21 @@ CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::projectHomogeneous(
 // Projects a point in homogenous coordinates to a 2d image point (projection).
 template<class DISTORTION_T>
 CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::projectHomogeneous(
-    const Eigen::Vector4d & point, Eigen::Vector2d * imagePoint,
-    Eigen::Matrix<double, 2, 4> * pointJacobian,
-    Eigen::Matrix2Xd * intrinsicsJacobian) const
-{
+    const Eigen::Vector4d &point, Eigen::Vector2d *imagePoint,
+    Eigen::Matrix<double, 2, 4> *pointJacobian,
+    Eigen::Matrix2Xd *intrinsicsJacobian) const {
   Eigen::Vector3d head = point.head<3>();
   Eigen::Matrix<double, 2, 3> pointJacobian3;
   CameraBase::ProjectionStatus status;
   if (point[3] < 0) {
     status = project(-head, imagePoint,
-                                                  &pointJacobian3,
-                                                  intrinsicsJacobian);
-  } else {
+                     &pointJacobian3,
+                     intrinsicsJacobian);
+  }
+  else {
     status = project(head, imagePoint,
-                                                  &pointJacobian3,
-                                                  intrinsicsJacobian);
+                     &pointJacobian3,
+                     intrinsicsJacobian);
   }
   pointJacobian->template bottomRightCorner<2, 1>() = Eigen::Vector2d::Zero();
   pointJacobian->template topLeftCorner<2, 3>() = pointJacobian3;
@@ -380,21 +378,21 @@ CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::projectHomogeneous(
 // Projects a point in homogenous coordinates to a 2d image point (projection).
 template<class DISTORTION_T>
 CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::projectHomogeneousWithExternalParameters(
-    const Eigen::Vector4d & point, const Eigen::VectorXd & parameters,
-    Eigen::Vector2d * imagePoint, Eigen::Matrix<double, 2, 4> * pointJacobian,
-    Eigen::Matrix2Xd * intrinsicsJacobian) const
-{
+    const Eigen::Vector4d &point, const Eigen::VectorXd &parameters,
+    Eigen::Vector2d *imagePoint, Eigen::Matrix<double, 2, 4> *pointJacobian,
+    Eigen::Matrix2Xd *intrinsicsJacobian) const {
   Eigen::Vector3d head = point.head<3>();
   Eigen::Matrix<double, 2, 3> pointJacobian3;
   CameraBase::ProjectionStatus status;
   if (point[3] < 0) {
     status = projectWithExternalParameters(-head, parameters, imagePoint,
-                                                  &pointJacobian3,
-                                                  intrinsicsJacobian);
-  } else {
+                                           &pointJacobian3,
+                                           intrinsicsJacobian);
+  }
+  else {
     status = projectWithExternalParameters(head, parameters, imagePoint,
-                                                  &pointJacobian3,
-                                                  intrinsicsJacobian);
+                                           &pointJacobian3,
+                                           intrinsicsJacobian);
   }
   pointJacobian->template bottomRightCorner<2, 1>() = Eigen::Vector2d::Zero();
   pointJacobian->template topLeftCorner<2, 3>() = pointJacobian3;
@@ -404,16 +402,15 @@ CameraBase::ProjectionStatus PinholeCamera<DISTORTION_T>::projectHomogeneousWith
 // Projects points in homogenous coordinates to 2d image points (projection) in a batch.
 template<class DISTORTION_T>
 void PinholeCamera<DISTORTION_T>::projectHomogeneousBatch(
-    const Eigen::Matrix4Xd & points, Eigen::Matrix2Xd * imagePoints,
-    std::vector<ProjectionStatus> * stati) const
-{
+    const Eigen::Matrix4Xd &points, Eigen::Matrix2Xd *imagePoints,
+    std::vector<ProjectionStatus> *stati) const {
   const int numPoints = points.cols();
   for (int i = 0; i < numPoints; ++i) {
     Eigen::Vector4d point = points.col(i);
     Eigen::Vector2d imagePoint;
     CameraBase::ProjectionStatus status = projectHomogeneous(point, &imagePoint);
     imagePoints->col(i) = imagePoint;
-    if(stati)
+    if (stati)
       stati->push_back(status);
   }
 }
@@ -424,8 +421,7 @@ void PinholeCamera<DISTORTION_T>::projectHomogeneousBatch(
 // Back-project a 2d image point into Euclidean space (direction vector).
 template<class DISTORTION_T>
 bool PinholeCamera<DISTORTION_T>::backProject(
-    const Eigen::Vector2d & imagePoint, Eigen::Vector3d * direction) const
-{
+    const Eigen::Vector2d &imagePoint, Eigen::Vector3d *direction) const {
   // unscale and center
   Eigen::Vector2d imagePoint2;
   imagePoint2[0] = (imagePoint[0] - cu_) * one_over_fu_;
@@ -446,9 +442,8 @@ bool PinholeCamera<DISTORTION_T>::backProject(
 // Back-project a 2d image point into Euclidean space (direction vector).
 template<class DISTORTION_T>
 inline bool PinholeCamera<DISTORTION_T>::backProject(
-    const Eigen::Vector2d & imagePoint, Eigen::Vector3d * direction,
-    Eigen::Matrix<double, 3, 2> * pointJacobian) const
-{
+    const Eigen::Vector2d &imagePoint, Eigen::Vector3d *direction,
+    Eigen::Matrix<double, 3, 2> *pointJacobian) const {
   // unscale and center
   Eigen::Vector2d imagePoint2;
   imagePoint2[0] = (imagePoint[0] - cu_) * one_over_fu_;
@@ -479,16 +474,15 @@ inline bool PinholeCamera<DISTORTION_T>::backProject(
 // Back-project 2d image points into Euclidean space (direction vectors).
 template<class DISTORTION_T>
 bool PinholeCamera<DISTORTION_T>::backProjectBatch(
-    const Eigen::Matrix2Xd & imagePoints, Eigen::Matrix3Xd * directions,
-    std::vector<bool> * success) const
-{
+    const Eigen::Matrix2Xd &imagePoints, Eigen::Matrix3Xd *directions,
+    std::vector<bool> *success) const {
   const int numPoints = imagePoints.cols();
   directions->row(3) = Eigen::VectorXd::Ones(numPoints);
   for (int i = 0; i < numPoints; ++i) {
     Eigen::Vector2d imagePoint = imagePoints.col(i);
     Eigen::Vector3d point;
     bool suc = backProject(imagePoint, &point);
-    if(success)
+    if (success)
       success->push_back(suc);
     directions->col(i) = point;
   }
@@ -498,8 +492,7 @@ bool PinholeCamera<DISTORTION_T>::backProjectBatch(
 // Back-project a 2d image point into homogeneous point (direction vector).
 template<class DISTORTION_T>
 bool PinholeCamera<DISTORTION_T>::backProjectHomogeneous(
-    const Eigen::Vector2d & imagePoint, Eigen::Vector4d * direction) const
-{
+    const Eigen::Vector2d &imagePoint, Eigen::Vector4d *direction) const {
   Eigen::Vector3d ray;
   bool success = backProject(imagePoint, &ray);
   direction->template head<3>() = ray;
@@ -510,15 +503,14 @@ bool PinholeCamera<DISTORTION_T>::backProjectHomogeneous(
 // Back-project a 2d image point into homogeneous point (direction vector).
 template<class DISTORTION_T>
 bool PinholeCamera<DISTORTION_T>::backProjectHomogeneous(
-    const Eigen::Vector2d & imagePoint, Eigen::Vector4d * direction,
-    Eigen::Matrix<double, 4, 2> * pointJacobian) const
-{
+    const Eigen::Vector2d &imagePoint, Eigen::Vector4d *direction,
+    Eigen::Matrix<double, 4, 2> *pointJacobian) const {
   Eigen::Vector3d ray;
   Eigen::Matrix<double, 3, 2> pointJacobian3;
   bool success = backProject(imagePoint, &ray, &pointJacobian3);
   direction->template head<3>() = ray;
   (*direction)[4] = 1.0;  // arbitrary
-  pointJacobian->template bottomRightCorner<1,2>() = Eigen::Vector2d::Zero();
+  pointJacobian->template bottomRightCorner<1, 2>() = Eigen::Vector2d::Zero();
   pointJacobian->template topLeftCorner<3, 2>() = pointJacobian3;
   return success;
 }
@@ -526,16 +518,15 @@ bool PinholeCamera<DISTORTION_T>::backProjectHomogeneous(
 // Back-project 2d image points into homogeneous points (direction vectors).
 template<class DISTORTION_T>
 bool PinholeCamera<DISTORTION_T>::backProjectHomogeneousBatch(
-    const Eigen::Matrix2Xd & imagePoints, Eigen::Matrix4Xd * directions,
-    std::vector<bool> * success) const
-{
+    const Eigen::Matrix2Xd &imagePoints, Eigen::Matrix4Xd *directions,
+    std::vector<bool> *success) const {
   const int numPoints = imagePoints.cols();
   directions->row(3) = Eigen::VectorXd::Ones(numPoints);
   for (int i = 0; i < numPoints; ++i) {
     Eigen::Vector2d imagePoint = imagePoints.col(i);
     Eigen::Vector3d point;
     bool suc = backProject(imagePoint, &point);
-    if(success)
+    if (success)
       success->push_back(suc);
     directions->template block<3, 1>(0, i) = point;
   }

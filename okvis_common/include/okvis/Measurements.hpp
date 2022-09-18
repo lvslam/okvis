@@ -43,13 +43,17 @@
 #include <deque>
 #include <vector>
 #include <memory>
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Woverloaded-virtual"
+
 #include <opencv2/opencv.hpp>
+
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
+
 #include <Eigen/Dense>
 #include <okvis/Time.hpp>
 #include <okvis/kinematics/Transformation.hpp>
@@ -64,7 +68,8 @@ namespace okvis {
  * \tparam MEASUREMENT_T Measurement data type.
  */
 template<class MEASUREMENT_T>
-struct Measurement {
+struct Measurement
+{
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   okvis::Time timeStamp;      ///< Measurement timestamp
   MEASUREMENT_T measurement;  ///< Actual measurement.
@@ -74,13 +79,14 @@ struct Measurement {
   Measurement()
       : timeStamp(0.0) {
   }
+
   /**
    * @brief Constructor
    * @param timeStamp_ Measurement timestamp.
    * @param measurement_ Actual measurement.
    * @param sensorId Sensor ID (optional).
    */
-  Measurement(const okvis::Time& timeStamp_, const MEASUREMENT_T& measurement_,
+  Measurement(const okvis::Time &timeStamp_, const MEASUREMENT_T &measurement_,
               int sensorId = -1)
       : timeStamp(timeStamp_),
         measurement(measurement_),
@@ -88,14 +94,18 @@ struct Measurement {
   }
 };
 
+
 /// \brief IMU measurements. For now assume they are synchronized:
-struct ImuSensorReadings {
+struct ImuSensorReadings
+{
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
   /// \brief Default constructor.
   ImuSensorReadings()
       : gyroscopes(),
         accelerometers() {
   }
+
   /**
    * @brief Constructor.
    * @param gyroscopes_ Gyroscope measurement.
@@ -106,28 +116,35 @@ struct ImuSensorReadings {
       : gyroscopes(gyroscopes_),
         accelerometers(accelerometers_) {
   }
+
   Eigen::Vector3d gyroscopes;     ///< Gyroscope measurement.
   Eigen::Vector3d accelerometers; ///< Accelerometer measurement.
 };
 
+
 /// \brief Depth camera measurements. For now assume they are synchronized:
-struct DepthCameraData {
+struct DepthCameraData
+{
   cv::Mat image;  ///< Grayscale/RGB image.
   cv::Mat depthImage; ///< Depth image.
   std::vector<cv::KeyPoint> keypoints;  ///< Keypoints if available.
   bool deliversKeypoints; ///< Are keypoints already delievered in measurement?
 };
 
+
 /// \brief Position measurement.
-struct PositionReading {
+struct PositionReading
+{
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::Vector3d position;           ///< Position measurement.
   Eigen::Vector3d positionOffset;     ///< Position offset.
   Eigen::Matrix3d positionCovariance; ///< Measurement covariance.
 };
 
+
 /// \brief GPS position measurement.
-struct GpsPositionReading {
+struct GpsPositionReading
+{
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   double lat_wgs84;   ///< Latitude in WGS84 coordinate system.
   double lon_wgs84;   ///< Longitude in WGS84 coordiante system.
@@ -136,45 +153,55 @@ struct GpsPositionReading {
   Eigen::Matrix3d positionCovarianceENU; ///< Measurement covariance. East/North/Up.
 };
 
+
 /// \brief Magnetometer measurement.
-struct MagnetometerReading {
+struct MagnetometerReading
+{
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   ///< The magnetic flux density measurement. [uT]
   Eigen::Vector3d fluxDensity;
 };
 
+
 /// \brief Barometer measurement.
-struct BarometerReading {
+struct BarometerReading
+{
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   double pressure;    ///< Pressure measurement. [Pa]
   double temperature; ///< Temperature. [K]
 };
 
+
 /// \brief Differential pressure sensor measurement.
-struct DifferentialPressureReading {
+struct DifferentialPressureReading
+{
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   double pressure;  ///< Pressure measurement. [Pa]
   Eigen::Vector3d acceleration_B;  ///< Acceleration in B-frame.
 };
+
 
 // this is how we store raw measurements before more advanced filling into
 // data structures happens:
 typedef Measurement<ImuSensorReadings> ImuMeasurement;
 typedef std::deque<ImuMeasurement, Eigen::aligned_allocator<ImuMeasurement> > ImuMeasurementDeque;
 /// \brief Camera measurement.
-struct CameraData {
+struct CameraData
+{
   cv::Mat image;  ///< Image.
   std::vector<cv::KeyPoint> keypoints; ///< Keypoints if available.
   bool deliversKeypoints; ///< Are the keypoints delivered too?
 };
 /// \brief Keypoint measurement.
-struct KeypointData {
+struct KeypointData
+{
   std::vector<cv::KeyPoint> keypoints;  ///< Keypoints.
   std::vector<long unsigned int> landmarkIds; ///< Associated landmark IDs.
   cv::Mat descriptors;  ///< Keypoint descriptors.
 };
 /// \brief Frame measurement.
-struct FrameData {
+struct FrameData
+{
   typedef std::shared_ptr<okvis::FrameData> Ptr;
   CameraData image; ///< Camera measurement, i.e., image.
   KeypointData keypoints; ///< Keypoints.

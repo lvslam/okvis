@@ -56,11 +56,13 @@ namespace okvis {
 /**
  * @brief This class is responsible to visualize the matching results
  */
-class VioVisualizer {
- public:
+class VioVisualizer
+{
+public:
 
   /// @brief This struct contains the relevant data for visualizing
-  struct VisualizationData {
+  struct VisualizationData
+  {
     typedef std::shared_ptr<VisualizationData> Ptr;
     okvis::ObservationVector observations;    ///< Vector containing all the keypoint observations.
     std::shared_ptr<okvis::MultiFrame> currentFrames; ///< Current multiframe.
@@ -68,25 +70,27 @@ class VioVisualizer {
     okvis::kinematics::Transformation T_WS_keyFrame;  ///< Pose of the current keyframe
   };
 
+
   OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /**
    * @brief Constructor.
    * @param parameters Parameters and settings.
    */
-  VioVisualizer(okvis::VioParameters& parameters);
+  VioVisualizer(okvis::VioParameters &parameters);
   virtual ~VioVisualizer();
 
   /**
    * @brief Initialise parameters. Called in constructor.
    * @param parameters Parameters and settings.
    */
-  void init(okvis::VioParameters& parameters);
+  void init(okvis::VioParameters &parameters);
   /**
    * @brief Show the current frames with the current keyframe and all its matches.
    * @param data Visualization data containing all the info.
    */
-  void showDebugImages(VisualizationData::Ptr& data);
+  void showDebugImages(VisualizationData::Ptr &data);
 
   /**
    * @brief Circles all keypoints in the current frame, links the matching ones to
@@ -95,16 +99,16 @@ class VioVisualizer {
    * @param image_number Index of the frame to display.
    * @return OpenCV matrix with the resulting image.
    */
-  cv::Mat drawMatches(VisualizationData::Ptr& data, size_t image_number);
-  
- private:
+  cv::Mat drawMatches(VisualizationData::Ptr &data, size_t image_number);
+
+private:
   /**
    * @brief Circles all keypoints in the current frame and returns the result.
    * @param data Visualization data.
    * @param cameraIndex Index of the frame to display.
    * @return OpenCV matrix with the resulting image.
    */
-  cv::Mat drawKeypoints(VisualizationData::Ptr& data, size_t cameraIndex);
+  cv::Mat drawKeypoints(VisualizationData::Ptr &data, size_t cameraIndex);
 
   /// Parameters and settings.
   okvis::VioParameters parameters_;

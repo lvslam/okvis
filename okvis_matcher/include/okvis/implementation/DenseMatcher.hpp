@@ -46,10 +46,10 @@ namespace okvis {
 // This function creates all the matching threads and assigns the best matches afterwards.
 template<typename MATCHING_ALGORITHM_T>
 void DenseMatcher::matchBody(
-    void (DenseMatcher::*doWorkPtr)(MatchJob&, MATCHING_ALGORITHM_T*),
-    MATCHING_ALGORITHM_T& matchingAlgorithm) {
+    void (DenseMatcher::*doWorkPtr)(MatchJob &, MATCHING_ALGORITHM_T *),
+    MATCHING_ALGORITHM_T &matchingAlgorithm) {
   // create lock list
-  std::mutex* locks = new std::mutex[matchingAlgorithm.sizeB()];
+  std::mutex *locks = new std::mutex[matchingAlgorithm.sizeB()];
 
   //the pairing list
   pairing_list_t vpairs;
@@ -92,31 +92,33 @@ void DenseMatcher::matchBody(
   matchingAlgorithm.reserveMatches(vpairs.size());
 
   // assemble the pairs and return
-  const distance_t& const_distratiothres = matchingAlgorithm.distanceRatioThreshold();
-  const distance_t& const_distthres = matchingAlgorithm.distanceThreshold();
+  const distance_t &const_distratiothres = matchingAlgorithm.distanceRatioThreshold();
+  const distance_t &const_distthres = matchingAlgorithm.distanceThreshold();
   for (size_t i = 0; i < vpairs.size(); ++i) {
     if (useDistanceRatioThreshold_ && vpairs[i].distance < const_distthres) {
-      const std::vector<pairing_t>& best_matches_list =
+      const std::vector<pairing_t> &best_matches_list =
           vMyBest[vpairs[i].indexA];
       OKVIS_ASSERT_TRUE_DBG(Exception, best_matches_list[0].indexA != -1,
                             "assertion failed");
 
       if (best_matches_list[1].indexA != -1) {
-        const distance_t& best_match_distance = best_matches_list[0].distance;
-        const distance_t& second_best_match_distance = best_matches_list[1]
+        const distance_t &best_match_distance = best_matches_list[0].distance;
+        const distance_t &second_best_match_distance = best_matches_list[1]
             .distance;
         // Only assign if the distance ratio better than the threshold.
         if (best_match_distance == 0
             || second_best_match_distance / best_match_distance
-                > const_distratiothres) {
+               > const_distratiothres) {
           matchingAlgorithm.setBestMatch(vpairs[i].indexA, i,
                                          vpairs[i].distance);
         }
-      } else {
+      }
+      else {
         // If there is only one matching feature, we assign it.
         matchingAlgorithm.setBestMatch(vpairs[i].indexA, i, vpairs[i].distance);
       }
-    } else if (vpairs[i].distance < const_distthres) {
+    }
+    else if (vpairs[i].distance < const_distthres) {
       matchingAlgorithm.setBestMatch(vpairs[i].indexA, i, vpairs[i].distance);
     }
   }
@@ -126,7 +128,7 @@ void DenseMatcher::matchBody(
 
 // Execute a matching algorithm. This is the fast, templated version. Use this.
 template<typename MATCHING_ALGORITHM_T>
-void DenseMatcher::match(MATCHING_ALGORITHM_T & matchingAlgorithm) {
+void DenseMatcher::match(MATCHING_ALGORITHM_T &matchingAlgorithm) {
   typedef MATCHING_ALGORITHM_T matching_algorithm_t;
   matchingAlgorithm.doSetup();
 
@@ -137,7 +139,7 @@ void DenseMatcher::match(MATCHING_ALGORITHM_T & matchingAlgorithm) {
 
 // Execute a matching algorithm implementing image space matching.
 template<typename MATCHING_ALGORITHM_T>
-void DenseMatcher::matchInImageSpace(MATCHING_ALGORITHM_T & matchingAlgorithm) {
+void DenseMatcher::matchInImageSpace(MATCHING_ALGORITHM_T &matchingAlgorithm) {
   typedef MATCHING_ALGORITHM_T matching_algorithm_t;
   matchingAlgorithm.doSetup();
 
@@ -151,7 +153,7 @@ void DenseMatcher::matchInImageSpace(MATCHING_ALGORITHM_T & matchingAlgorithm) {
 // found so far, it is included in the aiBest list.
 template<typename MATCHING_ALGORITHM_T>
 inline void DenseMatcher::listBIteration(
-    MATCHING_ALGORITHM_T* matchingAlgorithm, std::vector<pairing_t>& aiBest,
+    MATCHING_ALGORITHM_T *matchingAlgorithm, std::vector<pairing_t> &aiBest,
     size_t shortindexA, size_t i) {
   OKVIS_ASSERT_TRUE(std::runtime_error, matchingAlgorithm != NULL,
                     "matching algorithm is NULL");
@@ -181,7 +183,7 @@ inline void DenseMatcher::listBIteration(
 // The threading worker. This matches a keypoint with every other keypoint to find the best match.
 template<typename MATCHING_ALGORITHM_T>
 void DenseMatcher::doWorkLinearMatching(
-    MatchJob & my_job, MATCHING_ALGORITHM_T * matchingAlgorithm) {
+    MatchJob &my_job, MATCHING_ALGORITHM_T *matchingAlgorithm) {
   OKVIS_ASSERT_TRUE(std::runtime_error, matchingAlgorithm != NULL,
                     "matching algorithm is NULL");
   try {
@@ -195,12 +197,12 @@ void DenseMatcher::doWorkLinearMatching(
 
     size_t sizeA = matchingAlgorithm->sizeA();
     for (size_t shortindexA = start; shortindexA < sizeA; shortindexA +=
-        numMatcherThreads_) {
+                                                              numMatcherThreads_) {
       if (matchingAlgorithm->skipA(shortindexA))
         continue;
 
       //typename DenseMatcher::distance_t tmpdist;
-      std::vector<pairing_t> & aiBest = (*my_job.vMyBest)[shortindexA];
+      std::vector<pairing_t> &aiBest = (*my_job.vMyBest)[shortindexA];
 
       // initialize the best match to be -1 (no match) and set the score to be the distance threshold
       // No matches worse than the distance threshold will get through.
@@ -218,7 +220,7 @@ void DenseMatcher::doWorkLinearMatching(
       assignbest(static_cast<int>(shortindexA), *(my_job.vpairs),
                  *(my_job.vMyBest), my_job.mutexes, 0);  //this call assigns the match and reassigns losing matches recursively
     }
-  } catch (const std::exception & e) {
+  } catch (const std::exception &e) {
     // \todo Install an error handler in the matching algorithm?
     std::cout << "\033[31mException in matching thread:\033[0m " << e.what();
   }
@@ -229,7 +231,7 @@ void DenseMatcher::doWorkLinearMatching(
 // MatchingAlgorithm->getListBEndIterator().
 template<typename MATCHING_ALGORITHM_T>
 void DenseMatcher::doWorkImageSpaceMatching(
-    MatchJob & my_job, MATCHING_ALGORITHM_T* matchingAlgorithm) {
+    MatchJob &my_job, MATCHING_ALGORITHM_T *matchingAlgorithm) {
   OKVIS_ASSERT_TRUE(std::runtime_error, matchingAlgorithm != NULL,
                     "matching algorithm is NULL");
   try {
@@ -246,12 +248,12 @@ void DenseMatcher::doWorkImageSpaceMatching(
     }
 
     for (size_t shortindexA = start; shortindexA < matchingAlgorithm->sizeA();
-        shortindexA += numMatcherThreads_) {
+         shortindexA += numMatcherThreads_) {
       if (matchingAlgorithm->skipA(shortindexA))
         continue;
 
       typename DenseMatcher::distance_t tmpdist;
-      std::vector<pairing_t>& aiBest = (*my_job.vMyBest)[shortindexA];
+      std::vector<pairing_t> &aiBest = (*my_job.vMyBest)[shortindexA];
 
       // initialize the best match to be -1 (no match) and set the score to be the distance threshold
       // No matches worse than the distance threshold will get through.
@@ -278,7 +280,7 @@ void DenseMatcher::doWorkImageSpaceMatching(
                  *(my_job.vMyBest), my_job.mutexes, 0);  //this call assigns the match and reassigns losing matches recursively
     }
 
-  } catch (const std::exception & e) {
+  } catch (const std::exception &e) {
     // \todo Install an error handler in the matching algorithm?
     std::cout << "\033[31mException in matching thread:\033[0m " << e.what();
   }

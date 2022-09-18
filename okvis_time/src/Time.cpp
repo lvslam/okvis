@@ -46,7 +46,7 @@
  * @author Stefan Leutenegger
  * @author Andreas Forster
  */
- 
+
 #ifdef _MSC_VER
 #ifndef NOMINMAX
 #define NOMINMAX
@@ -80,10 +80,10 @@ namespace okvis {
  ** Variables
  *********************************************************************/
 
-const Duration DURATION_MAX(std::numeric_limits < int32_t > ::max(), 999999999);
-const Duration DURATION_MIN(std::numeric_limits < int32_t > ::min(), 0);
+const Duration DURATION_MAX(std::numeric_limits<int32_t>::max(), 999999999);
+const Duration DURATION_MIN(std::numeric_limits<int32_t>::min(), 0);
 
-const Time TIME_MAX(std::numeric_limits < uint32_t > ::max(), 999999999);
+const Time TIME_MAX(std::numeric_limits<uint32_t>::max(), 999999999);
 const Time TIME_MIN(0, 1);
 
 /*********************************************************************
@@ -93,9 +93,9 @@ const Time TIME_MIN(0, 1);
  * These have only internal linkage to this translation unit.
  * (i.e. not exposed to users of the time classes)
  */
-void okvis_walltime(uint32_t& sec, uint32_t& nsec)
-#ifndef WIN32    
-                        throw (NoHighPerformanceTimersException)
+void okvis_walltime(uint32_t &sec, uint32_t &nsec)
+#ifndef WIN32
+throw(NoHighPerformanceTimersException)
 #endif
 {
 #ifndef WIN32
@@ -167,6 +167,7 @@ void okvis_walltime(uint32_t& sec, uint32_t& nsec)
   nsec = nsec_sum;
 #endif
 }
+
 /**
  * @brief Simple representation of the rt library nanosleep function.
  */
@@ -195,7 +196,7 @@ int okvis_nanosleep(const uint32_t &sec, const uint32_t &nsec) {
   }
   return 0;
 #else
-  timespec req = { sec, nsec };
+  timespec req = {sec, nsec};
   return nanosleep(&req, NULL);
 #endif
 }
@@ -209,8 +210,8 @@ bool okvis_wallsleep(uint32_t sec, uint32_t nsec) {
 #if defined(WIN32)
   okvis_nanosleep(sec,nsec);
 #else
-  timespec req = { sec, nsec };
-  timespec rem = { 0, 0 };
+  timespec req = {sec, nsec};
+  timespec rem = {0, 0};
   while (nanosleep(&req, &rem)) {
     req = rem;
   }
@@ -242,7 +243,7 @@ Time Time::now() {
   return t;
 }
 
-void Time::setNow(const Time&) {
+void Time::setNow(const Time &) {
   throw std::runtime_error("Unimplemented function");
 }
 
@@ -260,7 +261,7 @@ bool Time::waitForValid() {
   return waitForValid(okvis::WallDuration());
 }
 
-bool Time::waitForValid(const okvis::WallDuration& /*timeout*/) {
+bool Time::waitForValid(const okvis::WallDuration & /*timeout*/) {
   /*okvis::WallTime start = ros::WallTime::now();
   while (!isValid() && !stopped_) {
     okvis::WallDuration(0.01).sleep();
@@ -276,17 +277,17 @@ bool Time::waitForValid(const okvis::WallDuration& /*timeout*/) {
   return false;
 }
 
-std::ostream& operator<<(std::ostream& os, const Time &rhs) {
+std::ostream &operator<<(std::ostream &os, const Time &rhs) {
   os << rhs.sec << "." << std::setw(9) << std::setfill('0') << rhs.nsec;
   return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const Duration& rhs) {
+std::ostream &operator<<(std::ostream &os, const Duration &rhs) {
   os << rhs.sec << "." << std::setw(9) << std::setfill('0') << rhs.nsec;
   return os;
 }
 
-bool Time::sleepUntil(const Time& end) {
+bool Time::sleepUntil(const Time &end) {
   if (Time::useSystemTime()) {
     Duration d(end - Time::now());
     if (d > Duration(0)) {
@@ -294,7 +295,8 @@ bool Time::sleepUntil(const Time& end) {
     }
 
     return true;
-  } else {
+  }
+  else {
     Time start = Time::now();
     while ((Time::now() < end)) {
       okvis_nanosleep(0, 1000000);
@@ -307,7 +309,7 @@ bool Time::sleepUntil(const Time& end) {
   }
 }
 
-bool WallTime::sleepUntil(const WallTime& end) {
+bool WallTime::sleepUntil(const WallTime &end) {
   WallDuration d(end - WallTime::now());
   if (d > WallDuration(0)) {
     return d.sleep();
@@ -319,7 +321,8 @@ bool WallTime::sleepUntil(const WallTime& end) {
 bool Duration::sleep() const {
   if (Time::useSystemTime()) {
     return okvis_wallsleep(sec, nsec);
-  } else {
+  }
+  else {
     Time start = Time::now();
     Time end = start + *this;
     if (start.isZero()) {
@@ -346,7 +349,7 @@ bool Duration::sleep() const {
   }
 }
 
-std::ostream &operator<<(std::ostream& os, const WallTime &rhs) {
+std::ostream &operator<<(std::ostream &os, const WallTime &rhs) {
   os << rhs.sec << "." << std::setw(9) << std::setfill('0') << rhs.nsec;
   return os;
 }
@@ -358,7 +361,7 @@ WallTime WallTime::now() {
   return t;
 }
 
-std::ostream &operator<<(std::ostream& os, const WallDuration& rhs) {
+std::ostream &operator<<(std::ostream &os, const WallDuration &rhs) {
   os << rhs.sec << "." << std::setw(9) << std::setfill('0') << rhs.nsec;
   return os;
 }
@@ -367,7 +370,7 @@ bool WallDuration::sleep() const {
   return okvis_wallsleep(sec, nsec);
 }
 
-void normalizeSecNSec(uint64_t& sec, uint64_t& nsec) {
+void normalizeSecNSec(uint64_t &sec, uint64_t &nsec) {
   uint64_t nsec_part = nsec % 1000000000UL;
   uint64_t sec_part = nsec / 1000000000UL;
 
@@ -378,7 +381,7 @@ void normalizeSecNSec(uint64_t& sec, uint64_t& nsec) {
   nsec = nsec_part;
 }
 
-void normalizeSecNSec(uint32_t& sec, uint32_t& nsec) {
+void normalizeSecNSec(uint32_t &sec, uint32_t &nsec) {
   uint64_t sec64 = sec;
   uint64_t nsec64 = nsec;
 
@@ -388,7 +391,7 @@ void normalizeSecNSec(uint32_t& sec, uint32_t& nsec) {
   nsec = (uint32_t) nsec64;
 }
 
-void normalizeSecNSecUnsigned(int64_t& sec, int64_t& nsec) {
+void normalizeSecNSecUnsigned(int64_t &sec, int64_t &nsec) {
   int64_t nsec_part = nsec;
   int64_t sec_part = sec;
 
@@ -408,7 +411,12 @@ void normalizeSecNSecUnsigned(int64_t& sec, int64_t& nsec) {
   nsec = nsec_part;
 }
 
-template class TimeBase<Time, Duration> ;
-template class TimeBase<WallTime, WallDuration> ;
+
+template
+class TimeBase<Time, Duration>;
+
+
+template
+class TimeBase<WallTime, WallDuration>;
 }
 

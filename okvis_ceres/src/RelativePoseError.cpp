@@ -46,7 +46,7 @@ namespace ceres {
 
 // Construct with measurement and information matrix.
 RelativePoseError::RelativePoseError(
-    const Eigen::Matrix<double, 6, 6> & information) {
+    const Eigen::Matrix<double, 6, 6> &information) {
   setInformation(information);
 }
 
@@ -57,15 +57,15 @@ RelativePoseError::RelativePoseError(double translationVariance,
   information_t information;
   information.setZero();
   information.topLeftCorner<3, 3>() = Eigen::Matrix3d::Identity() * 1.0
-      / translationVariance;
+                                      / translationVariance;
   information.bottomRightCorner<3, 3>() = Eigen::Matrix3d::Identity() * 1.0
-      / rotationVariance;
+                                          / rotationVariance;
 
   setInformation(information);
 }
 
 // Set the information.
-void RelativePoseError::setInformation(const information_t & information) {
+void RelativePoseError::setInformation(const information_t &information) {
   information_ = information;
   covariance_ = information.inverse();
   // perform the Cholesky decomposition on order to obtain the correct error weighting
@@ -74,16 +74,16 @@ void RelativePoseError::setInformation(const information_t & information) {
 }
 
 // This evaluates the error term and additionally computes the Jacobians.
-bool RelativePoseError::Evaluate(double const* const * parameters,
-                                 double* residuals, double** jacobians) const {
+bool RelativePoseError::Evaluate(double const *const *parameters,
+                                 double *residuals, double **jacobians) const {
   return EvaluateWithMinimalJacobians(parameters, residuals, jacobians, NULL);
 }
 
 // This evaluates the error term and additionally computes
 // the Jacobians in the minimal internal representation.
 bool RelativePoseError::EvaluateWithMinimalJacobians(
-    double const* const * parameters, double* residuals, double** jacobians,
-    double** jacobiansMinimal) const {
+    double const *const *parameters, double *residuals, double **jacobians,
+    double **jacobiansMinimal) const {
 
   // compute error
   okvis::kinematics::Transformation T_WS_0(

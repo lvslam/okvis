@@ -62,11 +62,15 @@ class ImuError :
         9 /* size of second parameter (SpeedAndBiasParameterBlock k) */,
         7 /* size of third parameter (PoseParameterBlock k+1) */,
         9 /* size of fourth parameter (SpeedAndBiasParameterBlock k+1) */>,
-    public ErrorInterface {
- public:
+    public ErrorInterface
+{
+public:
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
+
+
+  OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /// \brief The base in ceres we derive from
   typedef ::ceres::SizedCostFunction<15, 7, 9, 7, 9> base_t;
@@ -103,9 +107,9 @@ class ImuError :
   /// \@param[in] imuParameters The parameters to be used.
   /// \@param[in] t_0 Start time.
   /// \@param[in] t_1 End time.
-  ImuError(const okvis::ImuMeasurementDeque & imuMeasurements,
-           const okvis::ImuParameters & imuParameters, const okvis::Time& t_0,
-           const okvis::Time& t_1);
+  ImuError(const okvis::ImuMeasurementDeque &imuMeasurements,
+           const okvis::ImuParameters &imuParameters, const okvis::Time &t_0,
+           const okvis::Time &t_1);
 
   /**
    * @brief Propagates pose, speeds and biases with given IMU measurements.
@@ -120,13 +124,13 @@ class ImuError :
    * @param[out] jacobian Jacobian w.r.t. start states.
    * @return Number of integration steps.
    */
-  static int propagation(const okvis::ImuMeasurementDeque & imuMeasurements,
-                         const okvis::ImuParameters & imuParams,
-                         okvis::kinematics::Transformation& T_WS,
-                         okvis::SpeedAndBias & speedAndBiases,
-                         const okvis::Time& t_start, const okvis::Time& t_end,
-                         covariance_t* covariance = 0,
-                         jacobian_t* jacobian = 0);
+  static int propagation(const okvis::ImuMeasurementDeque &imuMeasurements,
+                         const okvis::ImuParameters &imuParams,
+                         okvis::kinematics::Transformation &T_WS,
+                         okvis::SpeedAndBias &speedAndBiases,
+                         const okvis::Time &t_start, const okvis::Time &t_end,
+                         covariance_t *covariance = 0,
+                         jacobian_t *jacobian = 0);
 
   /**
    * @brief Propagates pose, speeds and biases with given IMU measurements.
@@ -135,32 +139,32 @@ class ImuError :
    * @param[in] speedAndBiases Start speed and biases.
    * @return Number of integration steps.
    */
-  int redoPreintegration(const okvis::kinematics::Transformation& T_WS,
-                         const okvis::SpeedAndBias & speedAndBiases) const;
+  int redoPreintegration(const okvis::kinematics::Transformation &T_WS,
+                         const okvis::SpeedAndBias &speedAndBiases) const;
 
   // setters
 
   /// \brief (Re)set the parameters.
   /// \@param[in] imuParameters The parameters to be used.
-  void setImuParameters(const okvis::ImuParameters& imuParameters) {
+  void setImuParameters(const okvis::ImuParameters &imuParameters) {
     imuParameters_ = imuParameters;
   }
 
   /// \brief (Re)set the measurements
   /// \@param[in] imuMeasurements All the IMU measurements.
-  void setImuMeasurements(const okvis::ImuMeasurementDeque& imuMeasurements) {
+  void setImuMeasurements(const okvis::ImuMeasurementDeque &imuMeasurements) {
     imuMeasurements_ = imuMeasurements;
   }
 
   /// \brief (Re)set the start time.
   /// \@param[in] t_0 Start time.
-  void setT0(const okvis::Time& t_0) {
+  void setT0(const okvis::Time &t_0) {
     t0_ = t_0;
   }
 
   /// \brief (Re)set the start time.
   /// \@param[in] t_1 End time.
-  void setT1(const okvis::Time& t_1) {
+  void setT1(const okvis::Time &t_1) {
     t1_ = t_1;
   }
 
@@ -168,12 +172,12 @@ class ImuError :
 
   /// \brief Get the IMU Parameters.
   /// \return the IMU parameters.
-  const okvis::ImuParameters& imuParameters() const {
+  const okvis::ImuParameters &imuParameters() const {
     return imuParameters_;
   }
 
   /// \brief Get the IMU measurements.
-  const okvis::ImuMeasurementDeque& imuMeasurements() const {
+  const okvis::ImuMeasurementDeque &imuMeasurements() const {
     return imuMeasurements_;
   }
 
@@ -195,8 +199,8 @@ class ImuError :
    * @param jacobians Pointer to the Jacobians (see ceres)
    * @return success of th evaluation.
    */
-  virtual bool Evaluate(double const* const * parameters, double* residuals,
-                        double** jacobians) const;
+  virtual bool Evaluate(double const *const *parameters, double *residuals,
+                        double **jacobians) const;
 
   /**
    * @brief This evaluates the error term and additionally computes
@@ -207,9 +211,9 @@ class ImuError :
    * @param jacobiansMinimal Pointer to the minimal Jacobians (equivalent to jacobians).
    * @return Success of the evaluation.
    */
-  bool EvaluateWithMinimalJacobians(double const* const * parameters,
-                                    double* residuals, double** jacobians,
-                                    double** jacobiansMinimal) const;
+  bool EvaluateWithMinimalJacobians(double const *const *parameters,
+                                    double *residuals, double **jacobians,
+                                    double **jacobiansMinimal) const;
 
   // sizes
   /// \brief Residual dimension.
@@ -234,7 +238,7 @@ class ImuError :
     return "ImuError";
   }
 
- protected:
+protected:
   // parameters
   okvis::ImuParameters imuParameters_; ///< The IMU parameters.
 
@@ -248,7 +252,7 @@ class ImuError :
   // preintegration stuff. the mutable is a TERRIBLE HACK, but what can I do.
   mutable std::mutex preintegrationMutex_; //< Protect access of intermediate results.
   // increments (initialise with identity)
-  mutable Eigen::Quaterniond Delta_q_ = Eigen::Quaterniond(1,0,0,0); ///< Intermediate result
+  mutable Eigen::Quaterniond Delta_q_ = Eigen::Quaterniond(1, 0, 0, 0); ///< Intermediate result
   mutable Eigen::Matrix3d C_integral_ = Eigen::Matrix3d::Zero(); ///< Intermediate result
   mutable Eigen::Matrix3d C_doubleintegral_ = Eigen::Matrix3d::Zero(); ///< Intermediate result
   mutable Eigen::Vector3d acc_integral_ = Eigen::Vector3d::Zero(); ///< Intermediate result
@@ -263,7 +267,7 @@ class ImuError :
   mutable Eigen::Matrix3d dp_db_g_ = Eigen::Matrix3d::Zero(); ///< Intermediate result
 
   /// \brief The Jacobian of the increment (w/o biases).
-  mutable Eigen::Matrix<double,15,15> P_delta_ = Eigen::Matrix<double,15,15>::Zero();
+  mutable Eigen::Matrix<double, 15, 15> P_delta_ = Eigen::Matrix<double, 15, 15>::Zero();
 
   /// \brief Reference biases that are updated when called redoPreintegration.
   mutable SpeedAndBiases speedAndBiases_ref_ = SpeedAndBiases::Zero();

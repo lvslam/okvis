@@ -42,10 +42,14 @@
 #define INCLUDE_OKVIS_NCAMERASYSTEM_HPP_
 
 #include <memory>
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+
 #include <opencv2/core/core.hpp> // Code that causes warning goes here
+
 #pragma GCC diagnostic pop
+
 #include <okvis/kinematics/Transformation.hpp>
 #include <okvis/assert_macros.hpp>
 #include "okvis/cameras/CameraBase.hpp"
@@ -60,12 +64,16 @@ namespace cameras {
 /// (potentially different) cameras.
 class NCameraSystem
 {
- public:
+public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
+
+
+  OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /// The enumeration of the currently supported distortion types.
-  enum DistortionType  {
+  enum DistortionType
+  {
     Equidistant = 0, ///< Use with okvis::cameras::EquidistantDistortion.
     RadialTangential = 1, ///< Use with okvis::cameras::RadialTangentialDistortion.
     NoDistortion = 2,
@@ -79,9 +87,9 @@ class NCameraSystem
   /// @param[in] cameraGeometries a vector of camera geometries (same length as T_SC).
   /// @param[in] distortionTypes a vector of distortion types (same length as T_SC).
   /// @param[in] computeOverlaps Indicate, if the overlap computation (can take a while) should be performed.
-  inline NCameraSystem(const std::vector<std::shared_ptr<const okvis::kinematics::Transformation>> & T_SC,
-                       const std::vector<std::shared_ptr<const cameras::CameraBase>> & cameraGeometries,
-                       const std::vector<DistortionType>& distortionTypes,
+  inline NCameraSystem(const std::vector<std::shared_ptr<const okvis::kinematics::Transformation>> &T_SC,
+                       const std::vector<std::shared_ptr<const cameras::CameraBase>> &cameraGeometries,
+                       const std::vector<DistortionType> &distortionTypes,
                        bool computeOverlaps);
 
   /// \brief Destructor that doesn't do anything really.
@@ -92,9 +100,9 @@ class NCameraSystem
   /// @param[in] cameraGeometries a vector of camera geometries (same length as T_SC).
   /// @param[in] distortionTypes a vector of distortion types (same length as T_SC).
   /// @param[in] computeOverlaps Indicate, if the overlap computation (can take a while) should be performed.
-  inline void reset(const std::vector<std::shared_ptr<const okvis::kinematics::Transformation>> & T_SC,
-                    const std::vector<std::shared_ptr<const cameras::CameraBase>> & cameraGeometries,
-                    const std::vector<DistortionType>& distortionTypes,
+  inline void reset(const std::vector<std::shared_ptr<const okvis::kinematics::Transformation>> &T_SC,
+                    const std::vector<std::shared_ptr<const cameras::CameraBase>> &cameraGeometries,
+                    const std::vector<DistortionType> &distortionTypes,
                     bool computeOverlaps);
 
   /// \brief Append with a single camera.
@@ -135,7 +143,7 @@ class NCameraSystem
   /// @param[in] cameraIndex The camera index for the other camera.
   /// @return The overlap mask image.
   inline const cv::Mat overlap(size_t cameraIndexSeenBy,
-                                 size_t cameraIndex) const;
+                               size_t cameraIndex) const;
 
   /// \brief Can the first camera see parts of the FOV of the second camera?
   /// @param[in] cameraIndexSeenBy The camera index for one camera.
@@ -143,7 +151,7 @@ class NCameraSystem
   /// @return True, if there is at least one pixel of overlap.
   inline bool hasOverlap(size_t cameraIndexSeenBy, size_t cameraIndex) const;
 
- protected:
+protected:
   /// \brief Use this to check overlapMats_ and overlaps_ have correct sizes
   /// @return True, if valid.
   inline bool overlapComputationValid() const;

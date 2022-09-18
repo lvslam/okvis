@@ -76,8 +76,10 @@ namespace okvis {
  */
 class Estimator : public VioBackendInterface
 {
- public:
+public:
   OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
+
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /**
@@ -100,7 +102,7 @@ class Estimator : public VioBackendInterface
    * @return Index of new camera.
    */
   int addCamera(
-      const okvis::ExtrinsicsEstimationParameters & extrinsicsEstimationParameters);
+      const okvis::ExtrinsicsEstimationParameters &extrinsicsEstimationParameters);
 
   /**
    * @brief Add an IMU to the configuration.
@@ -108,7 +110,7 @@ class Estimator : public VioBackendInterface
    * @param imuParameters The IMU parameters.
    * @return index of IMU.
    */
-  int addImu(const okvis::ImuParameters & imuParameters);
+  int addImu(const okvis::ImuParameters &imuParameters);
 
   /**
    * @brief Remove all cameras from the configuration
@@ -130,7 +132,7 @@ class Estimator : public VioBackendInterface
    * @return True if successful.
    */
   bool addStates(okvis::MultiFramePtr multiFrame,
-                 const okvis::ImuMeasurementDeque & imuMeasurements,
+                 const okvis::ImuMeasurementDeque &imuMeasurements,
                  bool asKeyframe);
 
   /**
@@ -138,7 +140,7 @@ class Estimator : public VioBackendInterface
    * @param poseId The pose Id for which to print.
    * @param buffer The puffer to print into.
    */
-  void printStates(uint64_t poseId, std::ostream & buffer) const;
+  void printStates(uint64_t poseId, std::ostream &buffer) const;
 
   /**
    * @brief Add a landmark.
@@ -147,7 +149,7 @@ class Estimator : public VioBackendInterface
    * @return True if successful.
    */
   bool addLandmark(uint64_t landmarkId,
-                   const Eigen::Vector4d & landmark);
+                   const Eigen::Vector4d &landmark);
 
   /**
    * @brief Add an observation to a landmark.
@@ -169,7 +171,7 @@ class Estimator : public VioBackendInterface
    * @param keypointIdx ID of keypoint corresponding to the landmark.
    * @return True if observation was present and successfully removed.
    */
-  bool removeObservation(uint64_t landmarkId, uint64_t poseId,  size_t camIdx,
+  bool removeObservation(uint64_t landmarkId, uint64_t poseId, size_t camIdx,
                          size_t keypointIdx);
 
   /**
@@ -181,7 +183,7 @@ class Estimator : public VioBackendInterface
    * @return True if successful.
    */
   bool applyMarginalizationStrategy(size_t numKeyframes, size_t numImuFrames,
-                                    okvis::MapPointVector& removedLandmarks);
+                                    okvis::MapPointVector &removedLandmarks);
 
   /**
    * @brief Initialise pose from IMU measurements. For convenience as static.
@@ -190,8 +192,8 @@ class Estimator : public VioBackendInterface
    * @return True if successful.
    */
   static bool initPoseFromImu(
-      const okvis::ImuMeasurementDeque & imuMeasurements,
-      okvis::kinematics::Transformation & T_WS);
+      const okvis::ImuMeasurementDeque &imuMeasurements,
+      okvis::kinematics::Transformation &T_WS);
 
   /**
    * @brief Start ceres optimization.
@@ -218,7 +220,7 @@ class Estimator : public VioBackendInterface
   bool isLandmarkAdded(uint64_t landmarkId) const {
     bool isAdded = landmarksMap_.find(landmarkId) != landmarksMap_.end();
     OKVIS_ASSERT_TRUE_DBG(Exception, isAdded == mapPtr_->parameterBlockExists(landmarkId),
-                   "id="<<landmarkId<<" inconsistent. isAdded = " << isAdded);
+                          "id=" << landmarkId << " inconsistent. isAdded = " << isAdded);
     return isAdded;
   }
 
@@ -237,14 +239,14 @@ class Estimator : public VioBackendInterface
    * @param[out] mapPoint Landmark information, such as quality, coordinates etc.
    * @return True if successful.
    */
-  bool getLandmark(uint64_t landmarkId, okvis::MapPoint& mapPoint) const;
+  bool getLandmark(uint64_t landmarkId, okvis::MapPoint &mapPoint) const;
 
   /**
    * @brief Get a copy of all the landmarks as a PointMap.
    * @param[out] landmarks The landmarks.
    * @return number of landmarks.
    */
-  size_t getLandmarks(okvis::PointMap & landmarks) const;
+  size_t getLandmarks(okvis::PointMap &landmarks) const;
 
   /**
    * @brief Get a copy of all the landmark in a MapPointVector. This is for legacy support.
@@ -253,7 +255,7 @@ class Estimator : public VioBackendInterface
    * @see getLandmarks().
    * @return number of landmarks.
    */
-  size_t getLandmarks(okvis::MapPointVector & landmarks) const;
+  size_t getLandmarks(okvis::MapPointVector &landmarks) const;
 
   /**
    * @brief Get a multiframe.
@@ -261,8 +263,8 @@ class Estimator : public VioBackendInterface
    * @return Shared pointer to multiframe.
    */
   okvis::MultiFramePtr multiFrame(uint64_t frameId) const {
-    OKVIS_ASSERT_TRUE_DBG(Exception, multiFramePtrMap_.find(frameId)!=multiFramePtrMap_.end(),
-                       "Requested multi-frame does not exist in estimator.");
+    OKVIS_ASSERT_TRUE_DBG(Exception, multiFramePtrMap_.find(frameId) != multiFramePtrMap_.end(),
+                          "Requested multi-frame does not exist in estimator.");
     return multiFramePtrMap_.at(frameId);
   }
 
@@ -272,7 +274,7 @@ class Estimator : public VioBackendInterface
    * @param[out] T_WS Homogeneous transformation of this pose.
    * @return True if successful.
    */
-  bool get_T_WS(uint64_t poseId, okvis::kinematics::Transformation & T_WS) const;
+  bool get_T_WS(uint64_t poseId, okvis::kinematics::Transformation &T_WS) const;
 
   // the following access the optimization graph, so are not very fast.
   // Feel free to implement caching for them...
@@ -284,7 +286,7 @@ class Estimator : public VioBackendInterface
    * @param[out] speedAndBias Speed And bias requested.
    * @return True if successful.
    */
-  bool getSpeedAndBias(uint64_t poseId, uint64_t imuIdx, okvis::SpeedAndBias & speedAndBias) const;
+  bool getSpeedAndBias(uint64_t poseId, uint64_t imuIdx, okvis::SpeedAndBias &speedAndBias) const;
 
   /**
    * @brief Get camera states for a given pose ID.
@@ -295,7 +297,7 @@ class Estimator : public VioBackendInterface
    * @return True if successful.
    */
   bool getCameraSensorStates(uint64_t poseId, size_t cameraIdx,
-                              okvis::kinematics::Transformation & T_SCi) const;
+                             okvis::kinematics::Transformation &T_SCi) const;
 
   /// @brief Get the number of states/frames in the estimator.
   /// \return The number of frames.
@@ -363,7 +365,7 @@ class Estimator : public VioBackendInterface
    * @param[in] T_WS new homogeneous transformation.
    * @return True if successful.
    */
-  bool set_T_WS(uint64_t poseId, const okvis::kinematics::Transformation & T_WS);
+  bool set_T_WS(uint64_t poseId, const okvis::kinematics::Transformation &T_WS);
 
   /**
    * @brief Set the speeds and IMU biases for a given pose ID.
@@ -373,7 +375,7 @@ class Estimator : public VioBackendInterface
    * @param[in] speedAndBias new speeds and biases.
    * @return True if successful.
    */
-  bool setSpeedAndBias(uint64_t poseId, size_t imuIdx, const okvis::SpeedAndBias & speedAndBias);
+  bool setSpeedAndBias(uint64_t poseId, size_t imuIdx, const okvis::SpeedAndBias &speedAndBias);
 
   /**
    * @brief Set the transformation from sensor to camera frame for a given pose ID.
@@ -384,13 +386,13 @@ class Estimator : public VioBackendInterface
    * @return True if successful.
    */
   bool setCameraSensorStates(uint64_t poseId, size_t cameraIdx,
-                              const okvis::kinematics::Transformation & T_SCi);
+                             const okvis::kinematics::Transformation &T_SCi);
 
   /// @brief Set the homogeneous coordinates for a landmark.
   /// @param[in] landmarkId The landmark ID.
   /// @param[in] landmark Homogeneous coordinates of landmark in W-frame.
   /// @return True if successful.
-  bool setLandmark(uint64_t landmarkId, const Eigen::Vector4d & landmark);
+  bool setLandmark(uint64_t landmarkId, const Eigen::Vector4d &landmark);
 
   /// @brief Set the landmark initialization state.
   /// @param[in] landmarkId The landmark ID.
@@ -400,7 +402,7 @@ class Estimator : public VioBackendInterface
   /// @brief Set whether a frame is a keyframe or not.
   /// @param[in] frameId The frame ID.
   /// @param[in] isKeyframe Whether or not keyrame.
-  void setKeyframe(uint64_t frameId, bool isKeyframe){
+  void setKeyframe(uint64_t frameId, bool isKeyframe) {
     statesMap_.at(frameId).isKeyframe = isKeyframe;
   }
 
@@ -411,7 +413,7 @@ class Estimator : public VioBackendInterface
   }
   ///@}
 
- private:
+private:
 
   /**
    * @brief Remove an observation from a landmark.
@@ -419,6 +421,7 @@ class Estimator : public VioBackendInterface
    * @return True if successful.
    */
   bool removeObservation(::ceres::ResidualBlockId residualBlockId);
+
 
   /// \brief StateInfo This configures the state vector ordering
   struct StateInfo
@@ -430,13 +433,14 @@ class Estimator : public VioBackendInterface
     StateInfo(uint64_t id = 0, bool isRequired = true, bool exists = false)
         : id(id),
           isRequired(isRequired),
-          exists(exists)
-    {
+          exists(exists) {
     }
+
     uint64_t id; ///< The ID.
     bool isRequired; ///< Whether or not we require the state.
     bool exists; ///< Whether or not this exists in the ceres problem.
   };
+
 
   /// \brief GlobalStates The global states enumerated
   enum GlobalStates
@@ -506,32 +510,32 @@ class Estimator : public VioBackendInterface
 
   // getters
   bool getGlobalStateParameterBlockPtr(uint64_t poseId, int stateType,
-                                    std::shared_ptr<ceres::ParameterBlock>& stateParameterBlockPtr) const;
+                                       std::shared_ptr<ceres::ParameterBlock> &stateParameterBlockPtr) const;
   template<class PARAMETER_BLOCK_T>
   bool getGlobalStateParameterBlockAs(uint64_t poseId, int stateType,
-                                      PARAMETER_BLOCK_T & stateParameterBlock) const;
+                                      PARAMETER_BLOCK_T &stateParameterBlock) const;
   template<class PARAMETER_BLOCK_T>
   bool getGlobalStateEstimateAs(uint64_t poseId, int stateType,
-                                typename PARAMETER_BLOCK_T::estimate_t & state) const;
+                                typename PARAMETER_BLOCK_T::estimate_t &state) const;
 
   bool getSensorStateParameterBlockPtr(uint64_t poseId, int sensorIdx,
-                                    int sensorType, int stateType,
-                                    std::shared_ptr<ceres::ParameterBlock>& stateParameterBlockPtr) const;
+                                       int sensorType, int stateType,
+                                       std::shared_ptr<ceres::ParameterBlock> &stateParameterBlockPtr) const;
   template<class PARAMETER_BLOCK_T>
   bool getSensorStateParameterBlockAs(uint64_t poseId, int sensorIdx,
                                       int sensorType, int stateType,
-                                      PARAMETER_BLOCK_T & stateParameterBlock) const;
+                                      PARAMETER_BLOCK_T &stateParameterBlock) const;
   template<class PARAMETER_BLOCK_T>
   bool getSensorStateEstimateAs(uint64_t poseId, int sensorIdx, int sensorType,
-                                int stateType, typename PARAMETER_BLOCK_T::estimate_t & state) const;
+                                int stateType, typename PARAMETER_BLOCK_T::estimate_t &state) const;
 
   // setters
   template<class PARAMETER_BLOCK_T>
   bool setGlobalStateEstimateAs(uint64_t poseId, int stateType,
-                                const typename PARAMETER_BLOCK_T::estimate_t & state);
+                                const typename PARAMETER_BLOCK_T::estimate_t &state);
   template<class PARAMETER_BLOCK_T>
   bool setSensorStateEstimateAs(uint64_t poseId, int sensorIdx, int sensorType,
-                                int stateType, const typename PARAMETER_BLOCK_T::estimate_t & state);
+                                int stateType, const typename PARAMETER_BLOCK_T::estimate_t &state);
 
   // the following are just fixed-size containers for related parameterBlockIds:
   typedef std::array<StateInfo, 6> GlobalStatesContainer; ///< Container for global states.
@@ -541,15 +545,20 @@ class Estimator : public VioBackendInterface
   /// \brief States This summarizes all the possible states -- i.e. their ids:
   struct States
   {
-    States() : isKeyframe(false), id(0) {}
+    States() : isKeyframe(false), id(0) {
+    }
+
     States(bool isKeyframe, uint64_t id, okvis::Time timestamp)
-      : isKeyframe(isKeyframe), id(id), timestamp(timestamp) {}
+        : isKeyframe(isKeyframe), id(id), timestamp(timestamp) {
+    }
+
     GlobalStatesContainer global;
     AllSensorStatesContainer sensors;
     bool isKeyframe;
     uint64_t id;
     okvis::Time timestamp;
   };
+
 
   // the following keeps track of all the states at different time instances (key=poseId)
   std::map<uint64_t, States> statesMap_; ///< Buffer for currently considered states.
@@ -569,8 +578,8 @@ class Estimator : public VioBackendInterface
   std::vector<okvis::ImuParameters, Eigen::aligned_allocator<okvis::ImuParameters> > imuParametersVec_; ///< IMU parameters.
 
   // loss function for reprojection errors
-  std::shared_ptr< ::ceres::LossFunction> cauchyLossFunctionPtr_; ///< Cauchy loss.
-  std::shared_ptr< ::ceres::LossFunction> huberLossFunctionPtr_; ///< Huber loss.
+  std::shared_ptr<::ceres::LossFunction> cauchyLossFunctionPtr_; ///< Cauchy loss.
+  std::shared_ptr<::ceres::LossFunction> huberLossFunctionPtr_; ///< Huber loss.
 
   // the marginalized error term
   std::shared_ptr<ceres::MarginalizationError> marginalizationErrorPtr_; ///< The marginalisation class

@@ -54,7 +54,8 @@
 #include <okvis/FrameTypedefs.hpp>
 #include <okvis/assert_macros.hpp>
 
-TEST(okvisTestSuite, Marginalization){
+
+TEST(okvisTestSuite, Marginalization) {
   // initialize random number generator
   //srand((unsigned int) time(0)); // disabled: make unit tests deterministic...
 
@@ -128,9 +129,9 @@ TEST(okvisTestSuite, Marginalization){
     // points in camera frames:
     Eigen::Vector4d pointC0 = cameraGeometry->createRandomVisibleHomogeneousPoint(10.0);
     Eigen::Vector4d pointC1 = T_SC.inverse() * T_WS1.inverse() * T_WS0 * T_SC
-        * pointC0;
+                              * pointC0;
     Eigen::Vector4d pointC2 = T_SC.inverse() * T_WS2.inverse() * T_WS0 * T_SC
-        * pointC0;
+                              * pointC0;
 
     std::shared_ptr<okvis::ceres::HomogeneousPointParameterBlock> homogeneousPointParameterBlock_ptr(
         new okvis::ceres::HomogeneousPointParameterBlock(
@@ -145,9 +146,9 @@ TEST(okvisTestSuite, Marginalization){
 
     // Set up cost function
     Eigen::Matrix2d information = Eigen::Matrix2d::Identity();
-    std::shared_ptr< ::ceres::CostFunction> cost_function0(
+    std::shared_ptr<::ceres::CostFunction> cost_function0(
         new okvis::ceres::ReprojectionError<okvis::cameras::PinholeCamera<
-        okvis::cameras::EquidistantDistortion>>(
+            okvis::cameras::EquidistantDistortion>>(
             std::static_pointer_cast<
                 const okvis::cameras::PinholeCamera<
                     okvis::cameras::EquidistantDistortion>>(cameraGeometry),
@@ -166,9 +167,9 @@ TEST(okvisTestSuite, Marginalization){
 
       // Set up cost function
       Eigen::Matrix2d information = Eigen::Matrix2d::Identity();
-      std::shared_ptr< ::ceres::CostFunction> cost_function1(
+      std::shared_ptr<::ceres::CostFunction> cost_function1(
           new okvis::ceres::ReprojectionError<
-          okvis::cameras::PinholeCamera<
+              okvis::cameras::PinholeCamera<
                   okvis::cameras::EquidistantDistortion>>(
               std::static_pointer_cast<
                   const okvis::cameras::PinholeCamera<
@@ -189,13 +190,13 @@ TEST(okvisTestSuite, Marginalization){
 
       // Set up cost function
       Eigen::Matrix2d information = Eigen::Matrix2d::Identity();
-      std::shared_ptr< ::ceres::CostFunction> cost_function2(
+      std::shared_ptr<::ceres::CostFunction> cost_function2(
           new okvis::ceres::ReprojectionError<okvis::cameras::PinholeCamera<
-          okvis::cameras::EquidistantDistortion>>(
+              okvis::cameras::EquidistantDistortion>>(
               std::static_pointer_cast<
                   const okvis::cameras::PinholeCamera<
                       okvis::cameras::EquidistantDistortion>>(cameraGeometry), 0, kp2,
-                                                      information));
+              information));
 
       ::ceres::ResidualBlockId id2 = map.addResidualBlock(
           cost_function2, NULL, poseParameterBlock2_ptr,
@@ -228,7 +229,7 @@ TEST(okvisTestSuite, Marginalization){
   OKVIS_ASSERT_TRUE(
       Exception,
       2 * (T_WS2.q() * poseParameterBlock2_ptr->estimate().q().inverse()).vec().norm()
-          < 1e-2,
+      < 1e-2,
       "quaternions not close enough");
   OKVIS_ASSERT_TRUE(
       Exception,

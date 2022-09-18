@@ -55,10 +55,14 @@ namespace okvis {
 /// \brief Namespace for helper classes for threadsafe operation.
 namespace threadsafe {
 
-class ThreadSafeQueueBase {
- public:
+class ThreadSafeQueueBase
+{
+public:
   ThreadSafeQueueBase() = default;
-  virtual ~ThreadSafeQueueBase() {}
+
+  virtual ~ThreadSafeQueueBase() {
+  }
+
   virtual void NotifyAll() const = 0;
   virtual void Shutdown() = 0;
   virtual void Resume() = 0;
@@ -66,16 +70,18 @@ class ThreadSafeQueueBase {
   virtual bool Empty() const = 0;
 };
 
+
 /**
  * @brief Class that implements a threadsafe FIFO queue.
  * @tparam QueueType Datatype that is safed in the queue.
  */
 template<typename QueueType>
-class ThreadSafeQueue {
-  friend bool test_funcs(void* (*)(void*), void* (*)(void*),  // NOLINT
-                         const std::string&, bool);
+class ThreadSafeQueue
+{
+  friend bool test_funcs(void *(*)(void *), void *(*)(void *),  // NOLINT
+                         const std::string &, bool);
 
- public:
+public:
 
   /// \brief Notify all waiting threads. Only used in destructor and when shutting down.
   virtual void NotifyAll() const final {
@@ -113,12 +119,12 @@ class ThreadSafeQueue {
   }
 
   /// \brief Push non-blocking to the queue.
-  void Push(const QueueType& value) {
+  void Push(const QueueType &value) {
     PushNonBlocking(value);
   }
 
   /// \brief Push to the queue.
-  void PushNonBlocking(const QueueType& value) {
+  void PushNonBlocking(const QueueType &value) {
     pthread_mutex_lock(&mutex_);
     queue_.push(value);
     pthread_cond_signal(&condition_empty_);  // Signal that data is available.
@@ -145,7 +151,7 @@ class ThreadSafeQueue {
   /// \param[in] value New entry in queue.
   /// \param[in] max_queue_size Maximum queue size.
   /// \return False if shutdown is requested.
-  bool PushBlockingIfFull(const QueueType& value, size_t max_queue_size) {
+  bool PushBlockingIfFull(const QueueType &value, size_t max_queue_size) {
     while (!shutdown_) {
       pthread_mutex_lock(&mutex_);
       size_t size = queue_.size();
@@ -168,7 +174,7 @@ class ThreadSafeQueue {
   /// \param[in] value New entry in queue.
   /// \param[in] max_queue_size Maximum queue size.
   /// \return True if oldest was dropped because queue was full.
-  bool PushNonBlockingDroppingIfFull(const QueueType& value,
+  bool PushNonBlockingDroppingIfFull(const QueueType &value,
                                      size_t max_queue_size) {
     pthread_mutex_lock(&mutex_);
     bool result = false;
@@ -187,7 +193,7 @@ class ThreadSafeQueue {
    * @param[out] value Oldest entry in queue.
    * @return False if shutdown is requested.
    */
-  bool Pop(QueueType* value) {
+  bool Pop(QueueType *value) {
     return PopBlocking(value);
   }
 
@@ -196,7 +202,7 @@ class ThreadSafeQueue {
    * @param[out] value Oldest entry in queue.
    * @return False if shutdown is requested.
    */
-  bool PopBlocking(QueueType* value) {
+  bool PopBlocking(QueueType *value) {
     CHECK_NOTNULL(value);
     while (!shutdown_) {
       pthread_mutex_lock(&mutex_);
@@ -222,7 +228,7 @@ class ThreadSafeQueue {
    * @param[out] value Oldest entry in queue if queue was not empty.
    * @return True if queue was not empty.
    */
-  bool PopNonBlocking(QueueType* value) {
+  bool PopNonBlocking(QueueType *value) {
     CHECK_NOTNULL(value);
     pthread_mutex_lock(&mutex_);
     if (queue_.empty()) {
@@ -244,7 +250,7 @@ class ThreadSafeQueue {
    * @return True if value was updated. False if queue was empty and no new entry was pushed
    *         during the given timeout.
    */
-  bool PopTimeout(QueueType* value, int64_t timeout_nanoseconds) {
+  bool PopTimeout(QueueType *value, int64_t timeout_nanoseconds) {
     CHECK_NOTNULL(value);
     pthread_mutex_lock(&mutex_);
     if (queue_.empty()) {
@@ -274,7 +280,7 @@ class ThreadSafeQueue {
    * @param[out] value Oldest entry in queue if queue was not empty.
    * @return True if queue was not empty and value was updated.
    */
-  bool getCopyOfFront(QueueType* value) {
+  bool getCopyOfFront(QueueType *value) {
     CHECK_NOTNULL(value);
     pthread_mutex_lock(&mutex_);
     if (queue_.empty()) {
@@ -293,7 +299,7 @@ class ThreadSafeQueue {
    * @param value Oldest entry in the queue.
    * @return False if shutdown is requested.
    */
-  bool getCopyOfFrontBlocking(QueueType* value) {
+  bool getCopyOfFrontBlocking(QueueType *value) {
     CHECK_NOTNULL(value);
     while (!shutdown_) {
       pthread_mutex_lock(&mutex_);
@@ -318,7 +324,7 @@ class ThreadSafeQueue {
    * @param[out] value Newest entry in queue if queue was not empty.
    * @return True if queue was not empty and value was updated.
    */
-  bool getCopyOfBack(QueueType* value) {
+  bool getCopyOfBack(QueueType *value) {
     CHECK_NOTNULL(value);
     pthread_mutex_lock(&mutex_);
     if (queue_.empty()) {

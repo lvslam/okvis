@@ -56,8 +56,9 @@ namespace okvis {
  * @brief This class is to safely notify different threads whether IMU measurements
  *        up to a timestamp (e.g. the one of a camera frame) have already been registered.
  */
-class ImuFrameSynchronizer {
- public:
+class ImuFrameSynchronizer
+{
+public:
   /// @brief Constructor.
   ImuFrameSynchronizer();
   /// @brief Destructor.
@@ -67,19 +68,19 @@ class ImuFrameSynchronizer {
    * @brief Tell the synchronizer that a new IMU measurement has been registered.
    * @param stamp Timestamp of the new IMU mewasurement.
    */
-  void gotImuData(const okvis::Time& stamp);
+  void gotImuData(const okvis::Time &stamp);
 
   /**
    * @brief Wait until a IMU measurement with a timestamp equal or newer to the supplied one is registered.
    * @param frame_stamp Timestamp until you want to have IMU measurements for.
    * @return False if a shutdown signal has been received. Otherwise true.
    */
-  bool waitForUpToDateImuData(const okvis::Time& frame_stamp);
+  bool waitForUpToDateImuData(const okvis::Time &frame_stamp);
 
   /// @brief Tell the synchronizer to shutdown. This will notify all waiting threads to wake up.
   void shutdown();
 
- private:
+private:
   okvis::Time newestImuDataStamp_;           ///< Newest IMU data timestamp.
   okvis::Time imuDataNeededUntil_;           ///< A thread is waiting for IMU data newer or equal to this timestamp.
   std::condition_variable gotNeededImuData_; ///< Condition variable for waiting and notyfing.

@@ -59,11 +59,11 @@ namespace triangulation {
  * @param[out] isParallel Are the rays parallel?
  * @return Homogeneous coordinates of triangulated point.
  */
-Eigen::Vector4d triangulateFast(const Eigen::Vector3d & p1,
-                                const Eigen::Vector3d & e1,
-                                const Eigen::Vector3d & p2,
-                                const Eigen::Vector3d & e2, double sigma,
-                                bool & isValid, bool & isParallel);
+Eigen::Vector4d triangulateFast(const Eigen::Vector3d &p1,
+                                const Eigen::Vector3d &e1,
+                                const Eigen::Vector3d &p2,
+                                const Eigen::Vector3d &e2, double sigma,
+                                bool &isValid, bool &isParallel);
 }
 }
 

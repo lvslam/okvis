@@ -52,6 +52,7 @@
 namespace okvis {
 VioInterface::VioInterface() {
 }
+
 VioInterface::~VioInterface() {
   if (csvImuFile_)
     csvImuFile_->close();
@@ -61,15 +62,15 @@ VioInterface::~VioInterface() {
     csvMagFile_->close();
   // also close all registered tracks files
   for (FilePtrMap::iterator it = csvTracksFiles_.begin();
-      it != csvTracksFiles_.end(); ++it) {
+       it != csvTracksFiles_.end(); ++it) {
     if (it->second)
       it->second->close();
   }
 }
 
 // This is just handy for the python interface.
-bool VioInterface::addEigenImage(const okvis::Time & stamp, size_t cameraIndex,
-                                 const EigenImage & image) {
+bool VioInterface::addEigenImage(const okvis::Time &stamp, size_t cameraIndex,
+                                 const EigenImage &image) {
   cv::Mat mat8;
   cv::eigen2cv(image, mat8);
   return addImage(stamp, cameraIndex, mat8);
@@ -77,25 +78,25 @@ bool VioInterface::addEigenImage(const okvis::Time & stamp, size_t cameraIndex,
 }
 
 // Set the callback to be called every time a new state is estimated.
-void VioInterface::setStateCallback(const StateCallback & stateCallback) {
+void VioInterface::setStateCallback(const StateCallback &stateCallback) {
   stateCallback_ = stateCallback;
 }
 
 // Set the fullStateCallback to be called every time a new state is estimated.
 void VioInterface::setFullStateCallback(
-    const FullStateCallback & fullStateCallback) {
+    const FullStateCallback &fullStateCallback) {
   fullStateCallback_ = fullStateCallback;
 }
 
 // Set the callback to be called every time a new state is estimated.
 void VioInterface::setFullStateCallbackWithExtrinsics(
-    const FullStateCallbackWithExtrinsics & fullStateCallbackWithExtrinsics) {
+    const FullStateCallbackWithExtrinsics &fullStateCallbackWithExtrinsics) {
   fullStateCallbackWithExtrinsics_ = fullStateCallbackWithExtrinsics;
 }
 
 // Set the fullStateCallbackWithExtrinsics to be called every time a new state is estimated.
 void VioInterface::setLandmarksCallback(
-    const LandmarksCallback & landmarksCallback) {
+    const LandmarksCallback &landmarksCallback) {
   landmarksCallback_ = landmarksCallback;
 }
 
@@ -112,9 +113,9 @@ bool VioInterface::writeImuCsvDescription() {
   if (!csvImuFile_->good())
     return false;
   *csvImuFile_ << "timestamp" << ", " << "omega_tilde_WS_S_x" << ", "
-      << "omega_tilde_WS_S_y" << ", " << "omega_tilde_WS_S_z" << ", "
-      << "a_tilde_WS_S_x" << ", " << "a_tilde_WS_S_y" << ", "
-      << "a_tilde_WS_S_z" << std::endl;
+               << "omega_tilde_WS_S_y" << ", " << "omega_tilde_WS_S_z" << ", "
+               << "a_tilde_WS_S_x" << ", " << "a_tilde_WS_S_y" << ", "
+               << "a_tilde_WS_S_z" << std::endl;
   return true;
 }
 
@@ -125,7 +126,7 @@ bool VioInterface::writePosCsvDescription() {
   if (!csvPosFile_->good())
     return false;
   *csvPosFile_ << "timestamp" << ", " << "pos_E" << ", " << "pos_N" << ", "
-      << "pos_U" << std::endl;
+               << "pos_U" << std::endl;
   return true;
 }
 
@@ -136,7 +137,7 @@ bool VioInterface::writeMagCsvDescription() {
   if (!csvMagFile_->good())
     return false;
   *csvMagFile_ << "timestamp" << ", " << "mag_x" << ", " << "mag_y" << ", "
-      << "mag_z" << std::endl;
+               << "mag_z" << std::endl;
   return true;
 }
 
@@ -147,13 +148,13 @@ bool VioInterface::writeTracksCsvDescription(size_t cameraId) {
   if (!csvTracksFiles_[cameraId]->good())
     return false;
   *csvTracksFiles_[cameraId] << "timestamp" << ", " << "landmark_id" << ", "
-      << "z_tilde_x" << ", " << "z_tilde_y" << ", " << "z_tilde_stdev" << ", "
-      << "descriptor" << std::endl;
+                             << "z_tilde_x" << ", " << "z_tilde_y" << ", " << "z_tilde_stdev" << ", "
+                             << "descriptor" << std::endl;
   return false;
 }
 
 // Set a CVS file where the IMU data will be saved to.
-bool VioInterface::setImuCsvFile(std::fstream& csvFile) {
+bool VioInterface::setImuCsvFile(std::fstream &csvFile) {
   if (csvImuFile_) {
     csvImuFile_->close();
   }
@@ -163,7 +164,7 @@ bool VioInterface::setImuCsvFile(std::fstream& csvFile) {
 }
 
 // Set a CVS file where the IMU data will be saved to.
-bool VioInterface::setImuCsvFile(const std::string& csvFileName) {
+bool VioInterface::setImuCsvFile(const std::string &csvFileName) {
   csvImuFile_.reset(
       new std::fstream(csvFileName.c_str(), std::ios_base::out));
   writeImuCsvDescription();
@@ -171,7 +172,7 @@ bool VioInterface::setImuCsvFile(const std::string& csvFileName) {
 }
 
 // Set a CVS file where the position measurements will be saved to.
-bool VioInterface::setPosCsvFile(std::fstream& csvFile) {
+bool VioInterface::setPosCsvFile(std::fstream &csvFile) {
   if (csvPosFile_) {
     csvPosFile_->close();
   }
@@ -181,7 +182,7 @@ bool VioInterface::setPosCsvFile(std::fstream& csvFile) {
 }
 
 // Set a CVS file where the position measurements will be saved to.
-bool VioInterface::setPosCsvFile(const std::string& csvFileName) {
+bool VioInterface::setPosCsvFile(const std::string &csvFileName) {
   csvPosFile_.reset(
       new std::fstream(csvFileName.c_str(), std::ios_base::out));
   writePosCsvDescription();
@@ -189,7 +190,7 @@ bool VioInterface::setPosCsvFile(const std::string& csvFileName) {
 }
 
 // Set a CVS file where the magnetometer measurements will be saved to.
-bool VioInterface::setMagCsvFile(std::fstream& csvFile) {
+bool VioInterface::setMagCsvFile(std::fstream &csvFile) {
   if (csvMagFile_) {
     csvMagFile_->close();
   }
@@ -199,7 +200,7 @@ bool VioInterface::setMagCsvFile(std::fstream& csvFile) {
 }
 
 // Set a CVS file where the magnetometer measurements will be saved to.
-bool VioInterface::setMagCsvFile(const std::string& csvFileName) {
+bool VioInterface::setMagCsvFile(const std::string &csvFileName) {
   csvMagFile_.reset(
       new std::fstream(csvFileName.c_str(), std::ios_base::out));
   writeMagCsvDescription();
@@ -207,7 +208,7 @@ bool VioInterface::setMagCsvFile(const std::string& csvFileName) {
 }
 
 // Set a CVS file where the tracks (data associations) will be saved to.
-bool VioInterface::setTracksCsvFile(size_t cameraId, std::fstream& csvFile) {
+bool VioInterface::setTracksCsvFile(size_t cameraId, std::fstream &csvFile) {
   if (csvTracksFiles_[cameraId]) {
     csvTracksFiles_[cameraId]->close();
   }
@@ -218,7 +219,7 @@ bool VioInterface::setTracksCsvFile(size_t cameraId, std::fstream& csvFile) {
 
 // Set a CVS file where the tracks (data associations) will be saved to.
 bool VioInterface::setTracksCsvFile(size_t cameraId,
-                                    const std::string& csvFileName) {
+                                    const std::string &csvFileName) {
   csvTracksFiles_[cameraId].reset(
       new std::fstream(csvFileName.c_str(), std::ios_base::out));
   writeTracksCsvDescription(cameraId);

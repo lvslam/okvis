@@ -54,11 +54,15 @@ namespace ceres {
 class RelativePoseError : public ::ceres::SizedCostFunction<
     6 /* number of residuals */,
     7, /* size of first parameter */
-    7 /* size of second parameter */>, public ErrorInterface {
- public:
+    7 /* size of second parameter */>, public ErrorInterface
+{
+public:
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
+
+
+  OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /// \brief The base class type.
   typedef ::ceres::SizedCostFunction<6, 7, 7> base_t;
@@ -77,7 +81,7 @@ class RelativePoseError : public ::ceres::SizedCostFunction<
 
   /// \brief Construct with measurement and information matrix
   /// @param[in] information The information (weight) matrix.
-  RelativePoseError(const Eigen::Matrix<double, 6, 6> & information);
+  RelativePoseError(const Eigen::Matrix<double, 6, 6> &information);
 
   /// \brief Construct with measurement and variance.
   /// @param[in] translationVariance The (relative) translation variance.
@@ -91,18 +95,18 @@ class RelativePoseError : public ::ceres::SizedCostFunction<
   // setters
   /// \brief Set the information.
   /// @param[in] information The information (weight) matrix.
-  void setInformation(const information_t & information);
+  void setInformation(const information_t &information);
 
   // getters
   /// \brief Get the information matrix.
   /// \return The information (weight) matrix.
-  const information_t& information() const {
+  const information_t &information() const {
     return information_;
   }
 
   /// \brief Get the covariance matrix.
   /// \return The inverse information (covariance) matrix.
-  const information_t& covariance() const {
+  const information_t &covariance() const {
     return covariance_;
   }
 
@@ -114,8 +118,8 @@ class RelativePoseError : public ::ceres::SizedCostFunction<
     * @param jacobians Pointer to the Jacobians (see ceres)
     * @return success of th evaluation.
     */
-  virtual bool Evaluate(double const* const * parameters, double* residuals,
-                        double** jacobians) const;
+  virtual bool Evaluate(double const *const *parameters, double *residuals,
+                        double **jacobians) const;
 
   /**
    * @brief This evaluates the error term and additionally computes
@@ -126,9 +130,9 @@ class RelativePoseError : public ::ceres::SizedCostFunction<
    * @param jacobiansMinimal Pointer to the minimal Jacobians (equivalent to jacobians).
    * @return Success of the evaluation.
    */
-  bool EvaluateWithMinimalJacobians(double const* const * parameters,
-                                    double* residuals, double** jacobians,
-                                    double** jacobiansMinimal) const;
+  bool EvaluateWithMinimalJacobians(double const *const *parameters,
+                                    double *residuals, double **jacobians,
+                                    double **jacobiansMinimal) const;
 
   // sizes
   /// \brief Residual dimension.
@@ -151,7 +155,7 @@ class RelativePoseError : public ::ceres::SizedCostFunction<
     return "RelativePoseError";
   }
 
- protected:
+protected:
 
   // weighting related
   information_t information_; ///< The 6x6 information matrix.

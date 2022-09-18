@@ -98,8 +98,8 @@ void Map::printResidualBlockInfo(
 }
 
 // Obtain the Hessian block for a specific parameter block.
-void Map::getLhs(uint64_t parameterBlockId, Eigen::MatrixXd& H) {
-  OKVIS_ASSERT_TRUE_DBG(Exception,parameterBlockExists(parameterBlockId),"parameter block not in map.");
+void Map::getLhs(uint64_t parameterBlockId, Eigen::MatrixXd &H) {
+  OKVIS_ASSERT_TRUE_DBG(Exception, parameterBlockExists(parameterBlockId), "parameter block not in map.");
   ResidualBlockCollection res = residuals(parameterBlockId);
   H.setZero();
   for (size_t i = 0; i < res.size(); ++i) {
@@ -107,18 +107,18 @@ void Map::getLhs(uint64_t parameterBlockId, Eigen::MatrixXd& H) {
     // parameters:
     ParameterBlockCollection pars = parameters(res[i].residualBlockId);
 
-    double** parametersRaw = new double*[pars.size()];
+    double **parametersRaw = new double *[pars.size()];
     Eigen::VectorXd residualsEigen(res[i].errorInterfacePtr->residualDim());
-    double* residualsRaw = residualsEigen.data();
+    double *residualsRaw = residualsEigen.data();
 
-    double** jacobiansRaw = new double*[pars.size()];
+    double **jacobiansRaw = new double *[pars.size()];
     std::vector<
         Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
         Eigen::aligned_allocator<
             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic,
                 Eigen::RowMajor> > > jacobiansEigen(pars.size());
 
-    double** jacobiansMinimalRaw = new double*[pars.size()];
+    double **jacobiansMinimalRaw = new double *[pars.size()];
     std::vector<
         Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>,
         Eigen::aligned_allocator<
@@ -184,9 +184,9 @@ bool Map::isJacobianCorrect(::ceres::ResidualBlockId residualBlockId,
           Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> > > J_min_numDiff(
       parametersBlocks.size());
   double **parameters, **jacobians, **jacobiansMinimal;
-  parameters = new double*[parametersBlocks.size()];
-  jacobians = new double*[parametersBlocks.size()];
-  jacobiansMinimal = new double*[parametersBlocks.size()];
+  parameters = new double *[parametersBlocks.size()];
+  jacobians = new double *[parametersBlocks.size()];
+  jacobiansMinimal = new double *[parametersBlocks.size()];
   for (size_t i = 0; i < parametersBlocks.size(); ++i) {
     // set up the analytic Jacobians
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Ji(
@@ -222,7 +222,7 @@ bool Map::isJacobianCorrect(::ceres::ResidualBlockId residualBlockId,
   const double delta = 1e-8;
   for (size_t i = 0; i < parametersBlocks.size(); ++i) {
     for (size_t j = 0; j < parametersBlocks[i].second->minimalDimension();
-        ++j) {
+         ++j) {
       Eigen::VectorXd residuals_p(errorInterface_ptr->residualDim());
       Eigen::VectorXd residuals_m(errorInterface_ptr->residualDim());
 
@@ -251,7 +251,7 @@ bool Map::isJacobianCorrect(::ceres::ResidualBlockId residualBlockId,
       parameters[i] = parametersBlocks[i].second->parameters();  // reset
       // calculate numeric difference
       J_min_numDiff[i].col(j) = (residuals_p - residuals_m) * 1.0
-          / (2.0 * delta);
+                                / (2.0 * delta);
     }
   }
 
@@ -386,12 +386,12 @@ bool Map::removeParameterBlock(
 
 // Adds a residual block.
 ::ceres::ResidualBlockId Map::addResidualBlock(
-    std::shared_ptr< ::ceres::CostFunction> cost_function,
-    ::ceres::LossFunction* loss_function,
-    std::vector<std::shared_ptr<okvis::ceres::ParameterBlock> >& parameterBlockPtrs) {
+    std::shared_ptr<::ceres::CostFunction> cost_function,
+    ::ceres::LossFunction *loss_function,
+    std::vector<std::shared_ptr<okvis::ceres::ParameterBlock> > &parameterBlockPtrs) {
 
   ::ceres::ResidualBlockId return_id;
-  std::vector<double*> parameter_blocks;
+  std::vector<double *> parameter_blocks;
   ParameterBlockCollection parameterBlockCollection;
   for (size_t i = 0; i < parameterBlockPtrs.size(); ++i) {
     parameter_blocks.push_back(parameterBlockPtrs.at(i)->parameters());
@@ -407,23 +407,23 @@ bool Map::removeParameterBlock(
   // add in book-keeping
   std::shared_ptr<ErrorInterface> errorInterfacePtr = std::dynamic_pointer_cast<
       ErrorInterface>(cost_function);
-  OKVIS_ASSERT_TRUE_DBG(Exception,errorInterfacePtr!=0,"Supplied a cost function without okvis::ceres::ErrorInterface");
+  OKVIS_ASSERT_TRUE_DBG(Exception, errorInterfacePtr != 0, "Supplied a cost function without okvis::ceres::ErrorInterface");
   residualBlockId2ResidualBlockSpec_Map_.insert(
-      std::pair< ::ceres::ResidualBlockId, ResidualBlockSpec>(
+      std::pair<::ceres::ResidualBlockId, ResidualBlockSpec>(
           return_id,
           ResidualBlockSpec(return_id, loss_function, errorInterfacePtr)));
 
   // update book-keeping
   std::pair<ResidualBlockId2ParameterBlockCollection_Map::iterator, bool> insertion =
       residualBlockId2ParameterBlockCollection_Map_.insert(
-          std::pair< ::ceres::ResidualBlockId, ParameterBlockCollection>(
+          std::pair<::ceres::ResidualBlockId, ParameterBlockCollection>(
               return_id, parameterBlockCollection));
   if (insertion.second == false)
     return ::ceres::ResidualBlockId(0);
 
   // update ResidualBlock pointers on involved ParameterBlocks
   for (uint64_t parameter_id = 0;
-      parameter_id < parameterBlockCollection.size(); ++parameter_id) {
+       parameter_id < parameterBlockCollection.size(); ++parameter_id) {
     id2ResidualBlock_Multimap_.insert(
         std::pair<uint64_t, ResidualBlockSpec>(
             parameterBlockCollection[parameter_id].first,
@@ -435,8 +435,8 @@ bool Map::removeParameterBlock(
 
 // Add a residual block. See respective ceres docu. If more are needed, see other interface.
 ::ceres::ResidualBlockId Map::addResidualBlock(
-    std::shared_ptr< ::ceres::CostFunction> cost_function,
-    ::ceres::LossFunction* loss_function,
+    std::shared_ptr<::ceres::CostFunction> cost_function,
+    ::ceres::LossFunction *loss_function,
     std::shared_ptr<okvis::ceres::ParameterBlock> x0,
     std::shared_ptr<okvis::ceres::ParameterBlock> x1,
     std::shared_ptr<okvis::ceres::ParameterBlock> x2,
@@ -487,7 +487,7 @@ bool Map::removeParameterBlock(
 // Replace the parameters connected to a residual block ID.
 void Map::resetResidualBlock(
     ::ceres::ResidualBlockId residualBlockId,
-    std::vector<std::shared_ptr<okvis::ceres::ParameterBlock> >& parameterBlockPtrs) {
+    std::vector<std::shared_ptr<okvis::ceres::ParameterBlock> > &parameterBlockPtrs) {
 
   // remember the residual block spec:
   ResidualBlockSpec spec =
@@ -495,20 +495,21 @@ void Map::resetResidualBlock(
   // remove residual from old parameter set
   ResidualBlockId2ParameterBlockCollection_Map::iterator it =
       residualBlockId2ParameterBlockCollection_Map_.find(residualBlockId);
-  OKVIS_ASSERT_TRUE_DBG(Exception,it!=residualBlockId2ParameterBlockCollection_Map_.end(),
-      "residual block not in map.");
+  OKVIS_ASSERT_TRUE_DBG(Exception, it != residualBlockId2ParameterBlockCollection_Map_.end(),
+                        "residual block not in map.");
   for (ParameterBlockCollection::iterator parameter_it = it->second.begin();
-      parameter_it != it->second.end(); ++parameter_it) {
+       parameter_it != it->second.end(); ++parameter_it) {
     uint64_t parameterId = parameter_it->second->id();
     std::pair<Id2ResidualBlock_Multimap::iterator,
         Id2ResidualBlock_Multimap::iterator> range = id2ResidualBlock_Multimap_
         .equal_range(parameterId);
-    OKVIS_ASSERT_FALSE_DBG(Exception,range.first==id2ResidualBlock_Multimap_.end(),"book-keeping is broken");
+    OKVIS_ASSERT_FALSE_DBG(Exception, range.first == id2ResidualBlock_Multimap_.end(), "book-keeping is broken");
     for (Id2ResidualBlock_Multimap::iterator it2 = range.first;
-        it2 != range.second;) {
+         it2 != range.second;) {
       if (residualBlockId == it2->second.residualBlockId) {
         it2 = id2ResidualBlock_Multimap_.erase(it2);  // remove book-keeping
-      } else {
+      }
+      else {
         it2++;
       }
     }
@@ -526,7 +527,7 @@ void Map::resetResidualBlock(
 
   // update ResidualBlock pointers on involved ParameterBlocks
   for (uint64_t parameter_id = 0;
-      parameter_id < parameterBlockCollection.size(); ++parameter_id) {
+       parameter_id < parameterBlockCollection.size(); ++parameter_id) {
     id2ResidualBlock_Multimap_.insert(
         std::pair<uint64_t, ResidualBlockSpec>(
             parameterBlockCollection[parameter_id].first, spec));
@@ -543,18 +544,19 @@ bool Map::removeResidualBlock(::ceres::ResidualBlockId residualBlockId) {
     return false;
 
   for (ParameterBlockCollection::iterator parameter_it = it->second.begin();
-      parameter_it != it->second.end(); ++parameter_it) {
+       parameter_it != it->second.end(); ++parameter_it) {
     uint64_t parameterId = parameter_it->second->id();
     std::pair<Id2ResidualBlock_Multimap::iterator,
         Id2ResidualBlock_Multimap::iterator> range = id2ResidualBlock_Multimap_
         .equal_range(parameterId);
-    OKVIS_ASSERT_FALSE_DBG(Exception,range.first==id2ResidualBlock_Multimap_.end(),"book-keeping is broken");
+    OKVIS_ASSERT_FALSE_DBG(Exception, range.first == id2ResidualBlock_Multimap_.end(), "book-keeping is broken");
 
     for (Id2ResidualBlock_Multimap::iterator it2 = range.first;
-        it2 != range.second;) {
+         it2 != range.second;) {
       if (residualBlockId == it2->second.residualBlockId) {
         it2 = id2ResidualBlock_Multimap_.erase(it2);  // remove book-keeping
-      } else {
+      }
+      else {
         it2++;
       }
     }
@@ -616,7 +618,7 @@ bool Map::resetParameterization(uint64_t parameterBlockId,
   // re-assemble
   for (size_t r = 0; r < res.size(); ++r) {
     addResidualBlock(
-        std::dynamic_pointer_cast< ::ceres::CostFunction>(
+        std::dynamic_pointer_cast<::ceres::CostFunction>(
             res[r].errorInterfacePtr),
         res[r].lossFunctionPtr, parameterBlockPtrs[r]);
   }
@@ -627,7 +629,7 @@ bool Map::resetParameterization(uint64_t parameterBlockId,
 // Set the (local) parameterisation of a parameter block.
 bool Map::setParameterization(
     uint64_t parameterBlockId,
-    ::ceres::LocalParameterization* local_parameterization) {
+    ::ceres::LocalParameterization *local_parameterization) {
   if (!parameterBlockExists(parameterBlockId))
     return false;
   problem_->SetParameterization(
@@ -645,7 +647,7 @@ std::shared_ptr<okvis::ceres::ParameterBlock> Map::parameterBlockPtr(
   // get a parameterBlock
   OKVIS_ASSERT_TRUE(
       Exception, parameterBlockExists(parameterBlockId),
-      "parameterBlock with id "<<parameterBlockId<<" does not exist");
+      "parameterBlock with id " << parameterBlockId << " does not exist");
   if (parameterBlockExists(parameterBlockId)) {
     return id2ParameterBlock_Map_.find(parameterBlockId)->second;
   }
@@ -674,7 +676,7 @@ Map::ResidualBlockCollection Map::residuals(uint64_t parameterBlockId) const {
       Id2ResidualBlock_Multimap::const_iterator> range =
       id2ResidualBlock_Multimap_.equal_range(parameterBlockId);
   for (Id2ResidualBlock_Multimap::const_iterator it = range.first;
-      it != range.second; ++it) {
+       it != range.second; ++it) {
     returnResiduals.push_back(it->second);
   }
   return returnResiduals;

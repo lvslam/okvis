@@ -48,8 +48,8 @@
 #include <okvis/FrameTypedefs.hpp>
 #include <okvis/assert_macros.hpp>
 
-TEST(okvisTestSuite, Map)
-{
+
+TEST(okvisTestSuite, Map) {
   // initialize random number generator
   //srand((unsigned int) time(0)); // disabled: make unit tests deterministic...
 
@@ -117,7 +117,7 @@ TEST(okvisTestSuite, Map)
     ::ceres::ResidualBlockId id = map.addResidualBlock(
         cost_function, &loss, poseParameterBlock_ptr,
         homogeneousPointParameterBlock_ptr, extrinsicsParameterBlock_ptr);
-    OKVIS_ASSERT_TRUE(Exception,map.isJacobianCorrect(id),"wrong Jacobian");
+    OKVIS_ASSERT_TRUE(Exception, map.isJacobianCorrect(id), "wrong Jacobian");
 
     if (i % 10 == 0) {
       if (i % 20 == 0)
@@ -147,7 +147,7 @@ TEST(okvisTestSuite, Map)
   // make sure it converged
   OKVIS_ASSERT_TRUE(
       Exception,
-      2*(T_WS.q() * poseParameterBlock_ptr->estimate().q().inverse()).vec().norm() < 1e-2,
+      2 * (T_WS.q() * poseParameterBlock_ptr->estimate().q().inverse()).vec().norm() < 1e-2,
       "quaternions not close enough");
   OKVIS_ASSERT_TRUE(
       Exception,

@@ -60,14 +60,18 @@ namespace absolute_pose {
 
 /// \brief Adapter for absolute pose RANSAC (3D2D) with non-central cameras,
 ///        i.e. could be a multi-camera-setup.
-class FrameNoncentralAbsoluteAdapter : public AbsoluteAdapterBase {
- private:
+class FrameNoncentralAbsoluteAdapter : public AbsoluteAdapterBase
+{
+private:
   using AbsoluteAdapterBase::_t;
   using AbsoluteAdapterBase::_R;
 
- public:
+public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  OKVIS_DEFINE_EXCEPTION(Exception,std::runtime_error)
+
+
+  OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   /// \brief type for describing matches.
   typedef std::vector<int> matches_t;
@@ -79,8 +83,8 @@ class FrameNoncentralAbsoluteAdapter : public AbsoluteAdapterBase {
    * @param frame         The multiframe.
    */
   FrameNoncentralAbsoluteAdapter(
-      const okvis::Estimator & estimator,
-      const okvis::cameras::NCameraSystem & nCameraSystem,
+      const okvis::Estimator &estimator,
+      const okvis::cameras::NCameraSystem &nCameraSystem,
       std::shared_ptr<okvis::MultiFrame> frame);
 
   virtual ~FrameNoncentralAbsoluteAdapter() {
@@ -137,14 +141,18 @@ class FrameNoncentralAbsoluteAdapter : public AbsoluteAdapterBase {
    * @param index The serialized index of the correspondence.
    * @return Camera index of the correspondence.
    */
-  int camIndex(size_t index) const {return camIndices_.at(index);}
+  int camIndex(size_t index) const {
+    return camIndices_.at(index);
+  }
 
   /**
    * @brief Get the keypoint index for a specific correspondence
    * @param index The serialized index of the correspondence.
    * @return Keypoint index belonging to the correspondence.
    */
-  int keypointIndex(size_t index) const {return keypointIndices_.at(index);}
+  int keypointIndex(size_t index) const {
+    return keypointIndices_.at(index);
+  }
 
   /**
    * \brief Retrieve the weight of a correspondence. The weight is supposed to
@@ -164,7 +172,7 @@ class FrameNoncentralAbsoluteAdapter : public AbsoluteAdapterBase {
    */
   double getSigmaAngle(size_t index);
 
- private:
+private:
   /// The bearing vectors of the correspondences.
   opengv::bearingVectors_t bearingVectors_;
 

@@ -46,30 +46,31 @@
 namespace okvis {
 
 ImuFrameSynchronizer::ImuFrameSynchronizer()
-  : shutdown_(false) {}
+    : shutdown_(false) {
+}
 
 ImuFrameSynchronizer::~ImuFrameSynchronizer() {
-  if(!shutdown_)
+  if (!shutdown_)
     shutdown();
 }
 
 // Tell the synchronizer that a new IMU measurement has been registered.
-void ImuFrameSynchronizer::gotImuData(const okvis::Time& stamp) {
+void ImuFrameSynchronizer::gotImuData(const okvis::Time &stamp) {
   newestImuDataStamp_ = stamp;
-  if(imuDataNeededUntil_ < stamp)
+  if (imuDataNeededUntil_ < stamp)
     gotNeededImuData_.notify_all();
 }
 
 // Wait until a IMU measurement with a timestamp equal or newer to the supplied one is registered.
-bool ImuFrameSynchronizer::waitForUpToDateImuData(const okvis::Time& frame_stamp) {
+bool ImuFrameSynchronizer::waitForUpToDateImuData(const okvis::Time &frame_stamp) {
   // if the newest imu data timestamp is smaller than frame_stamp, wait until
   // imu_data newer than frame_stamp arrives
-  if(newestImuDataStamp_ <= frame_stamp && !shutdown_) {
+  if (newestImuDataStamp_ <= frame_stamp && !shutdown_) {
     imuDataNeededUntil_ = frame_stamp;
     std::unique_lock<std::mutex> lock(mutex_);
     gotNeededImuData_.wait(lock);
   }
-  if(shutdown_)
+  if (shutdown_)
     return false;
   return true;
 }

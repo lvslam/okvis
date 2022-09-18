@@ -42,12 +42,14 @@ using namespace okvis;
 static const size_t num_cameras = 2;
 static const size_t num_test_frames = 10;
 
-class FrameSynchronizerTest : public ::testing::Test {
- protected:
+
+class FrameSynchronizerTest : public ::testing::Test
+{
+protected:
 
   FrameSynchronizerTest()
- : parameters(),
-   frame_syncer(parameters){
+      : parameters(),
+        frame_syncer(parameters) {
     parameters.nCameraSystem = TestDataGenerator::getTestCameraSystem(num_cameras);
     frame_syncer.init(parameters);
   }
@@ -93,12 +95,12 @@ class FrameSynchronizerTest : public ::testing::Test {
 
 };
 
-TEST_F(FrameSynchronizerTest, ConstructDestruct)
-{
+
+TEST_F(FrameSynchronizerTest, ConstructDestruct) {
 }
 
-TEST_F(FrameSynchronizerTest, CorrectOrder)
-{
+
+TEST_F(FrameSynchronizerTest, CorrectOrder) {
   for (size_t i = 0; i < num_test_frames; ++i) {
     okvis::MultiFramePtr multiFrame = frame_syncer.addNewFrame(test_frames.at(i).at(0));
     frame_syncer.detectionEndedForMultiFrame(multiFrame->id());
@@ -114,15 +116,16 @@ TEST_F(FrameSynchronizerTest, CorrectOrder)
   }
 }
 
-TEST_F(FrameSynchronizerTest, OneMissing)
-{
+
+TEST_F(FrameSynchronizerTest, OneMissing) {
   for (size_t i = 0; i < num_test_frames; ++i) {
     okvis::MultiFramePtr multiFrame = frame_syncer.addNewFrame(test_frames.at(i).at(0));
     frame_syncer.detectionEndedForMultiFrame(multiFrame->id());
     EXPECT_FALSE(frame_syncer.detectionCompletedForAllCameras(multiFrame->id()));
-    if(i == 3) {
+    if (i == 3) {
       EXPECT_FALSE(frame_syncer.detectionCompletedForAllCameras(multiFrame->id()));
-    } else {
+    }
+    else {
       multiFrame = frame_syncer.addNewFrame(test_frames.at(i).at(1));
       frame_syncer.detectionEndedForMultiFrame(multiFrame->id());
       EXPECT_TRUE(frame_syncer.detectionCompletedForAllCameras(multiFrame->id()));
@@ -135,15 +138,16 @@ TEST_F(FrameSynchronizerTest, OneMissing)
   }
 }
 
-TEST_F(FrameSynchronizerTest, TwoMissing)
-{
+
+TEST_F(FrameSynchronizerTest, TwoMissing) {
   for (size_t i = 0; i < num_test_frames; ++i) {
     okvis::MultiFramePtr multiFrame = frame_syncer.addNewFrame(test_frames.at(i).at(0));
     frame_syncer.detectionEndedForMultiFrame(multiFrame->id());
     EXPECT_FALSE(frame_syncer.detectionCompletedForAllCameras(multiFrame->id()));
-    if(i == 3 || i == 5) {
+    if (i == 3 || i == 5) {
       EXPECT_FALSE(frame_syncer.detectionCompletedForAllCameras(multiFrame->id()));
-    } else {
+    }
+    else {
       multiFrame = frame_syncer.addNewFrame(test_frames.at(i).at(1));
       frame_syncer.detectionEndedForMultiFrame(multiFrame->id());
       EXPECT_TRUE(frame_syncer.detectionCompletedForAllCameras(multiFrame->id()));
@@ -156,13 +160,13 @@ TEST_F(FrameSynchronizerTest, TwoMissing)
   }
 }
 
-TEST_F(FrameSynchronizerTest, OneDouble)
-{
+
+TEST_F(FrameSynchronizerTest, OneDouble) {
   for (size_t i = 0; i < num_test_frames; ++i) {
     okvis::MultiFramePtr multiFrame = frame_syncer.addNewFrame(test_frames.at(i).at(0));
     frame_syncer.detectionEndedForMultiFrame(multiFrame->id());
     EXPECT_FALSE(frame_syncer.detectionCompletedForAllCameras(multiFrame->id()));
-    if(i == 3) {
+    if (i == 3) {
       multiFrame = frame_syncer.addNewFrame(test_frames.at(i).at(1));
       frame_syncer.detectionEndedForMultiFrame(multiFrame->id());
       multiFrame = frame_syncer.addNewFrame(test_frames.at(i).at(1));
@@ -171,7 +175,8 @@ TEST_F(FrameSynchronizerTest, OneDouble)
       // (3 frames with the same timestamp detected in a 2 camera setup)
       // and frame synchronizer wants you to drop the multiframe
       EXPECT_FALSE(frame_syncer.detectionCompletedForAllCameras(multiFrame->id()));
-    } else {
+    }
+    else {
       multiFrame = frame_syncer.addNewFrame(test_frames.at(i).at(1));
       frame_syncer.detectionEndedForMultiFrame(multiFrame->id());
       EXPECT_TRUE(frame_syncer.detectionCompletedForAllCameras(multiFrame->id()));
@@ -184,8 +189,8 @@ TEST_F(FrameSynchronizerTest, OneDouble)
   }
 }
 
-TEST_F(FrameSynchronizerTest, OneOutOfOrder)
-{
+
+TEST_F(FrameSynchronizerTest, OneOutOfOrder) {
   okvis::MultiFramePtr multiFrame;
   multiFrame = frame_syncer.addNewFrame(test_frames.at(0).at(0));
   frame_syncer.detectionEndedForMultiFrame(multiFrame->id());

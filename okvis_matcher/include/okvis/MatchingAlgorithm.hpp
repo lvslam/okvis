@@ -63,9 +63,11 @@ namespace okvis {
  * in the dense matcher.
  * 
  */
-class MatchingAlgorithm {
- public:
+class MatchingAlgorithm
+{
+public:
   OKVIS_DEFINE_EXCEPTION(Exception, std::runtime_error)
+
 
   typedef std::shared_ptr<MatchingAlgorithm> Ptr;
 
@@ -131,7 +133,7 @@ class MatchingAlgorithm {
     return std::numeric_limits<float>::max();
   }
 
- private:
+private:
   listB_tree_structure_t dummy_;
 
 };

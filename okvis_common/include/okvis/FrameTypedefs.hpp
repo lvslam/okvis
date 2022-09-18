@@ -66,8 +66,7 @@ struct KeypointIdentifier
   KeypointIdentifier(uint64_t fi = 0, size_t ci = 0, size_t ki = 0)
       : frameId(fi),
         cameraIndex(ci),
-        keypointIndex(ki)
-  {
+        keypointIndex(ki) {
   }
 
   uint64_t frameId;     ///< Multiframe ID.
@@ -75,35 +74,35 @@ struct KeypointIdentifier
   size_t keypointIndex; ///< Index of the keypoint
 
   /// \brief Get multiframe ID.
-  uint64_t getFrameId()
-  {
+  uint64_t getFrameId() {
     return frameId;
   }
+
   /// \brief Set multiframe ID.
-  void setFrameId(uint64_t fid)
-  {
+  void setFrameId(uint64_t fid) {
     frameId = fid;
   }
+
   /// \brief Are two identifiers identical?
-  bool isBinaryEqual(const KeypointIdentifier & rhs) const
-  {
+  bool isBinaryEqual(const KeypointIdentifier &rhs) const {
     return frameId == rhs.frameId && cameraIndex == rhs.cameraIndex
-        && keypointIndex == rhs.keypointIndex;
+           && keypointIndex == rhs.keypointIndex;
   }
+
   /// \brief Equal to operator.
-  bool operator==(const KeypointIdentifier & rhs) const
-  {
+  bool operator==(const KeypointIdentifier &rhs) const {
     return isBinaryEqual(rhs);
   }
+
   /// \brief Less than operator. Compares first multiframe ID, then camera index,
   ///        then keypoint index.
-  bool operator<(const KeypointIdentifier & rhs) const
-  {
+  bool operator<(const KeypointIdentifier &rhs) const {
 
     if (frameId == rhs.frameId) {
       if (cameraIndex == rhs.cameraIndex) {
         return keypointIndex < rhs.keypointIndex;
-      } else {
+      }
+      else {
         return cameraIndex < rhs.cameraIndex;
       }
     }
@@ -111,6 +110,7 @@ struct KeypointIdentifier
   }
 
 };
+
 
 /// \brief Type to store the result of matching.
 struct Match
@@ -124,14 +124,17 @@ struct Match
   Match(size_t idxA_, size_t idxB_, float distance_)
       : idxA(idxA_),
         idxB(idxB_),
-        distance(distance_)
-  {
+        distance(distance_) {
   }
+
   size_t idxA;    ///< Keypoint index in frame A.
   size_t idxB;    ///< Keypoint index in frame B.
   float distance; ///< Distance between the keypoints.
 };
+
+
 typedef std::vector<Match> Matches;
+
 
 /**
  * @brief A type to store information about a point in the world map.
@@ -144,9 +147,9 @@ struct MapPoint
   MapPoint()
       : id(0),
         quality(0.0),
-        distance(0.0)
-  {
+        distance(0.0) {
   }
+
   /**
    * @brief Constructor.
    * @param id        ID of the point. E.g. landmark ID.
@@ -154,14 +157,14 @@ struct MapPoint
    * @param quality   Quality of the point. Usually between 0 and 1.
    * @param distance  Distance to origin of the frame the coordinates are given in.
    */
-  MapPoint(uint64_t id, const Eigen::Vector4d & point,
+  MapPoint(uint64_t id, const Eigen::Vector4d &point,
            double quality, double distance)
       : id(id),
         point(point),
         quality(quality),
-        distance(distance)
-  {
+        distance(distance) {
   }
+
   uint64_t id;            ///< ID of the point. E.g. landmark ID.
   Eigen::Vector4d point;  ///< Homogeneous coordinate of the point.
   double quality;         ///< Quality of the point. Usually between 0 and 1.
@@ -169,11 +172,13 @@ struct MapPoint
   std::map<okvis::KeypointIdentifier, uint64_t> observations;   ///< Observations of this point.
 };
 
+
 typedef std::vector<MapPoint, Eigen::aligned_allocator<MapPoint> > MapPointVector;
 typedef std::map<uint64_t, MapPoint, std::less<uint64_t>,
     Eigen::aligned_allocator<MapPoint> > PointMap;
 typedef std::map<uint64_t, okvis::kinematics::Transformation, std::less<uint64_t>,
     Eigen::aligned_allocator<okvis::kinematics::Transformation> > TransformationMap;
+
 
 /// \brief For convenience to pass associations - also contains the 3d points.
 struct Observation
@@ -193,11 +198,11 @@ struct Observation
    * @param isInitialized Is the landmark initialized?
    */
   Observation(size_t keypointIdx,
-              const Eigen::Vector2d& keypointMeasurement,
+              const Eigen::Vector2d &keypointMeasurement,
               double keypointSize,
               size_t cameraIdx,
               uint64_t frameId,
-              const Eigen::Vector4d& landmark_W,
+              const Eigen::Vector4d &landmark_W,
               uint64_t landmarkId, bool isInitialized)
       : keypointIdx(keypointIdx),
         cameraIdx(cameraIdx),
@@ -206,18 +211,18 @@ struct Observation
         keypointSize(keypointSize),
         landmark_W(landmark_W),
         landmarkId(landmarkId),
-        isInitialized(isInitialized)
-  {
+        isInitialized(isInitialized) {
   }
+
   Observation()
       : keypointIdx(0),
         cameraIdx(-1),
         frameId(0),
         keypointSize(0),
         landmarkId(0),
-        isInitialized(false)
-  {
+        isInitialized(false) {
   }
+
   size_t keypointIdx; ///< Keypoint ID.
   size_t cameraIdx;  ///< index of the camera this point is observed in
   uint64_t frameId;  ///< unique pose block ID == multiframe ID
@@ -227,6 +232,8 @@ struct Observation
   uint64_t landmarkId;  ///< unique landmark ID
   bool isInitialized;   ///< Initialisation status of landmark
 };
+
+
 typedef std::vector<Observation, Eigen::aligned_allocator<Observation> > ObservationVector;
 
 // todo: find a better place for this

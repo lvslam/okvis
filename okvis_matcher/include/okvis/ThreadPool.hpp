@@ -57,7 +57,7 @@ namespace okvis {
  */
 class ThreadPool
 {
- public:
+public:
   /// \brief Constructor. Launches some amount of workers.
   /// \param[in] numThreads The number of threads in the pool.
   ThreadPool(size_t numThreads);
@@ -76,17 +76,16 @@ class ThreadPool
   ///          future.valid() == false
   template<class Function, class ... Args>
   std::future<typename std::result_of<Function(Args...)>::type>
-  enqueue(Function&& function, Args&&... args);
+  enqueue(Function &&function, Args &&... args);
 
   /// \brief Stop the thread pool. This method is non-blocking.
-  void stop()
-  {
+  void stop() {
     stop_ = true;
   }
 
   /// \brief This method blocks until the queue is empty.
   void waitForEmptyQueue() const;
- private:
+private:
   /// \brief Run a single thread.
   void run();
   /// Need to keep track of threads so we can join them.
@@ -105,15 +104,15 @@ class ThreadPool
   volatile bool stop_;
 };
 
+
 // Enqueue work for the thread pool.
 template<class Function, class ... Args>
 std::future<typename std::result_of<Function(Args...)>::type> ThreadPool::enqueue(
-    Function&& function, Args&&... args)
-{
+    Function &&function, Args &&... args) {
   typedef typename std::result_of<Function(Args...)>::type return_type;
   // Don't allow enqueueing after stopping the pool.
   if (stop_) {
-    LOG(ERROR)<< "enqueue() called on stopped ThreadPool";
+    LOG(ERROR) << "enqueue() called on stopped ThreadPool";
     // An empty future will return valid() == false.
     return std::future<typename std::result_of<Function(Args...)>::type>();
   }
@@ -124,7 +123,7 @@ std::future<typename std::result_of<Function(Args...)>::type> ThreadPool::enqueu
   std::future<return_type> res = task->get_future();
   {
     std::unique_lock<std::mutex> lock(tasks_mutex_);
-    tasks_.push([task]() {(*task)();});
+    tasks_.push([task]() { (*task)(); });
   }
   tasks_condition_.notify_one();
   return res;

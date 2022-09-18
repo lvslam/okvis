@@ -34,18 +34,22 @@
 #include <gtest/gtest.h>
 #include <memory>
 #include <vector>
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+
 #include <brisk/brisk.h>
+
 #pragma GCC diagnostic pop
+
 #include "okvis/cameras/PinholeCamera.hpp"
 #include "okvis/cameras/NoDistortion.hpp"
 #include "okvis/cameras/RadialTangentialDistortion.hpp"
 #include "okvis/cameras/EquidistantDistortion.hpp"
 #include "okvis/MultiFrame.hpp"
 
-TEST(MulitFrame, functions)
-{
+
+TEST(MulitFrame, functions) {
 
   // instantiate all possible versions of test cameras
   std::vector<std::shared_ptr<const okvis::cameras::CameraBase> > cameras;
@@ -82,10 +86,10 @@ TEST(MulitFrame, functions)
     //std::cout << "Testing MultiFrame with " << cameras.at(c)->type() << std::endl;
 
 #ifdef __ARM_NEON__
-   std::shared_ptr<cv::FeatureDetector> detector(
-        new brisk::BriskFeatureDetector(34, 2));
+    std::shared_ptr<cv::FeatureDetector> detector(
+         new brisk::BriskFeatureDetector(34, 2));
 #else
-   std::shared_ptr<cv::FeatureDetector> detector(
+    std::shared_ptr<cv::FeatureDetector> detector(
         new brisk::ScaleSpaceFeatureDetector<brisk::HarrisScoreCalculator>(
             34, 2, 800, 450));
 #endif
@@ -100,9 +104,9 @@ TEST(MulitFrame, functions)
     cv::Mat image(480, 752, CV_8UC1, eigenImage.data());
 
     // setup multifrmae
-    multiFrame.setDetector(c,detector);
-    multiFrame.setExtractor(c,extractor);
-    multiFrame.setImage(c,image);
+    multiFrame.setDetector(c, detector);
+    multiFrame.setExtractor(c, extractor);
+    multiFrame.setImage(c, image);
 
     // run
     multiFrame.detect(c);

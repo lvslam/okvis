@@ -41,6 +41,7 @@
  */
 #ifndef INCLUDE_OKVIS_TIMING_NSECTIMEUTILITIES_HPP_
 #define INCLUDE_OKVIS_TIMING_NSECTIMEUTILITIES_HPP_
+
 #include <chrono>
 #include <boost/cstdint.hpp>
 
@@ -51,26 +52,26 @@ namespace timing {
 typedef boost::int64_t NsecTime;
 
 /// \brief Convert nanoseconds since the epoch to std::chrono
-std::chrono::system_clock::time_point nsecToChrono( const NsecTime & time );
+std::chrono::system_clock::time_point nsecToChrono(const NsecTime &time);
 
 /// \brief Convert std::chrono to nanoseconds since the epoch.
-NsecTime chronoToNsec( const std::chrono::system_clock::time_point & time );
+NsecTime chronoToNsec(const std::chrono::system_clock::time_point &time);
 
 /// \brief Get the epoch time as nanoseconds since the epoch.
 NsecTime nsecNow();
 
 /// \brief Convert the time (in integer nanoseconds) to decimal seconds.
-double nsecToSec( const NsecTime & time );
+double nsecToSec(const NsecTime &time);
 
 /// \brief Convert the time (in seconds) to integer nanoseconds
-NsecTime secToNsec( const double & time );
+NsecTime secToNsec(const double &time);
 
 /// \brief return a magic number representing an invalid timestamp
 constexpr NsecTime getInvalidTime();
 
 /// \brief Is the time valid? This uses a magic number
 ///        std::numeric_limits<NsecTime>::min() to represent an invalid time
-bool isValid(const NsecTime & time);
+bool isValid(const NsecTime &time);
 
 } // namespace timing
 } // namespace okvis
